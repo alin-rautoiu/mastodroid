@@ -26,7 +26,6 @@ import rx.schedulers.Schedulers;
 
 public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
 
-    public ObservableInt tootListIsVisible;
     public ObservableInt tootProgressIsVisible;
 
     private Context context;
@@ -42,7 +41,6 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
         this.subscription = subscription;
         this.mainView = mainView;
         this.tootProgressIsVisible = new ObservableInt(View.VISIBLE);
-        this.tootListIsVisible = new ObservableInt(View.GONE);
         this.type = type;
 
         app = MastodroidApplication.create(context);
@@ -51,7 +49,7 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
         refresh();
     }
 
-    public void fetchPublicTimeline() {
+    private void fetchPublicTimeline() {
 
         subscription = service.getPublicTimeLine()
                 .observeOn(AndroidSchedulers.mainThread())
@@ -73,7 +71,7 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
                 );
     }
 
-    public void fetchPublicTimelineUpdate(long sinceId) {
+    private void fetchPublicTimelineUpdate(long sinceId) {
 
         subscription = service.getPublicTimeLineUpdate(sinceId)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -95,7 +93,29 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
                 );
     }
 
-    public void fetchNotifications() {
+    private void fetchPublicTimelineFromPast(long maxId) {
+
+        subscription = service.getPublicTimeLineFromPast(maxId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Action1<List<Toot>>() {
+                               @Override
+                               public void call(List<Toot> timeline) {
+                                   if (mainView != null) {
+                                       mainView.loadData(timeline);
+                                   }
+                               }
+                           },
+                        new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                Log.e("Error", throwable.getMessage());
+                            }
+                        }
+                );
+    }
+
+    private void fetchNotifications() {
 
         subscription = service.getNotifications()
                 .observeOn(AndroidSchedulers.mainThread())
@@ -150,7 +170,7 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
                 );
     }
 
-    public void fetchHome() {
+    private void fetchHome() {
 
         subscription = service.getHomeTimeLine()
                 .observeOn(AndroidSchedulers.mainThread())
@@ -172,9 +192,31 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
                 );
     }
 
-    public void fetchHomeUpdate(long sinceId) {
+    private void fetchHomeUpdate(long sinceId) {
 
         subscription = service.getHomeTimeLineUpdate(sinceId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Action1<List<Toot>>() {
+                               @Override
+                               public void call(List<Toot> timeline) {
+                                   if (mainView != null) {
+                                       mainView.loadData(timeline);
+                                   }
+                               }
+                           },
+                        new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                Log.e("Error", throwable.getMessage());
+                            }
+                        }
+                );
+    }
+
+    private void fetchHomeFromPast(long maxId) {
+
+        subscription = service.getHomeTimeLineFromPast(maxId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Action1<List<Toot>>() {
@@ -213,8 +255,7 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
     }
 
     public void refresh() {
-        this.tootProgressIsVisible.set(View.VISIBLE);
-        this.tootListIsVisible.set(View.GONE);
+        tootProgressIsVisible.set(View.VISIBLE);
         switch (type) {
             case FragmentMain.HOME:
                 fetchHome();
@@ -229,8 +270,7 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
     }
 
     public void refresh(long sinceId) {
-        this.tootProgressIsVisible.set(View.VISIBLE);
-        this.tootListIsVisible.set(View.GONE);
+        tootProgressIsVisible.set(View.VISIBLE);
         switch (type) {
             case FragmentMain.HOME:
                 fetchHomeUpdate(sinceId);
@@ -240,6 +280,17 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
                 break;
             case FragmentMain.PUBLIC:
                 fetchPublicTimelineUpdate(sinceId);
+                break;
+        }
+    }
+
+    public void bringFromPast(long maxId) {
+        switch (type) {
+            case FragmentMain.HOME:
+                fetchHomeFromPast(maxId);
+                break;
+            case FragmentMain.PUBLIC:
+                fetchPublicTimelineFromPast(maxId);
                 break;
         }
     }

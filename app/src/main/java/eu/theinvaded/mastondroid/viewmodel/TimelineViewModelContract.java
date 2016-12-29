@@ -1,6 +1,7 @@
 package eu.theinvaded.mastondroid.viewmodel;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 
 import java.util.List;
 

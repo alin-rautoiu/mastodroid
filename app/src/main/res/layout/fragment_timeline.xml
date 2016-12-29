@@ -34,8 +34,6 @@
             android:clipToPadding="false"
             android:scrollbars="vertical"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            android:visibility="@{mainViewModel.tootListIsVisible}"
-            app:visibility="@{mainViewModel.tootListIsVisible}"
             tools:listitem="@layout/item_toot"/>
 
     </android.support.v4.widget.SwipeRefreshLayout>

@@ -2,27 +2,21 @@ package eu.theinvaded.mastondroid.ui.fragment;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import eu.theinvaded.mastondroid.R;
 import eu.theinvaded.mastondroid.databinding.FragmentTimelineBinding;
-import eu.theinvaded.mastondroid.model.Notification;
 import eu.theinvaded.mastondroid.model.StatusType;
 import eu.theinvaded.mastondroid.model.Toot;
-import eu.theinvaded.mastondroid.ui.activity.ReplyActivity;
 import eu.theinvaded.mastondroid.ui.adapter.TimelineAdapter;
 import eu.theinvaded.mastondroid.utils.TootComparator;
 import eu.theinvaded.mastondroid.viewmodel.TimelineViewModel;
@@ -42,7 +36,7 @@ public class FragmentTimeline extends FragmentBase implements TimelineViewModelC
     private int previousTotal = 0; // The total number of items in the dataset after the last load
     private boolean loading = true; // True if we are still waiting for the last set of data to load.
     private int visibleThreshold = 5; // The minimum amount of items to have below your current scroll position before loading more.
-    int firstVisibleItem, visibleItemCount, totalItemCount;
+    int firstVisibleItemIndex, visibleItemCount, totalItemCount;
 
     public static FragmentTimeline getInstance(int type) {
         FragmentTimeline fragmentTimeline = new FragmentTimeline();
@@ -72,13 +66,17 @@ public class FragmentTimeline extends FragmentBase implements TimelineViewModelC
     }
 
     private void setupRecycler(View rootView) {
-        dataBinding.listPeople.setLayoutManager(new LinearLayoutManager(dataBinding.listPeople.getContext()));
+        dataBinding.listPeople
+                .setLayoutManager(new LinearLayoutManager(dataBinding.listPeople.getContext()));
         dataBinding.listPeople.setAdapter(new TimelineAdapter(getCredentials()));
         dataBinding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 if (dataBinding.listPeople.getAdapter().getItemCount() != 0) {
-                    timelineViewModel.refresh(((TimelineAdapter)dataBinding.listPeople.getAdapter()).getLatestId());
+                    timelineViewModel
+                            .refresh(((TimelineAdapter)dataBinding.listPeople
+                                    .getAdapter())
+                                    .getLatestId());
                 } else {
                     timelineViewModel.refresh();
                 }
@@ -90,6 +88,36 @@ public class FragmentTimeline extends FragmentBase implements TimelineViewModelC
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                LinearLayoutManager linearLayoutManager =
+                        (LinearLayoutManager) dataBinding.listPeople.getLayoutManager();
+
+                visibleItemCount = recyclerView.getChildCount();
+                totalItemCount = linearLayoutManager.getItemCount();
+                firstVisibleItemIndex = linearLayoutManager.findFirstVisibleItemPosition();
+
+                //synchronizew loading state when item count changes
+                if (loading) {
+                    if (totalItemCount > previousTotal) {
+                        loading = false;
+                        previousTotal = totalItemCount;
+                    }
+                }
+                if (!loading && (totalItemCount - visibleItemCount) <= firstVisibleItemIndex) {
+                    // Loading NOT in progress and end of list has been reached
+                    // also triggered if not enough items to fill the screen
+                    // if you start loading
+                    loading = true;
+                    timelineViewModel
+                            .bringFromPast(((TimelineAdapter)dataBinding.listPeople
+                                    .getAdapter())
+                                    .getLastId());
+                }
             }
         });
     }
@@ -106,13 +134,12 @@ public class FragmentTimeline extends FragmentBase implements TimelineViewModelC
 
         timelineAdapter.setTimeline(timeline);
         Collections.sort(timeline, new TootComparator());
-
+        loading = false;
         setVisibility();
     }
 
     private void setVisibility() {
         timelineViewModel.tootProgressIsVisible.set(View.GONE);
-        timelineViewModel.tootListIsVisible.set(View.VISIBLE);
     }
 
     @Override
