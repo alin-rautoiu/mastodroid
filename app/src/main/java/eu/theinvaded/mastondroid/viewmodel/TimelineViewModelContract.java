@@ -16,7 +16,6 @@ public class TimelineViewModelContract {
         Context getContext();
 
         void loadData(List<Toot> timeline);
-        void loadNotifications(List<Notification> notifications);
         String getCredentials();
     }
 

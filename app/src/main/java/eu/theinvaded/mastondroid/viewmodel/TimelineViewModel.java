@@ -6,11 +6,13 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import eu.theinvaded.mastondroid.MastodroidApplication;
 import eu.theinvaded.mastondroid.data.MastodroidService;
 import eu.theinvaded.mastondroid.model.Notification;
+import eu.theinvaded.mastondroid.model.StatusType;
 import eu.theinvaded.mastondroid.model.Toot;
 import eu.theinvaded.mastondroid.ui.fragment.FragmentMain;
 import rx.Subscription;
@@ -71,9 +73,9 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
                 );
     }
 
-    public void fetchPublicTimeline(long minId) {
+    public void fetchPublicTimelineUpdate(long sinceId) {
 
-        subscription = service.getPublicTimeLineUpdate(minId)
+        subscription = service.getPublicTimeLineUpdate(sinceId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Action1<List<Toot>>() {
@@ -102,7 +104,40 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
                                @Override
                                public void call(List<Notification> notifications) {
                                    if (mainView != null) {
-                                       mainView.loadNotifications(notifications);
+
+                                       List<Toot> statuses = new ArrayList<>();
+
+                                       for (Notification notification: notifications) {
+                                           if (notification.status == null) {
+                                               Toot emptyToot = new Toot();
+                                               emptyToot.statusType = StatusType.Follow;
+                                               emptyToot.account = notification.account;
+                                               emptyToot.isNotification = true;
+                                               statuses.add(emptyToot);
+                                           } else {
+                                               notification.status.isNotification = true;
+                                               notification.status.notifiedAccound = notification.account;
+                                               Log.i("Notification type ", notification.type);
+                                               switch (notification.type) {
+                                                   case "follow" :
+                                                       notification.status.statusType = StatusType.Follow;
+                                                       break;
+                                                   case "favourite":
+                                                       notification.status.statusType = StatusType.Favorite;
+                                                       break;
+                                                   case "mention":
+                                                       notification.status.statusType = StatusType.Mention;
+                                                       break;
+                                                   case "reblog":
+                                                       notification.status.reblog = notification.status;
+                                                       notification.status.statusType = StatusType.Boost;
+                                                       break;
+                                               }
+                                               statuses.add(notification.status);
+                                           }
+                                       }
+
+                                       mainView.loadData(statuses);
                                    }
                                }
                            },
@@ -118,6 +153,28 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
     public void fetchHome() {
 
         subscription = service.getHomeTimeLine()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Action1<List<Toot>>() {
+                               @Override
+                               public void call(List<Toot> timeline) {
+                                   if (mainView != null) {
+                                       mainView.loadData(timeline);
+                                   }
+                               }
+                           },
+                        new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                Log.e("Error", throwable.getMessage());
+                            }
+                        }
+                );
+    }
+
+    public void fetchHomeUpdate(long sinceId) {
+
+        subscription = service.getHomeTimeLineUpdate(sinceId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Action1<List<Toot>>() {
@@ -171,18 +228,18 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
         }
     }
 
-    public void refresh(long minId) {
+    public void refresh(long sinceId) {
         this.tootProgressIsVisible.set(View.VISIBLE);
         this.tootListIsVisible.set(View.GONE);
         switch (type) {
             case FragmentMain.HOME:
-                fetchHome();
+                fetchHomeUpdate(sinceId);
                 break;
             case FragmentMain.NOTIFICATIONS:
                 fetchNotifications();
                 break;
             case FragmentMain.PUBLIC:
-                fetchPublicTimeline(minId);
+                fetchPublicTimelineUpdate(sinceId);
                 break;
         }
     }

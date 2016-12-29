@@ -11,6 +11,8 @@ import eu.theinvaded.mastondroid.model.Toot;
 public class TootComparator implements Comparator<Toot> {
     @Override
     public int compare(Toot o1, Toot o2) {
-        return o2.createdAt.compareTo(o1.createdAt);
+        if (o1.createdAt != null && o2.createdAt != null)
+            return o2.createdAt.compareTo(o1.createdAt);
+        else return 1;
     }
 }

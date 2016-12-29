@@ -38,10 +38,16 @@ public interface MastodroidService {
     Observable<List<Toot>> getPublicTimeLine();
 
     @GET("api/v1/timelines/public")
-    Observable<List<Toot>> getPublicTimeLineFromBack(@Query("max_id") long maxId);
+    Observable<List<Toot>> getPublicTimeLineFromPast(@Query("max_id") long maxId);
 
     @GET("api/v1/timelines/public")
-    Observable<List<Toot>> getPublicTimeLineUpdate(@Query("since_id") long minId);
+    Observable<List<Toot>> getPublicTimeLineUpdate(@Query("since_id") long sinceId);
+
+    @GET("api/v1/timelines/home")
+    Observable<List<Toot>> getHomeTimeLineFromPast(@Query("max_id") long maxId);
+
+    @GET("api/v1/timelines/home")
+    Observable<List<Toot>> getHomeTimeLineUpdate(@Query("since_id") long sinceId);
 
     @GET("api/v1/timelines/home")
     Observable<List<Toot>> getHomeTimeLine();
