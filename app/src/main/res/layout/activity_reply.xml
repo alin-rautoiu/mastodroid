@@ -6,6 +6,9 @@
         <variable
             name="viewModel"
             type="eu.theinvaded.mastondroid.viewmodel.ReplyViewModel"/>
+        <variable
+            name="VIEW"
+            type="android.view.View"/>
     </data>
 <RelativeLayout
     android:id="@+id/activity_reply"
@@ -29,18 +32,44 @@
         android:id="@+id/send_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Send"
+        android:text="@string/toot"
         android:layout_below="@+id/status_et"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
+        android:enabled='@{viewModel.remainingChars &gt; -1 }'
         android:onClick="@{() -> viewModel.postStatus()}"/>
     <TextView
         android:id="@+id/count_tv"
         android:layout_below="@id/status_et"
         android:layout_toLeftOf="@id/send_button"
-        android:text="@{viewModel.remainingChars}"
+        android:layout_toStartOf="@id/send_button"
+        android:textColor='@{viewModel.remainingChars &gt; -1 ? @color/colorPrimary : @color/colorRed }'
+        android:text="@{viewModel.remainingCharsText}"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+    <CheckBox
+        android:id="@+id/private_ck"
+        android:text="@string/mark_as_private"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="@={viewModel.isPrivate}"
+        style="@style/Widget.AppCompat.CompoundButton.CheckBox"
+        android:layout_alignBaseline="@+id/send_button"
+        android:layout_alignBottom="@+id/send_button"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <CheckBox
+        android:id="@+id/public_timeline_ck"
+        android:checked="@={viewModel.notDisplayPublic}"
+        android:visibility="@{viewModel.isPrivate ? VIEW.GONE : VIEW.VISIBLE}"
+        android:text="@string/do_not_display_in_public_timeline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/Widget.AppCompat.CompoundButton.CheckBox"
+        android:layout_below="@+id/private_ck"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 </RelativeLayout>
 </layout>

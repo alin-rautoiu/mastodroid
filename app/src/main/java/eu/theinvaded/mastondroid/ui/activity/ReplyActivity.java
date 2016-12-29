@@ -3,6 +3,7 @@ package eu.theinvaded.mastondroid.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -55,5 +56,10 @@ public class ReplyActivity extends AppCompatActivity implements ReplyViewModelCo
         return context
                 .getSharedPreferences(getString(R.string.preferences), context.MODE_PRIVATE)
                 .getString(getString(R.string.authKey), "");
+    }
+
+    @Override
+    public void goToParent() {
+        NavUtils.navigateUpFromSameTask(this);
     }
 }

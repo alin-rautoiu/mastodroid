@@ -1,11 +1,13 @@
 package eu.theinvaded.mastondroid.viewmodel;
 
+import android.accessibilityservice.GestureDescription;
 import android.content.Context;
 import android.databinding.BaseObservable;
+import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
+import android.databinding.ObservableInt;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.text.style.ScaleXSpan;
 import android.util.Log;
 
 import eu.theinvaded.mastondroid.MastodroidApplication;
@@ -25,27 +27,35 @@ import static android.content.ContentValues.TAG;
 public class ReplyViewModel extends BaseObservable implements ReplyViewModelContract.ViewModel {
     private final MastodroidApplication app;
     private final MastodroidService service;
+    private ReplyViewModelContract.ReplyView replyView;
 
     public ObservableField<String> tootText = new ObservableField<>("");
-    public ObservableField<String> remainingChars  = new ObservableField<>("500");
+    public ObservableField<String> remainingCharsText = new ObservableField<>("500");
+    public ObservableInt remainingChars = new ObservableInt(500);
+    public ObservableBoolean isPrivate = new ObservableBoolean(false);
+    public ObservableBoolean notDisplayPublic = new ObservableBoolean(false);
+
     public long replyToId;
 
     public ReplyViewModel(Context context, ReplyViewModelContract.ReplyView replyView) {
         app = MastodroidApplication.create(context);
         service = app.getMastodroidService(replyView.getCredentials());
+        this.replyView = replyView;
     }
 
     private String getRemainingChars(CharSequence s) {
-        return s != null
-        ? String.valueOf(500 - s.length())
-        : "500";
+        remainingChars.set(s != null
+                ? 500 - s.length()
+                : 500);
+
+        return String.valueOf(remainingChars.get());
     }
 
     public void setReplyTo(long statusId, String username) {
         if (StringUtils.isNotNullOrEmpty(username)) {
             tootText.set("@" + username + " ");
         }
-        remainingChars.set(getRemainingChars(tootText.get()));
+        remainingCharsText.set(getRemainingChars(tootText.get()));
         replyToId = statusId;
     }
 
@@ -58,7 +68,7 @@ public class ReplyViewModel extends BaseObservable implements ReplyViewModelCont
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                remainingChars.set(getRemainingChars(s));
+                remainingCharsText.set(getRemainingChars(s));
             }
 
             @Override
@@ -68,14 +78,21 @@ public class ReplyViewModel extends BaseObservable implements ReplyViewModelCont
     }
 
     public void postStatus() {
+        String statusVisibility = isPrivate.get()
+                ? "private"
+                : notDisplayPublic.get()
+                    ? "unlisted"
+                    : "public";
         if (replyToId == 0) {
-            service.postStatus(tootText.get(), false, "private")
+            service.postStatus(tootText.get(), false, statusVisibility)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeOn(Schedulers.io())
                     .subscribe(new Action1<Toot>() {
                         @Override
                         public void call(Toot toot) {
                             Log.d(TAG, "");
+                            replyView.goToParent();
+
                         }
                     }, new Action1<Throwable>() {
                         @Override
@@ -84,13 +101,13 @@ public class ReplyViewModel extends BaseObservable implements ReplyViewModelCont
                         }
                     });
         } else {
-            service.postStatusReply(tootText.get(), replyToId, false, "private")
+            service.postStatusReply(tootText.get(), replyToId, false, statusVisibility)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeOn(Schedulers.io())
                     .subscribe(new Action1<Toot>() {
                         @Override
                         public void call(Toot toot) {
-
+                            replyView.goToParent();
                         }
                     }, new Action1<Throwable>() {
                         @Override

@@ -10,6 +10,8 @@ public class ReplyViewModelContract {
 
     public interface ReplyView {
         String getCredentials();
+
+        void goToParent();
     }
 
     public interface ViewModel {
