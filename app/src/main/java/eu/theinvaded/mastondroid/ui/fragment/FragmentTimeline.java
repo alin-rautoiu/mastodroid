@@ -115,47 +115,6 @@ public class FragmentTimeline extends FragmentBase implements TimelineViewModelC
         timelineViewModel.tootListIsVisible.set(View.VISIBLE);
     }
 
-//    @Override
-//    public void loadNotifications(List<Notification> notifications) {
-//        List<Toot> statuses = new ArrayList<>();
-//
-//        for (Notification notification: notifications) {
-//            if (notification.status == null) {
-//                Toot emptyToot = new Toot();
-//                emptyToot.statusType = StatusType.Follow;
-//                emptyToot.account = notification.account;
-//                emptyToot.isNotification = true;
-//                statuses.add(emptyToot);
-//            } else {
-//                notification.status.isNotification = true;
-//                notification.status.notifiedAccound = notification.account;
-//                Log.i("Notification type ", notification.type);
-//                switch (notification.type) {
-//                    case "follow" :
-//                        notification.status.statusType = StatusType.Follow;
-//                        break;
-//                    case "favourite":
-//                        notification.status.statusType = StatusType.Favorite;
-//                        break;
-//                    case "mention":
-//                        notification.status.statusType = StatusType.Mention;
-//                        break;
-//                    case "reblog":
-//                        notification.status.reblog = notification.status;
-//                        notification.status.statusType = StatusType.Boost;
-//                        break;
-//                }
-//                statuses.add(notification.status);
-//            }
-//        }
-//
-//        TimelineAdapter timelineAdapter = (TimelineAdapter) dataBinding.listPeople.getAdapter();
-//        timelineAdapter.setTimeline(statuses);
-//
-//        setVisibility();
-//    }
-
-
     @Override
     public String getCredentials() {
         String credentials = getContext()
