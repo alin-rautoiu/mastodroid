@@ -48,9 +48,12 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
         this.context = context;
         this.tootView = tootView;
 
-        isFavorited = new ObservableBoolean(toot.favorited);
-        reblogged = new ObservableBoolean(this.toot.reblogged
-                || this.toot.account.username.compareTo(tootView.getUsername()) == 0);
+        reblogged = new ObservableBoolean(this.toot.statusType == StatusType.Boost
+                ? toot.reblog.reblogged
+                : toot.reblogged);
+        isFavorited = new ObservableBoolean(this.toot.statusType == StatusType.Boost
+                ? toot.reblog.favorited
+                : toot.favorited);
 
         statusTypeVisible = new ObservableInt(View.GONE);
         statusTypeFavorite = new ObservableInt(View.GONE);
@@ -153,8 +156,8 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
                     .subscribe(new Action1<Toot>() {
                                    @Override
                                    public void call(Toot favoritedStatus) {
-                                       tootView.setStatusFavorite(favoritedStatus);
-                                       toot.favorited = true;
+                                       toot = favoritedStatus;
+                                       isFavorited.set(favoritedStatus.favorited);
                                    }
                                },
                             new Action1<Throwable>() {
@@ -171,8 +174,8 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
                     .subscribe(new Action1<Toot>() {
                                    @Override
                                    public void call(Toot favoritedStatus) {
-                                       tootView.setStatusUnfavorite(favoritedStatus);
-                                       toot.favorited = false;
+                                       toot = favoritedStatus;
+                                       isFavorited.set(favoritedStatus.favorited);
                                    }
                                },
                             new Action1<Throwable>() {
@@ -195,6 +198,7 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
                                    @Override
                                    public void call(Toot boostedStatus) {
                                        reblogged.set(true);
+                                       toot = boostedStatus;
                                    }
                                },
                             new Action1<Throwable>() {
@@ -212,6 +216,7 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
                                    @Override
                                    public void call(Toot unboostedStatus) {
                                        reblogged.set(false);
+                                       toot = unboostedStatus;
                                    }
                                },
                             new Action1<Throwable>() {

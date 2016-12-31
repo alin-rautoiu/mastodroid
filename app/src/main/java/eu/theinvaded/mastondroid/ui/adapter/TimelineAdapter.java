@@ -158,24 +158,6 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.TootVi
         }
 
         @Override
-        public void setStatusFavorite(Toot toot) {
-            if (toot.isHiglighted) {
-                itemSelectedTootBinding.getTootViewModel().isFavorited.set(true);
-            } else {
-                itemTootBinding.getTootViewModel().isFavorited.set(true);
-            }
-        }
-
-        @Override
-        public void setStatusUnfavorite(Toot favoritedStatus) {
-            if (favoritedStatus.isHiglighted) {
-                itemSelectedTootBinding.getTootViewModel().isFavorited.set(false);
-            } else {
-                itemTootBinding.getTootViewModel().isFavorited.set(false);
-            }
-        }
-
-        @Override
         public void reply(Toot toot) {
             getContext().startActivity(ReplyActivity.getStartIntent(getContext(), toot));
         }

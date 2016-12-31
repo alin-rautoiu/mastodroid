@@ -37,7 +37,7 @@ public class Toot implements Parcelable {
     public int reblogs_count;
     @SerializedName("favorites_count")
     public int favorites_count;
-    @SerializedName("favorited")
+    @SerializedName("favourited")
     public boolean favorited;
     @SerializedName("reblog")
     public Toot reblog;

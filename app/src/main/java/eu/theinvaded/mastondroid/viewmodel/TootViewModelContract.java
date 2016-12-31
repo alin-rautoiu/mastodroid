@@ -14,8 +14,6 @@ public class TootViewModelContract {
     public interface TootView {
         Context getContext();
 
-        void setStatusFavorite(Toot id);
-        void setStatusUnfavorite(Toot favoritedStatus);
         void reply(Toot toot);
         void startThread(Toot toot);
 
