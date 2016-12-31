@@ -18,6 +18,7 @@ public class TimelineViewModelContract {
 
         void loadData(List<Toot> timeline);
         String getCredentials();
+        String getUsername();
     }
 
     public interface ViewModel {

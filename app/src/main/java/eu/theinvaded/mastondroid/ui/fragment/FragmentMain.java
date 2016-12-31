@@ -22,6 +22,7 @@ public class FragmentMain extends FragmentBase {
     public final static int HOME = 1;
     public final static int NOTIFICATIONS = 2;
     public final static int PUBLIC = 3;
+    public final static int THREAD = 4;
 
     private FragmentMainBinding dataBinding;
 

@@ -17,7 +17,10 @@ public class TootViewModelContract {
         void setStatusFavorite(Toot id);
         void setStatusUnfavorite(Toot favoritedStatus);
         void reply(Toot toot);
+        void startThread(Toot toot);
+
         String getCredentials();
+        String getUsername();
     }
 
     public interface ViewModel {

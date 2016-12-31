@@ -1,19 +1,15 @@
 package eu.theinvaded.mastondroid.data;
 
-import android.accounts.Account;
-import android.databinding.ObservableBoolean;
-import android.support.annotation.NonNull;
-
 import java.util.List;
 
 import eu.theinvaded.mastondroid.model.MastodonAccount;
+import eu.theinvaded.mastondroid.model.MastodonThread;
 import eu.theinvaded.mastondroid.model.Notification;
 import eu.theinvaded.mastondroid.model.Token;
 import eu.theinvaded.mastondroid.model.Toot;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
-import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -63,6 +59,12 @@ public interface MastodroidService {
 
     @POST("api/v1/statuses/{id}/unfavourite")
     Observable<Toot> unfavoriteStatus(@Path("id") long statusId);
+
+    @GET("api/v1/statuses/{id}/context")
+    Observable<MastodonThread> getThread(@Path("id") long statusId);
+
+    @GET("api/v1/statuses/{id}/")
+    Observable<Toot> getStatus(@Path("id") Toot statusId);
 
     @GET("api/v1/accounts/verify_credentials")
     Observable<MastodonAccount> verifyCredentials();

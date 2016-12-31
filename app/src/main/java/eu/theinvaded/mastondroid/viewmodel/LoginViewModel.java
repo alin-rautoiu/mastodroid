@@ -57,6 +57,7 @@ public class LoginViewModel extends BaseObservable implements LoginViewModelCont
                             @Override
                             public void call(MastodonAccount account) {
                                 if (account != null) {
+                                    viewModel.setUser(account);
                                     viewModel.startMainActivity();
                                 }
                             }
@@ -98,6 +99,7 @@ public class LoginViewModel extends BaseObservable implements LoginViewModelCont
                             public void call(Token token) {
                                 viewModel.setAuthKey(token.accessToken);
                                 isSignIn.set(!isSignIn.get());
+                                checkCredentials(token.accessToken);
                                 viewModel.startMainActivity();
                             }
                         },

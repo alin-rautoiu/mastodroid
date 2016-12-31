@@ -61,14 +61,19 @@ public class FragmentTimeline extends FragmentBase implements TimelineViewModelC
     private void initDataBinding() {
         Bundle bundle = this.getArguments();
 
-        timelineViewModel = new TimelineViewModel(mainView, getContext(), null, bundle.getInt(TYPE));
+        timelineViewModel = new TimelineViewModel(mainView, getContext(), bundle.getInt(TYPE));
+        timelineViewModel.refresh();
         dataBinding.setMainViewModel(timelineViewModel);
     }
 
     private void setupRecycler(View rootView) {
         dataBinding.listPeople
                 .setLayoutManager(new LinearLayoutManager(dataBinding.listPeople.getContext()));
-        dataBinding.listPeople.setAdapter(new TimelineAdapter(getCredentials()));
+        TimelineAdapter adapter = new TimelineAdapter();
+        adapter.setCredentials(getCredentials());
+        adapter.setUsername(getUsername());
+        dataBinding.listPeople.setAdapter(adapter);
+
         dataBinding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -101,7 +106,7 @@ public class FragmentTimeline extends FragmentBase implements TimelineViewModelC
                 totalItemCount = linearLayoutManager.getItemCount();
                 firstVisibleItemIndex = linearLayoutManager.findFirstVisibleItemPosition();
 
-                //synchronizew loading state when item count changes
+                //synchronize loading state when item count changes
                 if (loading) {
                     if (totalItemCount > previousTotal) {
                         loading = false;
@@ -121,7 +126,6 @@ public class FragmentTimeline extends FragmentBase implements TimelineViewModelC
             }
         });
     }
-
 
     @Override
     public void loadData(List<Toot> timeline) {
@@ -144,10 +148,17 @@ public class FragmentTimeline extends FragmentBase implements TimelineViewModelC
 
     @Override
     public String getCredentials() {
-        String credentials = getContext()
+
+        return getContext()
                 .getSharedPreferences(getString(R.string.preferences), getContext().MODE_PRIVATE)
                 .getString(getString(R.string.authKey), "");
-
-        return credentials;
     }
+
+    public String getUsername() {
+
+        return getContext()
+                .getSharedPreferences(getString(R.string.preferences), getContext().MODE_PRIVATE)
+                .getString(getString(R.string.CURRENT_USERNAME), "");
+    }
+
 }

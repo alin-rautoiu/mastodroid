@@ -14,10 +14,8 @@
         <activity
             android:name=".ui.activity.MainActivity"
             android:launchMode="singleTop"
-            android:theme="@style/AppTheme.NoActionBar"
-            />
-        <activity android:name=".ui.activity.LoginActivity"
-            >
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".ui.activity.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,11 +25,16 @@
         <activity
             android:name=".ui.activity.ReplyActivity"
             android:parentActivityName=".ui.activity.MainActivity"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
-            />
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="894c7240bb1eaa57bdc34a7a3b487c70eba1d799" />
+
+        <activity
+            android:parentActivityName=".ui.activity.MainActivity"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+            android:name=".ui.activity.ThreadActivity"></activity>
     </application>
 
 </manifest>

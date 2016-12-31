@@ -1,7 +1,6 @@
 package eu.theinvaded.mastondroid.ui.adapter;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,13 +12,14 @@ import java.util.Collections;
 import java.util.List;
 
 import eu.theinvaded.mastondroid.R;
+import eu.theinvaded.mastondroid.databinding.ItemSelectedTootBinding;
 import eu.theinvaded.mastondroid.databinding.ItemTootBinding;
 import eu.theinvaded.mastondroid.model.StatusType;
 import eu.theinvaded.mastondroid.model.Toot;
 import eu.theinvaded.mastondroid.ui.activity.ReplyActivity;
+import eu.theinvaded.mastondroid.ui.activity.ThreadActivity;
 import eu.theinvaded.mastondroid.viewmodel.ItemTootViewModel;
 import eu.theinvaded.mastondroid.viewmodel.TootViewModelContract;
-import retrofit2.http.Path;
 
 /**
  * Created by alin on 10.12.2016.
@@ -27,17 +27,43 @@ import retrofit2.http.Path;
 public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.TootViewHolder> {
     private List<Toot> timeline;
     private String credentials;
+    private String username;
 
-    public TimelineAdapter(String credentials) {
+    private final static int NORMAL = 1;
+    private final static int HIGHLIGHTED = 2;
+
+    public TimelineAdapter() {
         this.timeline = Collections.emptyList();
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setCredentials(String credentials) {
         this.credentials = credentials;
     }
 
     @Override
+    public int getItemViewType(int position) {
+        return timeline.get(position).isHiglighted ? HIGHLIGHTED : NORMAL;
+    }
+
+    @Override
     public TootViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        ItemTootBinding dataBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),
-                R.layout.item_toot, parent, false);
-        return new TootViewHolder(dataBinding);
+
+        switch (viewType) {
+            case NORMAL:
+                ItemTootBinding dataBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),
+                        R.layout.item_toot, parent, false);
+                return new TootViewHolder(dataBinding);
+            case HIGHLIGHTED:
+                ItemSelectedTootBinding itemSelectedTootBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),
+                        R.layout.item_selected_toot, parent, false);
+                return new TootViewHolder(itemSelectedTootBinding);
+        }
+
+        return null;
     }
 
     @Override
@@ -69,36 +95,61 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.TootVi
     }
 
     public class TootViewHolder extends RecyclerView.ViewHolder implements TootViewModelContract.TootView {
-        ItemTootBinding dataBinding;
-
+        ItemTootBinding itemTootBinding;
+        ItemSelectedTootBinding itemSelectedTootBinding;
         public TootViewHolder(ItemTootBinding binding) {
             super(binding.itemToot);
-            this.dataBinding = binding;
+            this.itemTootBinding = binding;
+        }
+
+        public TootViewHolder(ItemSelectedTootBinding binding) {
+            super(binding.itemToot);
+            this.itemSelectedTootBinding = binding;
         }
 
         void bindToot(Toot toot) {
-            if (dataBinding.getTootViewModel() == null) {
-                dataBinding.setTootViewModel(new ItemTootViewModel(toot, itemView.getContext(), this));
+
+            if (toot.isHiglighted) {
+                if (itemSelectedTootBinding.getTootViewModel() == null) {
+                    itemSelectedTootBinding.setTootViewModel(new ItemTootViewModel(toot, itemView.getContext(), this));
+                } else {
+                    itemSelectedTootBinding.getTootViewModel().setToot(toot);
+                }
+
+                String avatarUri = "";
+                if (toot.statusType != null
+                        && toot.statusType == StatusType.Boost
+                        && toot.reblog.account != null) {
+                    avatarUri = toot.reblog.account.avatar;
+                } else if (toot.account != null) {
+                    avatarUri = toot.account.avatar;
+                }
+
+                Picasso.with(getContext())
+                        .load(avatarUri)
+                        .placeholder(R.drawable.ic_person)
+                        .into(itemSelectedTootBinding.avatarIv);
             } else {
-                dataBinding.getTootViewModel().setToot(toot);
+                if (itemTootBinding.getTootViewModel() == null) {
+                    itemTootBinding.setTootViewModel(new ItemTootViewModel(toot, itemView.getContext(), this));
+                } else {
+                    itemTootBinding.getTootViewModel().setToot(toot);
+                }
+
+                String avatarUri = "";
+                if (toot.statusType != null
+                        && toot.statusType == StatusType.Boost
+                        && toot.reblog.account != null) {
+                    avatarUri = toot.reblog.account.avatar;
+                } else if (toot.account != null) {
+                    avatarUri = toot.account.avatar;
+                }
+
+                Picasso.with(getContext())
+                        .load(avatarUri)
+                        .placeholder(R.drawable.ic_person)
+                        .into(itemTootBinding.avatarIv);
             }
-
-            if (toot == null)
-                return;
-
-            String avatarUri = "";
-            if (toot.statusType != null
-                    && toot.statusType == StatusType.Boost
-                    && toot.reblog.account != null) {
-                avatarUri = toot.reblog.account.avatar;
-            } else if (toot.account != null) {
-                avatarUri = toot.account.avatar;
-            }
-
-            Picasso.with(getContext())
-                    .load(avatarUri)
-                    .placeholder(R.drawable.ic_person)
-                    .into(dataBinding.avatarIv);
         }
 
         @Override
@@ -108,12 +159,20 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.TootVi
 
         @Override
         public void setStatusFavorite(Toot toot) {
-            dataBinding.getTootViewModel().isFavorited.set(true);
+            if (toot.isHiglighted) {
+                itemSelectedTootBinding.getTootViewModel().isFavorited.set(true);
+            } else {
+                itemTootBinding.getTootViewModel().isFavorited.set(true);
+            }
         }
 
         @Override
         public void setStatusUnfavorite(Toot favoritedStatus) {
-            dataBinding.getTootViewModel().isFavorited.set(false);
+            if (favoritedStatus.isHiglighted) {
+                itemSelectedTootBinding.getTootViewModel().isFavorited.set(false);
+            } else {
+                itemTootBinding.getTootViewModel().isFavorited.set(false);
+            }
         }
 
         @Override
@@ -122,8 +181,18 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.TootVi
         }
 
         @Override
+        public void startThread(Toot toot) {
+            getContext().startActivity(ThreadActivity.getStartIntent(getContext(), toot));
+        }
+
+        @Override
         public String getCredentials() {
             return credentials;
+        }
+
+        @Override
+        public String getUsername() {
+            return username;
         }
     }
 }

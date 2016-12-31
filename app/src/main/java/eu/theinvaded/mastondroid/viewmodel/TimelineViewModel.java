@@ -11,9 +11,11 @@ import java.util.List;
 
 import eu.theinvaded.mastondroid.MastodroidApplication;
 import eu.theinvaded.mastondroid.data.MastodroidService;
+import eu.theinvaded.mastondroid.model.MastodonThread;
 import eu.theinvaded.mastondroid.model.Notification;
 import eu.theinvaded.mastondroid.model.StatusType;
 import eu.theinvaded.mastondroid.model.Toot;
+import eu.theinvaded.mastondroid.ui.activity.ThreadActivity;
 import eu.theinvaded.mastondroid.ui.fragment.FragmentMain;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -34,9 +36,10 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
     private int type;
     private MastodroidApplication app;
     private MastodroidService service;
+    private Toot highlightedStatus;
 
     public TimelineViewModel(@NonNull TimelineViewModelContract.MainView mainView,
-                             @NonNull Context context, Subscription subscription, int type) {
+                             @NonNull Context context, int type) {
         this.context = context;
         this.subscription = subscription;
         this.mainView = mainView;
@@ -45,8 +48,15 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
 
         app = MastodroidApplication.create(context);
         service = app.getMastodroidService(mainView.getCredentials());
+    }
 
-        refresh();
+    public TimelineViewModel(ThreadActivity threadActivity,
+                             Context context,
+                             int thread,
+                             Toot highlightedStatus) {
+
+        this(threadActivity, context, thread);
+        this.highlightedStatus = highlightedStatus;
     }
 
     private void fetchPublicTimeline() {
@@ -236,6 +246,36 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
                 );
     }
 
+    private void fetchThread() {
+        subscription = service.getThread(highlightedStatus.id)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Action1<MastodonThread>() {
+                               @Override
+                               public void call(MastodonThread thread) {
+                                   if (mainView != null) {
+                                       List<Toot> newList = new ArrayList<Toot>();
+                                       newList.addAll(thread.ancestors);
+                                       newList.addAll(thread.descendants);
+                                       highlightedStatus.isHiglighted = true;
+                                       newList.add(highlightedStatus);
+                                       mainView.loadData(newList);
+                                   }
+                               }
+                           },
+                        new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                Log.e("Error", throwable.getMessage());
+                            }
+                        }
+                );
+    }
+
+    private Toot returnToot(Toot toot) {
+        return toot;
+    }
+
     private void unsubscribeFromObservable() {
         if (subscription != null && !subscription.isUnsubscribed()) {
             subscription.unsubscribe();
@@ -266,6 +306,9 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
             case FragmentMain.PUBLIC:
                 fetchPublicTimeline();
                 break;
+            case FragmentMain.THREAD:
+                fetchThread();
+                break;
         }
     }
 
@@ -293,5 +336,9 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
                 fetchPublicTimelineFromPast(maxId);
                 break;
         }
+    }
+
+    public void setHighlightedStatus(Toot highlightedStatus) {
+        this.highlightedStatus = highlightedStatus;
     }
 }

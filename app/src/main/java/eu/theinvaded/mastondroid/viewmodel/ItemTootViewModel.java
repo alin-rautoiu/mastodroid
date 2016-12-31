@@ -38,20 +38,20 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
     public ObservableInt statusTypeFavorite;
     public ObservableInt statusTypeFollow;
 
-    public String statusTypeMessage;
 
-    TootViewModelContract.TootView tootView;
-    MastodroidService service;
-    MastodroidApplication app;
+    private TootViewModelContract.TootView tootView;
+    private MastodroidService service;
+    private MastodroidApplication app;
 
     public ItemTootViewModel(Toot toot, Context context, TootViewModelContract.TootView tootView) {
         this.toot = toot;
         this.context = context;
         this.tootView = tootView;
 
-        isFavorited = new ObservableBoolean(false);
-        reblogged = new ObservableBoolean(this.toot.reblogged);
-        statusTypeMessage = "";
+        isFavorited = new ObservableBoolean(toot.favorited);
+        reblogged = new ObservableBoolean(this.toot.reblogged
+                || this.toot.account.username.compareTo(tootView.getUsername()) == 0);
+
         statusTypeVisible = new ObservableInt(View.GONE);
         statusTypeFavorite = new ObservableInt(View.GONE);
         statusTypeBoost = new ObservableInt(View.GONE);
@@ -81,6 +81,7 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
         String status = "";
         statusTypeFavorite.set(View.GONE);
         statusTypeBoost.set(View.GONE);
+        statusTypeFollow.set(View.GONE);
 
         if (toot.statusType == null)
             return status;
@@ -155,7 +156,13 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
                                        tootView.setStatusFavorite(favoritedStatus);
                                        toot.favorited = true;
                                    }
-                               }
+                               },
+                            new Action1<Throwable>() {
+                                @Override
+                                public void call(Throwable throwable) {
+                                    Log.e("Favorite: ", throwable.getMessage());
+                                }
+                            }
                     );
         } else {
             subscription = service.unfavoriteStatus(toot.id)
@@ -167,7 +174,13 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
                                        tootView.setStatusUnfavorite(favoritedStatus);
                                        toot.favorited = false;
                                    }
-                               }
+                               },
+                            new Action1<Throwable>() {
+                                @Override
+                                public void call(Throwable throwable) {
+                                    Log.e("Unfavorite: ", throwable.getMessage());
+                                }
+                            }
                     );
         }
     }
@@ -228,6 +241,9 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
         notifyChange();
     }
 
+    public void startThread() {
+        tootView.startThread(toot);
+    }
 
     private void unsubscribeFromObservable() {
         if (subscription != null && !subscription.isUnsubscribed()) {

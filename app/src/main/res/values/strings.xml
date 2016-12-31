@@ -13,4 +13,5 @@
     <string name="toot">Toot</string>
     <string name="mark_as_private">Mark as private</string>
     <string name="do_not_display_in_public_timeline">Do not display in public timeline</string>
+    <string name="CURRENT_USERNAME">CURRENT_USERNAME</string>
 </resources>

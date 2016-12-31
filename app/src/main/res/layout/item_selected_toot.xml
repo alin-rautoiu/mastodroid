@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    >
-
+<layout>
     <data>
         <variable
             name="tootViewModel"
             type="eu.theinvaded.mastondroid.viewmodel.ItemTootViewModel" />
     </data>
 
-    <RelativeLayout
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/itemToot"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="@{() -> tootViewModel.startThread()}"
-        android:paddingBottom="@dimen/fab_margin">
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:background="@color/colorPrimaryDark"
+        tools:context="eu.theinvaded.mastondroid.ui.activity.ThreadActivity">
+
 
         <!--Status type-->
         <ImageView
@@ -75,26 +78,27 @@
 
         <TextView
             android:id="@+id/displayName_tv"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text='@{tootViewModel.displayName}'
             android:textColor="@color/colorAccent"
-            tools:text="User McUsername"
+            tools:text="User McUsernam"
+            tools:textColor="@color/colorAccent"
             android:layout_toRightOf="@+id/avatar_iv"
             android:layout_toEndOf="@+id/avatar_iv"
             android:layout_below="@+id/status_type_tv" />
 
         <TextView
             android:id="@+id/username_tv"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text='@{"@" + tootViewModel.username}'
             android:textColor="@color/colorAccent"
             tools:text="\@User McUsernam"
-            android:layout_alignBottom="@+id/displayName_tv"
-            android:layout_toRightOf="@+id/displayName_tv"
-            android:layout_toEndOf="@+id/displayName_tv"
-            android:layout_below="@+id/status_type_tv" />
+            tools:textColor="@color/colorAccent"
+            android:layout_toRightOf="@+id/avatar_iv"
+            android:layout_toEndOf="@+id/avatar_iv"
+            android:layout_below="@+id/displayName_tv" />
 
         <TextView
             android:id="@+id/content_tv"
@@ -102,7 +106,6 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/username_tv"
             android:layout_toRightOf="@id/avatar_iv"
-            android:layout_toEndOf="@id/avatar_iv"
             android:text="@{tootViewModel.content}"
             android:textColor="@color/colorAccent"
             tools:text="Tooooooooooooooooooooooooooooooooooooooooooooooooooot"
@@ -117,7 +120,6 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/content_tv"
             android:layout_toRightOf="@id/avatar_iv"
-            android:layout_toEndOf="@id/avatar_iv"
             android:weightSum="1"
             android:clipToPadding="false"
             android:clipChildren="false"
@@ -142,7 +144,7 @@
 
             <ImageButton
                 android:id="@+id/star_btn"
-                android:layout_width="@dimen/icon_dimension"
+                android:layout_width="wrap_content"
                 android:layout_height="@dimen/icon_dimension"
                 android:background="@{tootViewModel.isFavorited ? @drawable/star : @drawable/star_outline}"
                 android:onClick="@{() -> tootViewModel.favoriteStatus()}"

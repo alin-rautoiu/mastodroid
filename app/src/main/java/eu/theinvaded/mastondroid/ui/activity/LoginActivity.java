@@ -9,6 +9,7 @@ import android.os.Bundle;
 import com.crashlytics.android.Crashlytics;
 import eu.theinvaded.mastondroid.R;
 import eu.theinvaded.mastondroid.databinding.ActivityLoginBinding;
+import eu.theinvaded.mastondroid.model.MastodonAccount;
 import eu.theinvaded.mastondroid.viewmodel.LoginViewModel;
 import eu.theinvaded.mastondroid.viewmodel.LoginViewModelContract;
 import io.fabric.sdk.android.Fabric;
@@ -74,5 +75,13 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
     @Override
     public String getClientId() {
         return getString(R.string.clientId);
+    }
+
+    @Override
+    public void setUser(MastodonAccount account) {
+        preferences
+                .edit()
+                .putString(getString(R.string.CURRENT_USERNAME), account.username)
+                .apply();
     }
 }
