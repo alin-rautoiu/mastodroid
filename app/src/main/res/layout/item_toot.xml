@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     >
 
@@ -69,6 +70,9 @@
             android:paddingRight="@dimen/image_padding"
             android:visibility="@{tootViewModel.statusVisibility}"
             android:src="@drawable/ic_person"
+            app:imageUrl="@{tootViewModel.avatarUrl}"
+            android:clickable="true"
+            android:onClick="@{() -> tootViewModel.expandUser()}"
             android:layout_below="@+id/status_type_tv"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
@@ -80,6 +84,8 @@
             android:text='@{tootViewModel.displayName}'
             android:textColor="@color/colorAccent"
             tools:text="User McUsername"
+            android:clickable="true"
+            android:onClick="@{() -> tootViewModel.expandUser()}"
             android:layout_toRightOf="@+id/avatar_iv"
             android:layout_toEndOf="@+id/avatar_iv"
             android:layout_below="@+id/status_type_tv" />
@@ -91,6 +97,8 @@
             android:text='@{"@" + tootViewModel.username}'
             android:textColor="@color/colorAccent"
             tools:text="\@User McUsernam"
+            android:clickable="true"
+            android:onClick="@{() -> tootViewModel.expandUser()}"
             android:layout_alignBottom="@+id/displayName_tv"
             android:layout_toRightOf="@+id/displayName_tv"
             android:layout_toEndOf="@+id/displayName_tv"

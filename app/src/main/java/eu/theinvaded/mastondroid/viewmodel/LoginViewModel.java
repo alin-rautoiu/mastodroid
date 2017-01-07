@@ -74,7 +74,9 @@ public class LoginViewModel extends BaseObservable implements LoginViewModelCont
 
     @Override
     public void destroy() {
-
+        unsubscribeFromObservable();
+        subscription = null;
+        viewModel = null;
     }
 
     public void signIn() {

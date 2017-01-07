@@ -1,10 +1,12 @@
 package eu.theinvaded.mastondroid.data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import eu.theinvaded.mastondroid.model.MastodonAccount;
 import eu.theinvaded.mastondroid.model.MastodonThread;
 import eu.theinvaded.mastondroid.model.Notification;
+import eu.theinvaded.mastondroid.model.Relationship;
 import eu.theinvaded.mastondroid.model.Token;
 import eu.theinvaded.mastondroid.model.Toot;
 import retrofit2.http.Field;
@@ -68,6 +70,18 @@ public interface MastodroidService {
 
     @GET("api/v1/accounts/verify_credentials")
     Observable<MastodonAccount> verifyCredentials();
+
+    @GET("api/v1/accounts/{id}/statuses")
+    Observable<List<Toot>> getStatusesForUser(@Path("id") long id);
+
+    @GET("api/v1/accounts/relationships")
+    Observable<List<Relationship>> relationships(@Query("id") List<Long> id);
+
+    @POST("api/v1/accounts/{id}/follow")
+    Observable<Relationship> followUser(@Path("id") long id);
+
+    @POST("api/v1/accounts/{id}/unfollow")
+    Observable<Relationship> unfollowUser(@Path("id") long id);
 
     @GET("api/v1/notifications")
     Observable<List<Notification>> getNotifications();

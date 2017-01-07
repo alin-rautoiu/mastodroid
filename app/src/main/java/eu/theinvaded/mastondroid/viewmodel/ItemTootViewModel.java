@@ -3,6 +3,7 @@ package eu.theinvaded.mastondroid.viewmodel;
 import android.content.Context;
 import android.database.Observable;
 import android.databinding.BaseObservable;
+import android.databinding.BindingAdapter;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableInt;
 import android.os.Build;
@@ -10,8 +11,12 @@ import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
+
+import com.squareup.picasso.Picasso;
 
 import eu.theinvaded.mastondroid.MastodroidApplication;
+import eu.theinvaded.mastondroid.R;
 import eu.theinvaded.mastondroid.data.MastodroidService;
 import eu.theinvaded.mastondroid.model.MastodonAccount;
 import eu.theinvaded.mastondroid.model.StatusType;
@@ -62,6 +67,7 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
 
         app = MastodroidApplication.create(context);
         service = app.getMastodroidService(tootView.getCredentials());
+        this.context = context;
     }
 
     public String getUsername() {
@@ -145,6 +151,20 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
         } else {
             return View.VISIBLE;
         }
+    }
+
+    public String getAvatarUrl() {
+        return toot.reblog == null
+                ? toot.account.avatar
+                : toot.reblog.account.avatar;
+    }
+
+    @BindingAdapter({"bind:imageUrl"})
+    public static void loadImage(ImageView view, String imageUrl) {
+        Picasso.with(view.getContext())
+                .load(imageUrl)
+                .placeholder(R.drawable.ic_person)
+                .into(view);
     }
 
     public void favoriteStatus() {
@@ -254,6 +274,15 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
         if (subscription != null && !subscription.isUnsubscribed()) {
             subscription.unsubscribe();
         }
+    }
+
+    public void expandUser() {
+        if (toot.statusType == StatusType.Boost) {
+            tootView.expandUser(toot.reblog.account);
+        } else {
+            tootView.expandUser(toot.account);
+        }
+
     }
 
     @Override

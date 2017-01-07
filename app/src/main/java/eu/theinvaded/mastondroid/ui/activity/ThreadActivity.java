@@ -17,6 +17,7 @@ import eu.theinvaded.mastondroid.model.StatusType;
 import eu.theinvaded.mastondroid.model.Toot;
 import eu.theinvaded.mastondroid.ui.adapter.TimelineAdapter;
 import eu.theinvaded.mastondroid.ui.fragment.FragmentMain;
+import eu.theinvaded.mastondroid.utils.Constants;
 import eu.theinvaded.mastondroid.utils.TootComparator;
 import eu.theinvaded.mastondroid.viewmodel.TimelineViewModel;
 import eu.theinvaded.mastondroid.viewmodel.TimelineViewModelContract;
@@ -56,7 +57,7 @@ public class ThreadActivity extends AppCompatActivity implements TimelineViewMod
 
     private void setBinding() {
         timelineViewModel = new TimelineViewModel(this, context,
-                FragmentMain.THREAD,
+                Constants.THREAD,
                 highlightedStatus);
         timelineViewModel.refresh();
 
@@ -95,7 +96,7 @@ public class ThreadActivity extends AppCompatActivity implements TimelineViewMod
         }
 
         timelineAdapter.setTimeline(timeline);
-        Collections.sort(timeline, new TootComparator());
+        Collections.sort(timeline, new TootComparator(true));
         this.loading = false;
         setVisibility();
     }

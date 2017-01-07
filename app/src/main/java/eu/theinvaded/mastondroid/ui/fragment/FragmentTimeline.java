@@ -1,5 +1,6 @@
 package eu.theinvaded.mastondroid.ui.fragment;
 
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -28,6 +29,7 @@ import eu.theinvaded.mastondroid.viewmodel.TimelineViewModelContract;
 public class FragmentTimeline extends FragmentBase implements TimelineViewModelContract.MainView {
 
     private static final String TYPE = "TYPE";
+    private static final String USER_ID = "USER_ID";
 
     private FragmentTimelineBinding dataBinding;
     private TimelineViewModel timelineViewModel;
@@ -37,11 +39,21 @@ public class FragmentTimeline extends FragmentBase implements TimelineViewModelC
     private boolean loading = true; // True if we are still waiting for the last set of data to load.
     private int visibleThreshold = 5; // The minimum amount of items to have below your current scroll position before loading more.
     int firstVisibleItemIndex, visibleItemCount, totalItemCount;
+    private long userId;
 
     public static FragmentTimeline getInstance(int type) {
         FragmentTimeline fragmentTimeline = new FragmentTimeline();
         Bundle extraArguments = new Bundle();
         extraArguments.putInt(TYPE, type);
+        fragmentTimeline.setArguments(extraArguments);
+
+        return fragmentTimeline;
+    }
+
+    public static FragmentTimeline getInstance(int type, long userId) {
+        FragmentTimeline fragmentTimeline = getInstance(type);
+        Bundle extraArguments = fragmentTimeline.getArguments();
+        extraArguments.putLong(USER_ID, userId);
         fragmentTimeline.setArguments(extraArguments);
 
         return fragmentTimeline;
@@ -62,7 +74,12 @@ public class FragmentTimeline extends FragmentBase implements TimelineViewModelC
         Bundle bundle = this.getArguments();
 
         timelineViewModel = new TimelineViewModel(mainView, getContext(), bundle.getInt(TYPE));
-        timelineViewModel.refresh();
+        userId = getArguments().getLong(USER_ID);
+        if (userId != 0) {
+            timelineViewModel.refreshUser(userId);
+        } else {
+            timelineViewModel.refresh();
+        }
         dataBinding.setMainViewModel(timelineViewModel);
     }
 
@@ -150,14 +167,14 @@ public class FragmentTimeline extends FragmentBase implements TimelineViewModelC
     public String getCredentials() {
 
         return getContext()
-                .getSharedPreferences(getString(R.string.preferences), getContext().MODE_PRIVATE)
+                .getSharedPreferences(getString(R.string.preferences), Context.MODE_PRIVATE)
                 .getString(getString(R.string.authKey), "");
     }
 
     public String getUsername() {
 
         return getContext()
-                .getSharedPreferences(getString(R.string.preferences), getContext().MODE_PRIVATE)
+                .getSharedPreferences(getString(R.string.preferences), Context.MODE_PRIVATE)
                 .getString(getString(R.string.CURRENT_USERNAME), "");
     }
 

@@ -17,6 +17,7 @@ import eu.theinvaded.mastondroid.model.StatusType;
 import eu.theinvaded.mastondroid.model.Toot;
 import eu.theinvaded.mastondroid.ui.activity.ThreadActivity;
 import eu.theinvaded.mastondroid.ui.fragment.FragmentMain;
+import eu.theinvaded.mastondroid.utils.Constants;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -272,6 +273,27 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
                 );
     }
 
+    private void fetchUserStatuses(long userId) {
+        subscription = service.getStatusesForUser(userId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Action1<List<Toot>>() {
+                               @Override
+                               public void call(List<Toot> statuses) {
+                                   if (mainView != null) {
+                                       mainView.loadData(statuses);
+                                   }
+                               }
+                           },
+                        new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                Log.e("Error", throwable.getMessage());
+                            }
+                        }
+                );
+    }
+
     private Toot returnToot(Toot toot) {
         return toot;
     }
@@ -297,31 +319,35 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
     public void refresh() {
         tootProgressIsVisible.set(View.VISIBLE);
         switch (type) {
-            case FragmentMain.HOME:
+            case Constants.HOME:
                 fetchHome();
                 break;
-            case FragmentMain.NOTIFICATIONS:
+            case Constants.NOTIFICATIONS:
                 fetchNotifications();
                 break;
-            case FragmentMain.PUBLIC:
+            case Constants.PUBLIC:
                 fetchPublicTimeline();
                 break;
-            case FragmentMain.THREAD:
+            case Constants.THREAD:
                 fetchThread();
                 break;
         }
     }
 
+    public void refreshUser(long userId) {
+        fetchUserStatuses(userId);
+    }
+
     public void refresh(long sinceId) {
         tootProgressIsVisible.set(View.VISIBLE);
         switch (type) {
-            case FragmentMain.HOME:
+            case Constants.HOME:
                 fetchHomeUpdate(sinceId);
                 break;
-            case FragmentMain.NOTIFICATIONS:
+            case Constants.NOTIFICATIONS:
                 fetchNotifications();
                 break;
-            case FragmentMain.PUBLIC:
+            case Constants.PUBLIC:
                 fetchPublicTimelineUpdate(sinceId);
                 break;
         }
@@ -329,10 +355,10 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
 
     public void bringFromPast(long maxId) {
         switch (type) {
-            case FragmentMain.HOME:
+            case Constants.HOME:
                 fetchHomeFromPast(maxId);
                 break;
-            case FragmentMain.PUBLIC:
+            case Constants.PUBLIC:
                 fetchPublicTimelineFromPast(maxId);
                 break;
         }
