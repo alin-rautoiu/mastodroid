@@ -1,17 +1,22 @@
 package eu.theinvaded.mastondroid.viewmodel;
 
 import android.content.Context;
-import android.database.Observable;
 import android.databinding.BaseObservable;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableInt;
 import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.text.Html;
+import android.text.Spannable;
 import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.style.URLSpan;
+import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.View;
 
 import eu.theinvaded.mastondroid.MastodroidApplication;
+import eu.theinvaded.mastondroid.R;
 import eu.theinvaded.mastondroid.data.MastodroidService;
 import eu.theinvaded.mastondroid.model.MastodonAccount;
 import eu.theinvaded.mastondroid.model.StatusType;
@@ -132,12 +137,25 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
             content = toot.content;
         }
 
+        Spannable spanned;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return Html.fromHtml(content, Html.FROM_HTML_MODE_LEGACY);
+            spanned = (Spannable) Html.fromHtml(content, Html.FROM_HTML_MODE_LEGACY);
         } else {
-            return Html.fromHtml(content);
+            spanned = (Spannable) Html.fromHtml(content);
         }
+
+        // Restyle link: remove underline and change color
+        for (URLSpan span : spanned.getSpans(0, spanned.length(), URLSpan.class)) {
+            spanned.setSpan(new UnderlineSpan() {
+                public void updateDrawState(TextPaint tp) {
+                    tp.setUnderlineText(false);
+                    tp.setColor(ContextCompat.getColor(context, R.color.colorLink));
+                }
+            }, spanned.getSpanStart(span), spanned.getSpanEnd(span), 0);
+        }
+        return spanned;
     }
+
 
     public int getButtonBarVisibility() {
         if (toot.isNotification) {

@@ -3,6 +3,7 @@ package eu.theinvaded.mastondroid.ui.adapter;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -149,6 +150,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.TootVi
                         .load(avatarUri)
                         .placeholder(R.drawable.ic_person)
                         .into(itemTootBinding.avatarIv);
+
+                this.itemTootBinding.contentTv.setMovementMethod(new LinkMovementMethod());
             }
         }
 

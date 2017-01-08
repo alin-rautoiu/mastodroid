@@ -106,7 +106,6 @@
             android:text="@{tootViewModel.content}"
             android:textColor="@color/colorAccent"
             tools:text="Tooooooooooooooooooooooooooooooooooooooooooooooooooot"
-            android:autoLink="web"
             android:selectAllOnFocus="true" />
 
         <android.support.v7.widget.ButtonBarLayout
