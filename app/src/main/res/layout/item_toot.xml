@@ -107,8 +107,7 @@
             android:textColor="@color/colorAccent"
             tools:text="Tooooooooooooooooooooooooooooooooooooooooooooooooooot"
             android:autoLink="web"
-            android:selectAllOnFocus="true"
-            android:clickable="true" />
+            android:selectAllOnFocus="true" />
 
         <android.support.v7.widget.ButtonBarLayout
             android:id="@+id/buttonPanel"
