@@ -24,7 +24,7 @@ public interface MastodroidService {
     @FormUrlEncoded
     @POST("oauth/token")
     Observable<Token> SignIn(@Field("client_id") String clientId,
-                             @Field("client_secrete_here") String clientSecret,
+                             @Field("client_secret") String clientSecret,
                              @Field("scope") String scope,
                              @Field("grant_type") String grantType,
                              @Field("username") String username,

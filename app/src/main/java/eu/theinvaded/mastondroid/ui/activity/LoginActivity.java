@@ -65,6 +65,7 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
     @Override
     public void startMainActivity() {
         startActivity(MainActivity.getStartIntent(context));
+        finish();
     }
 
     @Override
