@@ -60,8 +60,8 @@ public class FragmentUser extends FragmentBase implements UserViewModelContract.
     private void setUpViewPage(ViewPager viewpager) {
         FragmentPager fragmentPager = new FragmentPager(getChildFragmentManager());
         fragmentPager.addFragment(FragmentTimeline.getInstance(Constants.POSTS, account.id), "POSTS");
-        fragmentPager.addFragment(FragmentTimeline.getInstance(Constants.FOLLOWS), "FOLLOWS");
-        fragmentPager.addFragment(FragmentTimeline.getInstance(Constants.FOLLOWERS), "FOLLOWERS");
+        fragmentPager.addFragment(FragmentFollowers.getInstance(Constants.FOLLOWS, account.id), "FOLLOWS");
+        fragmentPager.addFragment(FragmentFollowers.getInstance(Constants.FOLLOWERS, account.id), "FOLLOWERS");
 
         dataBinding.viewpager.setAdapter(fragmentPager);
     }

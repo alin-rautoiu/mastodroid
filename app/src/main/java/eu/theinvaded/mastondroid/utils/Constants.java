@@ -12,4 +12,9 @@ public class Constants {
     public static final int FOLLOWERS = 5;
     public static final int FOLLOWS = 6;
     public static final int POSTS = 7;
+    public static final String PREFERENCES = "PREFERENCES";
+    public static final String AUTH_KEY = "AUTH_KEY";
+    public static final String CURRENT_USERNAME = "CURRENT_USERNAME";
+
+    public enum FollowColumn {FOLLOWERS, FOLLOWING}
 }

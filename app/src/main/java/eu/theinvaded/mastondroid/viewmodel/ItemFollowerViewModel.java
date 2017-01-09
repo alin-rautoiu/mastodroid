@@ -4,11 +4,6 @@ import android.content.Context;
 import android.databinding.BaseObservable;
 import android.databinding.BindingAdapter;
 import android.databinding.ObservableBoolean;
-import android.databinding.parser.BindingExpressionParser;
-import android.os.Build;
-import android.text.Html;
-import android.text.Spanned;
-import android.text.SpannedString;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -28,50 +23,43 @@ import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 /**
- * Created by alin on 07.01.2017.
+ * Created by alin on 09.01.2017.
  */
 
-public class UserViewModel extends BaseObservable implements UserViewModelContract.ViewModel{
+public class ItemFollowerViewModel extends BaseObservable implements ItemFollowerViewModelContract.ViewModel {
 
     public ObservableBoolean isFollowed;
-    UserViewModelContract.UserView userModel;
-    MastodonAccount account;
 
+    private MastodonAccount account;
+    private ItemFollowerViewModelContract.FollowerView followerView;
     private MastodroidService service;
     private MastodroidApplication app;
 
-    public String getAvatar () {
-        return account.avatar;
-    }
-    public String getHeader () {
-        return account.header;
-    }
-
-    public String getDisplayName () {
-        return account.displayName;
-    }
-
-    public String getUsername () {
-        return account.username;
-    }
-
-    public Spanned getNote() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return Html.fromHtml(account.note, Html.FROM_HTML_MODE_LEGACY);
-        } else {
-            return Html.fromHtml(account.note);
-        }
-    }
-
-    public UserViewModel(UserViewModelContract.UserView userModel, MastodonAccount account) {
-        this.userModel = userModel;
+    public ItemFollowerViewModel(MastodonAccount account, Context context, ItemFollowerViewModelContract.FollowerView followerView) {
         this.account = account;
+        this.followerView = followerView;
 
-        app = MastodroidApplication.create(userModel.getContext());
-        service = app.getMastodroidService(userModel.getCredentials());
+        app = MastodroidApplication.create(context);
+        service = app.getMastodroidService(followerView.getCredentials());
 
         isFollowed = new ObservableBoolean(false);
         checkRelationship();
+    }
+
+    public String getAvatarUrl() {
+        return account.avatar;
+    }
+
+    @BindingAdapter({"bind:imageUrl"})
+    public static void loadImage(ImageView view, String imageUrl) {
+        Picasso.with(view.getContext())
+                .load(imageUrl)
+                .placeholder(R.drawable.ic_person)
+                .into(view);
+    }
+
+    public void expandUser() {
+        followerView.expandUser(account);
     }
 
     public void toggleUserRelationship() {
@@ -80,6 +68,14 @@ public class UserViewModel extends BaseObservable implements UserViewModelContra
         } else {
             followUser();
         }
+    }
+
+    public String getUsername() {
+        return account.username;
+    }
+
+    public String getDisplayName() {
+        return account.displayName;
     }
 
     private void checkRelationship() {
@@ -100,7 +96,6 @@ public class UserViewModel extends BaseObservable implements UserViewModelContra
                     }
                 });
     }
-
 
     private void followUser() {
         service.followUser(account.id)
@@ -127,21 +122,10 @@ public class UserViewModel extends BaseObservable implements UserViewModelContra
 
     }
 
-    public void toot() {
-        Context context = userModel.getContext();
-        context.startActivity(ReplyActivity.getStartIntent(context));
-    }
-
-    @BindingAdapter({"bind:imageUrl"})
-    public static void loadImage(ImageView view, String imageUrl) {
-        Picasso.with(view.getContext())
-                .load(imageUrl)
-                .placeholder(R.drawable.ic_person)
-                .into(view);
-    }
-
     @Override
     public void destroy() {
-
+        account = null;
+        app = null;
+        service = null;
     }
 }

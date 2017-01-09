@@ -80,6 +80,12 @@ public interface MastodroidService {
     @POST("api/v1/accounts/{id}/follow")
     Observable<Relationship> followUser(@Path("id") long id);
 
+    @GET("api/v1/accounts/{id}/following")
+    Observable<List<MastodonAccount>> getFollowing(@Path("id") long id);
+
+    @GET("api/v1/accounts/{id}/followers")
+    Observable<List<MastodonAccount>> getFollowers(@Path("id") long id);
+
     @POST("api/v1/accounts/{id}/unfollow")
     Observable<Relationship> unfollowUser(@Path("id") long id);
 

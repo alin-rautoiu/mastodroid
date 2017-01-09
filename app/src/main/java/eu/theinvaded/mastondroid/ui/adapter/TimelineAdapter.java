@@ -101,6 +101,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.TootVi
     public class TootViewHolder extends RecyclerView.ViewHolder implements TootViewModelContract.TootView {
         ItemTootBinding itemTootBinding;
         ItemSelectedTootBinding itemSelectedTootBinding;
+
         public TootViewHolder(ItemTootBinding binding) {
             super(binding.itemToot);
             this.itemTootBinding = binding;

@@ -18,6 +18,8 @@ public class MastodonAccount implements Parcelable {
     public String acct;
     @SerializedName("display_name")
     public String displayName;
+    @SerializedName("locked")
+    public boolean locked;
     @SerializedName("note")
     public String note;
     @SerializedName("url")

@@ -34,6 +34,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:imageUrl="@{viewModel.header}"
+                        android:foreground="@drawable/header_gradient_shape"
+                        android:scaleType="fitXY" />
+
                     <ImageButton
                         android:id="@+id/follow_btn"
                         android:layout_width="wrap_content"
@@ -59,6 +66,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/avatar_iv"
                         android:layout_centerHorizontal="true"
+                        android:textAlignment="center"
                         android:text="@{viewModel.displayName}"
                         tools:text="Displayname"
                         android:textColor="@color/colorTextPrimary" />
@@ -68,6 +76,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/displayName_tv"
                         android:layout_centerHorizontal="true"
+                        android:textAlignment="center"
                         android:text="@{viewModel.username}"
                         tools:text="Username"
                         android:textColor="@color/colorTextSecundary" />
@@ -78,6 +87,7 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/username_tv"
                         android:layout_centerHorizontal="true"
+                        android:textAlignment="center"
                         android:text="@{viewModel.note}"
                         tools:text="Username"
                         android:textColor="@color/colorTextSecundary" />
