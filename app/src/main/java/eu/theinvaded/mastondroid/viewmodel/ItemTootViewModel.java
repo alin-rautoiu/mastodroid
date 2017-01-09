@@ -158,7 +158,7 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
 
 
     public int getButtonBarVisibility() {
-        if (toot.isNotification) {
+        if (toot.statusType == StatusType.Follow) {
             return View.GONE;
         } else {
             return View.VISIBLE;
