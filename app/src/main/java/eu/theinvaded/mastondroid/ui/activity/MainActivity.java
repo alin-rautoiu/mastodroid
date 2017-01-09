@@ -33,11 +33,13 @@ public class MainActivity extends AppCompatActivity {
 
         fragmentTransactionReplace(FragmentMain.getInstance());
         setupDrawerContent(activityMainBinding.navView);
+
+        // temporary disable drawer
+        activityMainBinding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
     }
 
     private void initDataBinding() {
         activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-
     }
 
 
