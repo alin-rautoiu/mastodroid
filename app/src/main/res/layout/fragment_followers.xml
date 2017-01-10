@@ -1,9 +1,9 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 <FrameLayout
-    android:background="@color/colorPrimaryDark"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
     tools:context="eu.theinvaded.mastondroid.ui.fragment.FragmentFollowers">
 
     <android.support.v7.widget.RecyclerView

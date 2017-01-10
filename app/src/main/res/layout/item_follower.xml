@@ -16,8 +16,8 @@
 
         <ImageView
             android:id="@+id/avatar_iv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:paddingLeft="@dimen/image_padding"
             android:paddingRight="@dimen/image_padding"
             android:src="@drawable/ic_person"
@@ -55,26 +55,21 @@
             android:layout_alignStart="@+id/displayName_tv"
             android:layout_below="@+id/displayName_tv" />
 
-        <ImageView
+        <ImageButton
             android:id="@+id/follow_iv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/image_padding"
-            android:paddingRight="@dimen/image_padding"
-            android:src="@drawable/ic_person"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:background="@{viewModel.isFollowed ? @drawable/ic_person_remove : @drawable/ic_person_add}"
             android:clickable="true"
             android:onClick="@{() -> viewModel.toggleUserRelationship()}"
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:paddingStart="@dimen/image_padding"
-            android:paddingEnd="@dimen/image_padding"
-            android:paddingBottom="@dimen/image_padding"
-            android:paddingTop="@dimen/image_padding" />
+            android:padding="@dimen/image_padding"
+            android:paddingRight="16dp" />
 
         <View
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="2dp"
             android:background="@color/colorPrimaryDark"
             android:layout_below="@+id/avatar_iv"

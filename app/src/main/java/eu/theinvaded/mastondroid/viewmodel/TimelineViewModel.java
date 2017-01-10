@@ -294,6 +294,27 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
                 );
     }
 
+    private void fetchUserStatusesFromPast(long userId, long maxId) {
+        subscription = service.getStatusesForUserFromPast(userId, maxId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Action1<List<Toot>>() {
+                               @Override
+                               public void call(List<Toot> statuses) {
+                                   if (mainView != null) {
+                                       mainView.loadData(statuses);
+                                   }
+                               }
+                           },
+                        new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                Log.e("Error", throwable.getMessage());
+                            }
+                        }
+                );
+    }
+
     private Toot returnToot(Toot toot) {
         return toot;
     }
@@ -336,6 +357,10 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
 
     public void refreshUser(long userId) {
         fetchUserStatuses(userId);
+    }
+
+    public void refreshUser(long userId, long maxId) {
+        fetchUserStatusesFromPast(userId, maxId);
     }
 
     public void refresh(long sinceId) {

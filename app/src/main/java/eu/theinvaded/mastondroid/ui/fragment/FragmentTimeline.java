@@ -135,10 +135,17 @@ public class FragmentTimeline extends FragmentBase implements TimelineViewModelC
                     // also triggered if not enough items to fill the screen
                     // if you start loading
                     loading = true;
-                    timelineViewModel
-                            .bringFromPast(((TimelineAdapter)dataBinding.listPeople
-                                    .getAdapter())
-                                    .getLastId());
+                    if (userId != 0) {
+                        timelineViewModel
+                                .refreshUser(userId, ((TimelineAdapter)dataBinding.listPeople
+                                        .getAdapter())
+                                        .getLastId());
+                    } else {
+                        timelineViewModel
+                                .bringFromPast(((TimelineAdapter)dataBinding.listPeople
+                                        .getAdapter())
+                                        .getLastId());
+                    }
                 }
             }
         });

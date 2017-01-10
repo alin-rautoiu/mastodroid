@@ -98,6 +98,10 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.TootVi
         return timeline.get(timeline.size() - 1).id;
     }
 
+    public long getFirstId() {
+        return timeline.get(0).id;
+    }
+
     public class TootViewHolder extends RecyclerView.ViewHolder implements TootViewModelContract.TootView {
         ItemTootBinding itemTootBinding;
         ItemSelectedTootBinding itemSelectedTootBinding;

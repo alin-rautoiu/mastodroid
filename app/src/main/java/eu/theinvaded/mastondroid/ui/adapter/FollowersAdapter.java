@@ -39,13 +39,21 @@ public class FollowersAdapter extends RecyclerView.Adapter<FollowersAdapter.Foll
     }
 
     public void setAccountList(List<MastodonAccount> accountsList) {
-        this.accountsList = accountsList;
+        if (this.accountsList == null) {
+            this.accountsList = accountsList;
+        } else {
+            this.accountsList.addAll(accountsList);
+        }
         notifyDataSetChanged();
     }
 
     @Override
     public int getItemCount() {
         return accountsList.size();
+    }
+
+    public long getLastId() {
+        return accountsList.get(accountsList.size() - 1).id;
     }
 
     public class FollowerViewHolder extends RecyclerView.ViewHolder implements ItemFollowerViewModelContract.FollowerView {
@@ -84,9 +92,7 @@ public class FollowersAdapter extends RecyclerView.Adapter<FollowersAdapter.Foll
         }
 
         public void bindFollower(MastodonAccount account) {
-            if (binding.getViewModel() == null) {
-                binding.setViewModel(new ItemFollowerViewModel(account, itemView.getContext(), this));
-            }
+            binding.setViewModel(new ItemFollowerViewModel(account, itemView.getContext(), this));
         }
     }
 }

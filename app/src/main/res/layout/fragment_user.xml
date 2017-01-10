@@ -43,8 +43,8 @@
 
                     <ImageButton
                         android:id="@+id/follow_btn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentTop="true"
                         android:background="@{viewModel.isFollowed ? @drawable/ic_person_remove : @drawable/ic_person_add}"

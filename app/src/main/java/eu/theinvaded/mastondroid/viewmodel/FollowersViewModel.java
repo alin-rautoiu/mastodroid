@@ -12,6 +12,7 @@ import eu.theinvaded.mastondroid.model.MastodonAccount;
 import eu.theinvaded.mastondroid.utils.Constants;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
@@ -27,6 +28,8 @@ public class FollowersViewModel extends BaseObservable implements FollowersViewM
     private MastodroidService service;
     private Subscription subscription;
     private FollowersViewModelContract.FollowersView followersView;
+    private String nextFollowers;
+    private String nextFollowing;
 
     public FollowersViewModel(@NonNull FollowersViewModelContract.FollowersView followersView,
                               long userId,
@@ -45,6 +48,17 @@ public class FollowersViewModel extends BaseObservable implements FollowersViewM
                 break;
             case Constants.FOLLOWS:
                 fetchFollowing();
+                break;
+        }
+    }
+
+    public void populateList(long maxId) {
+        switch (type) {
+            case Constants.FOLLOWERS:
+                fetchFollowers(maxId);
+                break;
+            case Constants.FOLLOWS:
+                fetchFollowing(maxId);
                 break;
         }
     }
@@ -71,9 +85,53 @@ public class FollowersViewModel extends BaseObservable implements FollowersViewM
                 );
     }
 
+    private void fetchFollowers(long maxId) {
+
+        subscription = service.getFollowersNext(userId, maxId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Action1<List<MastodonAccount>>() {
+                               @Override
+                               public void call(List<MastodonAccount> followers) {
+                                   if (followersView != null) {
+                                       followersView.loadData(followers);
+                                   }
+                               }
+                           },
+                        new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                Log.e("Error", throwable.getMessage());
+                            }
+                        }
+                );
+    }
+
     private void fetchFollowing() {
 
         subscription = service.getFollowing(userId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Action1<List<MastodonAccount>>() {
+                               @Override
+                               public void call(List<MastodonAccount> following) {
+                                   if (followersView != null) {
+                                       followersView.loadData(following);
+                                   }
+                               }
+                           },
+                        new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                Log.e("Error", throwable.getMessage());
+                            }
+                        }
+                );
+    }
+
+    private void fetchFollowing(long maxId) {
+
+        subscription = service.getFollowingNext(userId, maxId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Action1<List<MastodonAccount>>() {
