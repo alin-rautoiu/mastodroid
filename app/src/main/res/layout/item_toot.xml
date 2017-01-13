@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    >
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
         <variable
@@ -13,6 +13,7 @@
         android:id="@+id/itemToot"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@{tootViewModel.isHighlighted ? @color/colorPrimaryDark : @color/colorPrimary}"
         android:onClick="@{() -> tootViewModel.startThread()}"
         android:minHeight="96dp"
         android:paddingTop="12dp">
@@ -25,11 +26,11 @@
             android:src="@drawable/ic_person_add"
             android:layout_alignParentTop="true"
             android:visibility="@{tootViewModel.statusTypeFollow}"
-            android:layout_toLeftOf="@id/status_type_tv"
-            android:layout_toStartOf="@id/status_type_tv"
+            android:layout_toLeftOf="@+id/status_type_tv"
+            android:layout_toStartOf="@+id/status_type_tv"
             android:scaleType="fitXY"
-            android:layout_alignRight="@id/avatar_iv"
-            android:layout_alignBottom="@id/status_type_tv"/>
+            android:layout_alignRight="@+id/avatar_iv"
+            android:layout_alignBottom="@+id/status_type_tv"/>
         <ImageView
             android:id="@+id/star_icn"
             android:layout_width="@dimen/icon_dimension"
@@ -54,20 +55,20 @@
             android:layout_alignBottom="@id/status_type_tv"/>
 
         <TextView
-            android:id="@+id/status_type_tv"
+            android:id="@id/status_type_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/colorAccent"
             android:visibility="@{tootViewModel.statusTypeVisible}"
             android:text="@{tootViewModel.statusTypeMessage}"
             android:layout_alignParentTop="true"
-            android:layout_alignLeft="@id/displayName_tv"
+            android:layout_alignLeft="@+id/displayName_tv"
             tools:text="xxxName boosted"
             android:fontFamily="sans-serif-light"
             android:textSize="12sp" />
 
         <ImageView
-            android:id="@+id/avatar_iv"
+            android:id="@id/avatar_iv"
             android:src="@drawable/ic_person"
             android:layout_below="@+id/status_type_tv"
             android:layout_alignParentLeft="true"
@@ -79,7 +80,7 @@
             android:layout_height="50dp" />
 
         <TextView
-            android:id="@+id/displayName_tv"
+            android:id="@id/displayName_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text='@{tootViewModel.displayName}'

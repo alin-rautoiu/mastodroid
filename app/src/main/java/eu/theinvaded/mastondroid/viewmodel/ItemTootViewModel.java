@@ -37,6 +37,7 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
     private Subscription subscription;
     public ObservableBoolean isFavorited;
     public ObservableBoolean reblogged;
+    public ObservableBoolean isHighlighted;
 
     public ObservableInt statusTypeVisible;
     public ObservableInt statusTypeBoost;
@@ -59,6 +60,8 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
         isFavorited = new ObservableBoolean(this.toot.statusType == StatusType.Boost
                 ? toot.reblog.favorited
                 : toot.favorited);
+
+        isHighlighted = new ObservableBoolean(this.toot.isHiglighted);
 
         statusTypeVisible = new ObservableInt(View.GONE);
         statusTypeFavorite = new ObservableInt(View.GONE);

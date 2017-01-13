@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.List;
 
 import eu.theinvaded.mastondroid.R;
-import eu.theinvaded.mastondroid.databinding.ItemSelectedTootBinding;
 import eu.theinvaded.mastondroid.databinding.ItemTootBinding;
 import eu.theinvaded.mastondroid.model.StatusType;
 import eu.theinvaded.mastondroid.model.Toot;
@@ -30,9 +29,6 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.TootVi
     private String credentials;
     private String username;
 
-    private final static int NORMAL = 1;
-    private final static int HIGHLIGHTED = 2;
-
     public TimelineAdapter() {
         this.timeline = Collections.emptyList();
     }
@@ -46,25 +42,11 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.TootVi
     }
 
     @Override
-    public int getItemViewType(int position) {
-        return timeline.get(position).isHiglighted ? HIGHLIGHTED : NORMAL;
-    }
-
-    @Override
     public TootViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        switch (viewType) {
-            case NORMAL:
-                ItemTootBinding dataBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),
-                        R.layout.item_toot, parent, false);
-                return new TootViewHolder(dataBinding);
-            case HIGHLIGHTED:
-                ItemSelectedTootBinding itemSelectedTootBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),
-                        R.layout.item_selected_toot, parent, false);
-                return new TootViewHolder(itemSelectedTootBinding);
-        }
-
-        return null;
+        ItemTootBinding dataBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),
+                R.layout.item_toot, parent, false);
+        return new TootViewHolder(dataBinding);
     }
 
     @Override
@@ -97,62 +79,35 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.TootVi
 
     public class TootViewHolder extends RecyclerView.ViewHolder implements TootViewModelContract.TootView {
         ItemTootBinding itemTootBinding;
-        ItemSelectedTootBinding itemSelectedTootBinding;
+
         public TootViewHolder(ItemTootBinding binding) {
             super(binding.itemToot);
             this.itemTootBinding = binding;
         }
 
-        public TootViewHolder(ItemSelectedTootBinding binding) {
-            super(binding.itemToot);
-            this.itemSelectedTootBinding = binding;
-        }
-
         void bindToot(Toot toot) {
 
-            if (toot.isHiglighted) {
-                if (itemSelectedTootBinding.getTootViewModel() == null) {
-                    itemSelectedTootBinding.setTootViewModel(new ItemTootViewModel(toot, itemView.getContext(), this));
-                } else {
-                    itemSelectedTootBinding.getTootViewModel().setToot(toot);
-                }
-
-                String avatarUri = "";
-                if (toot.statusType != null
-                        && toot.statusType == StatusType.Boost
-                        && toot.reblog.account != null) {
-                    avatarUri = toot.reblog.account.avatar;
-                } else if (toot.account != null) {
-                    avatarUri = toot.account.avatar;
-                }
-
-                Picasso.with(getContext())
-                        .load(avatarUri)
-                        .placeholder(R.drawable.ic_person)
-                        .into(itemSelectedTootBinding.avatarIv);
+            if (itemTootBinding.getTootViewModel() == null) {
+                itemTootBinding.setTootViewModel(new ItemTootViewModel(toot, itemView.getContext(), this));
             } else {
-                if (itemTootBinding.getTootViewModel() == null) {
-                    itemTootBinding.setTootViewModel(new ItemTootViewModel(toot, itemView.getContext(), this));
-                } else {
-                    itemTootBinding.getTootViewModel().setToot(toot);
-                }
-
-                String avatarUri = "";
-                if (toot.statusType != null
-                        && toot.statusType == StatusType.Boost
-                        && toot.reblog.account != null) {
-                    avatarUri = toot.reblog.account.avatar;
-                } else if (toot.account != null) {
-                    avatarUri = toot.account.avatar;
-                }
-
-                Picasso.with(getContext())
-                        .load(avatarUri)
-                        .placeholder(R.drawable.ic_person)
-                        .into(itemTootBinding.avatarIv);
-
-                this.itemTootBinding.contentTv.setMovementMethod(new LinkMovementMethod());
+                itemTootBinding.getTootViewModel().setToot(toot);
             }
+
+            String avatarUri = "";
+            if (toot.statusType != null
+                    && toot.statusType == StatusType.Boost
+                    && toot.reblog.account != null) {
+                avatarUri = toot.reblog.account.avatar;
+            } else if (toot.account != null) {
+                avatarUri = toot.account.avatar;
+            }
+
+            Picasso.with(getContext())
+                    .load(avatarUri)
+                    .placeholder(R.drawable.ic_person)
+                    .into(itemTootBinding.avatarIv);
+
+            this.itemTootBinding.contentTv.setMovementMethod(new LinkMovementMethod());
         }
 
         @Override
@@ -167,6 +122,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.TootVi
 
         @Override
         public void startThread(Toot toot) {
+            toot.isHiglighted = true;
             getContext().startActivity(ThreadActivity.getStartIntent(getContext(), toot));
         }
 
