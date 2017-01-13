@@ -14,6 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="@{() -> tootViewModel.startThread()}"
+        android:minHeight="96dp"
         android:paddingTop="12dp">
 
         <!--Status type-->
@@ -21,11 +22,11 @@
             android:id="@+id/person_add_icn"
             android:layout_width="@dimen/icon_dimension"
             android:layout_height="@dimen/icon_dimension"
-            android:background="@drawable/ic_person_add"
+            android:src="@drawable/ic_person_add"
             android:layout_alignParentTop="true"
             android:visibility="@{tootViewModel.statusTypeFollow}"
-            android:layout_toLeftOf="@+id/status_type_tv"
-            android:layout_toStartOf="@+id/status_type_tv"
+            android:layout_toLeftOf="@id/status_type_tv"
+            android:layout_toStartOf="@id/status_type_tv"
             android:scaleType="fitXY"
             android:layout_alignRight="@id/avatar_iv"
             android:layout_alignBottom="@id/status_type_tv"/>
@@ -35,8 +36,8 @@
             android:layout_height="@dimen/icon_dimension"
             android:background="@drawable/star"
             android:layout_alignParentTop="true"
-            android:layout_toLeftOf="@+id/status_type_tv"
-            android:layout_toStartOf="@+id/status_type_tv"
+            android:layout_toLeftOf="@id/status_type_tv"
+            android:layout_toStartOf="@id/status_type_tv"
             android:visibility="@{tootViewModel.statusTypeFavorite}"
             android:scaleType="fitXY"
             android:layout_alignRight="@id/avatar_iv"
@@ -59,6 +60,7 @@
             android:textColor="@color/colorAccent"
             android:visibility="@{tootViewModel.statusTypeVisible}"
             android:text="@{tootViewModel.statusTypeMessage}"
+            android:layout_alignParentTop="true"
             android:layout_alignLeft="@id/displayName_tv"
             tools:text="xxxName boosted"
             android:fontFamily="sans-serif-light"
@@ -66,7 +68,6 @@
 
         <ImageView
             android:id="@+id/avatar_iv"
-            android:visibility="@{tootViewModel.statusVisibility}"
             android:src="@drawable/ic_person"
             android:layout_below="@+id/status_type_tv"
             android:layout_alignParentLeft="true"
@@ -84,8 +85,9 @@
             android:text='@{tootViewModel.displayName}'
             android:textColor="@color/colorAccent"
             tools:text="User McUsername"
-            android:layout_toRightOf="@+id/avatar_iv"
-            android:layout_toEndOf="@+id/avatar_iv"
+            android:layout_below="@id/status_type_tv"
+            android:layout_toRightOf="@id/avatar_iv"
+            android:layout_toEndOf="@id/avatar_iv"
             android:layout_alignTop="@id/avatar_iv"
             android:textStyle="normal|bold" />
 
@@ -97,9 +99,9 @@
             android:textColor="@color/colorAccent"
             tools:text="\@User McUsernam"
             android:layout_alignTop="@id/avatar_iv"
-            android:layout_toRightOf="@+id/displayName_tv"
-            android:layout_toEndOf="@+id/displayName_tv"
-            android:layout_below="@+id/status_type_tv"
+            android:layout_toRightOf="@id/displayName_tv"
+            android:layout_toEndOf="@id/displayName_tv"
+            android:layout_below="@id/status_type_tv"
             android:layout_marginLeft="4dp"/>
 
         <TextView
@@ -126,6 +128,7 @@
             android:layout_toEndOf="@id/avatar_iv"
             android:weightSum="1"
             android:clipToPadding="false"
+            android:paddingBottom="8dp"
             android:clipChildren="false"
             android:layout_alignParentBottom="false">
 
@@ -156,8 +159,7 @@
                 android:scaleType="fitCenter" />
         </android.support.v7.widget.ButtonBarLayout>
         <View
-            android:layout_marginTop="8dp"
-            android:layout_below="@id/buttonPanel"
+            android:layout_alignParentBottom="true"
             android:layout_width="fill_parent"
             android:background="@color/colorPrimaryDark"
             android:layout_height="2dp" />
