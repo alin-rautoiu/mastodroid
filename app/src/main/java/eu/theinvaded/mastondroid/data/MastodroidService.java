@@ -79,7 +79,7 @@ public interface MastodroidService {
     Observable<List<Toot>> getStatusesForUserFromPast(@Path("id") long id, @Query("max_id") long maxId);
 
     @GET("api/v1/accounts/relationships")
-    Observable<List<Relationship>> relationships(@Query("id") List<Long> id);
+    Observable<List<Relationship>> relationships(@Query("id[]") List<Long> id);
 
     @POST("api/v1/accounts/{id}/follow")
     Observable<Relationship> followUser(@Path("id") long id);

@@ -39,11 +39,9 @@ public class FollowersAdapter extends RecyclerView.Adapter<FollowersAdapter.Foll
     }
 
     public void setAccountList(List<MastodonAccount> accountsList) {
-        if (this.accountsList == null) {
-            this.accountsList = accountsList;
-        } else {
-            this.accountsList.addAll(accountsList);
-        }
+        if (accountsList.size() == 0) return;
+
+        this.accountsList.addAll(accountsList);
         notifyDataSetChanged();
     }
 

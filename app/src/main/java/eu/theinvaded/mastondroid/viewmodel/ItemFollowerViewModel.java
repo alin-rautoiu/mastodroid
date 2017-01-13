@@ -28,6 +28,7 @@ import rx.schedulers.Schedulers;
 
 public class ItemFollowerViewModel extends BaseObservable implements ItemFollowerViewModelContract.ViewModel {
 
+    private static final String TAG = "ItemFollowerViewModel";
     public ObservableBoolean isFollowed;
 
     private MastodonAccount account;
@@ -79,22 +80,7 @@ public class ItemFollowerViewModel extends BaseObservable implements ItemFollowe
     }
 
     private void checkRelationship() {
-        ArrayList<Long> ids = new ArrayList<Long>();
-        ids.add(account.id);
-        service.relationships(ids)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Action1<List<Relationship>>() {
-                    @Override
-                    public void call(List<Relationship> relationships) {
-                        isFollowed.set(relationships.get(0).isFollowing());
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        Log.e("checkrelationships", "call: ", throwable);
-                    }
-                });
+        isFollowed.set(account.relationship.isFollowing());
     }
 
     private void followUser() {
@@ -105,6 +91,11 @@ public class ItemFollowerViewModel extends BaseObservable implements ItemFollowe
                     @Override
                     public void call(Relationship relationship) {
                         isFollowed.set(true);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.e(TAG, "call: followUser",throwable );
                     }
                 });
     }
@@ -117,6 +108,11 @@ public class ItemFollowerViewModel extends BaseObservable implements ItemFollowe
                     @Override
                     public void call(Relationship relationship) {
                         isFollowed.set(false);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.e(TAG, "call: unfollowUser",throwable );
                     }
                 });
 

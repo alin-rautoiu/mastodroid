@@ -19,6 +19,7 @@ import eu.theinvaded.mastondroid.databinding.FragmentFollowersBinding;
 import eu.theinvaded.mastondroid.model.MastodonAccount;
 import eu.theinvaded.mastondroid.ui.adapter.FollowersAdapter;
 import eu.theinvaded.mastondroid.ui.adapter.TimelineAdapter;
+import eu.theinvaded.mastondroid.utils.PostsRecyclerScrollListener;
 import eu.theinvaded.mastondroid.viewmodel.FollowersViewModel;
 import eu.theinvaded.mastondroid.viewmodel.FollowersViewModelContract;
 import eu.theinvaded.mastondroid.viewmodel.TimelineViewModel;
@@ -83,43 +84,18 @@ public class FragmentFollowers extends Fragment implements FollowersViewModelCon
         FollowersAdapter adapter = new FollowersAdapter();
         dataBinding.followRv.setAdapter(adapter);
 
-        dataBinding.followRv.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        dataBinding
+                .followRv
+                .addOnScrollListener(
+                        new PostsRecyclerScrollListener((LinearLayoutManager)dataBinding.followRv.getLayoutManager()) {
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-            }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                LinearLayoutManager linearLayoutManager =
-                        (LinearLayoutManager) dataBinding.followRv.getLayoutManager();
-
-                visibleItemCount = recyclerView.getChildCount();
-                totalItemCount = linearLayoutManager.getItemCount();
-                firstVisibleItemIndex = linearLayoutManager.findFirstVisibleItemPosition();
-
-                //synchronize loading state when item count changes
-                if (loading) {
-                    if (totalItemCount > previousTotal) {
-                        loading = false;
-                        previousTotal = totalItemCount;
-                    }
-                }
-                if (!loading && (totalItemCount - visibleItemCount) <= firstVisibleItemIndex) {
-                    // Loading NOT in progress and end of list has been reached
-                    // also triggered if not enough items to fill the screen
-                    // if you start loading
-                    loading = true;
-                    followersViewModel
-                            .populateList(((FollowersAdapter)dataBinding.followRv
-                                    .getAdapter())
-                                    .getLastId());
-                }
+            protected void loadData() {
+                followersViewModel
+                        .populateList(((FollowersAdapter)dataBinding.followRv
+                                .getAdapter())
+                                .getLastId());
             }
         });
-
     }
 
     @Override
