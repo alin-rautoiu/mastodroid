@@ -95,7 +95,7 @@ public class ThreadActivity extends AppCompatActivity implements TimelineViewMod
         }
 
         timelineAdapter.setTimeline(timeline);
-        Collections.sort(timeline, new TootComparator());
+        Collections.sort(timeline, new TootComparator(true));
         this.loading = false;
         setVisibility();
     }
