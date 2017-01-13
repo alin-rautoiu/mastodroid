@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import eu.theinvaded.mastondroid.R;
 import eu.theinvaded.mastondroid.databinding.FragmentMainBinding;
 import eu.theinvaded.mastondroid.ui.adapter.FragmentPager;
+import eu.theinvaded.mastondroid.utils.Constants;
 import eu.theinvaded.mastondroid.viewmodel.MainViewModel;
 
 /**
@@ -18,11 +19,6 @@ import eu.theinvaded.mastondroid.viewmodel.MainViewModel;
  */
 
 public class FragmentMain extends FragmentBase {
-
-    public final static int HOME = 1;
-    public final static int NOTIFICATIONS = 2;
-    public final static int PUBLIC = 3;
-    public final static int THREAD = 4;
 
     private FragmentMainBinding dataBinding;
 
@@ -49,9 +45,9 @@ public class FragmentMain extends FragmentBase {
 
     private void setUpViewPage(ViewPager viewpager) {
         FragmentPager fragmentPager = new FragmentPager(getChildFragmentManager());
-        fragmentPager.addFragment(FragmentTimeline.getInstance(HOME), "Home");
-        fragmentPager.addFragment(FragmentTimeline.getInstance(NOTIFICATIONS), "Notifications");
-        fragmentPager.addFragment(FragmentTimeline.getInstance(PUBLIC), "Public");
+        fragmentPager.addFragment(FragmentTimeline.getInstance(Constants.HOME), "Home");
+        fragmentPager.addFragment(FragmentTimeline.getInstance(Constants.NOTIFICATIONS), "Notifications");
+        fragmentPager.addFragment(FragmentTimeline.getInstance(Constants.PUBLIC), "Public");
 
         dataBinding.viewpager.setAdapter(fragmentPager);
     }

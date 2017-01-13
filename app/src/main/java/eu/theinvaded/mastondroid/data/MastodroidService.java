@@ -1,10 +1,12 @@
 package eu.theinvaded.mastondroid.data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import eu.theinvaded.mastondroid.model.MastodonAccount;
 import eu.theinvaded.mastondroid.model.MastodonThread;
 import eu.theinvaded.mastondroid.model.Notification;
+import eu.theinvaded.mastondroid.model.Relationship;
 import eu.theinvaded.mastondroid.model.Token;
 import eu.theinvaded.mastondroid.model.Toot;
 import retrofit2.http.Field;
@@ -13,6 +15,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import retrofit2.http.Url;
 import rx.Observable;
 
 /**
@@ -68,6 +71,33 @@ public interface MastodroidService {
 
     @GET("api/v1/accounts/verify_credentials")
     Observable<MastodonAccount> verifyCredentials();
+
+    @GET("api/v1/accounts/{id}/statuses")
+    Observable<List<Toot>> getStatusesForUser(@Path("id") long id);
+
+    @GET("api/v1/accounts/{id}/statuses")
+    Observable<List<Toot>> getStatusesForUserFromPast(@Path("id") long id, @Query("max_id") long maxId);
+
+    @GET("api/v1/accounts/relationships")
+    Observable<List<Relationship>> relationships(@Query("id[]") List<Long> id);
+
+    @POST("api/v1/accounts/{id}/follow")
+    Observable<Relationship> followUser(@Path("id") long id);
+
+    @GET("api/v1/accounts/{id}/following")
+    Observable<List<MastodonAccount>> getFollowing(@Path("id") long id);
+
+    @GET("api/v1/accounts/{id}/following")
+    Observable<List<MastodonAccount>> getFollowingNext(@Path("id") long id, @Query("max_id") long maxId);
+
+    @GET("api/v1/accounts/{id}/followers")
+    Observable<List<MastodonAccount>> getFollowers(@Path("id") long id);
+
+    @GET("api/v1/accounts/{id}/followers")
+    Observable<List<MastodonAccount>> getFollowersNext(@Path("id") long id, @Query("max_id") long maxId);
+
+    @POST("api/v1/accounts/{id}/unfollow")
+    Observable<Relationship> unfollowUser(@Path("id") long id);
 
     @GET("api/v1/notifications")
     Observable<List<Notification>> getNotifications();

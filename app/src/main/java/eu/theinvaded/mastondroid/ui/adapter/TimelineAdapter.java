@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
@@ -14,10 +15,13 @@ import java.util.List;
 
 import eu.theinvaded.mastondroid.R;
 import eu.theinvaded.mastondroid.databinding.ItemTootBinding;
+import eu.theinvaded.mastondroid.model.MastodonAccount;
 import eu.theinvaded.mastondroid.model.StatusType;
 import eu.theinvaded.mastondroid.model.Toot;
+import eu.theinvaded.mastondroid.ui.activity.MainActivity;
 import eu.theinvaded.mastondroid.ui.activity.ReplyActivity;
 import eu.theinvaded.mastondroid.ui.activity.ThreadActivity;
+import eu.theinvaded.mastondroid.ui.fragment.FragmentUser;
 import eu.theinvaded.mastondroid.viewmodel.ItemTootViewModel;
 import eu.theinvaded.mastondroid.viewmodel.TootViewModelContract;
 
@@ -77,6 +81,10 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.TootVi
         return timeline.get(timeline.size() - 1).id;
     }
 
+    public long getFirstId() {
+        return timeline.get(0).id;
+    }
+
     public class TootViewHolder extends RecyclerView.ViewHolder implements TootViewModelContract.TootView {
         ItemTootBinding itemTootBinding;
 
@@ -134,6 +142,14 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.TootVi
         @Override
         public String getUsername() {
             return username;
+        }
+
+        @Override
+        public void expandUser(MastodonAccount account) {
+            ((MainActivity) getContext()).getSupportFragmentManager().beginTransaction()
+                    .addToBackStack("user")
+                    .replace(R.id.container, FragmentUser.getInstance(account))
+                    .commit();
         }
     }
 }

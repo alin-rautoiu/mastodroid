@@ -9,6 +9,7 @@ import eu.theinvaded.mastondroid.model.Toot;
  */
 
 public class TootComparator implements Comparator<Toot> {
+
     private boolean reverse;
 
     public TootComparator() {

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="viewModel"
+            type="eu.theinvaded.mastondroid.viewmodel.ItemFollowerViewModel">
+        </variable>
+    </data>
+    <RelativeLayout
+        android:id="@+id/itemFollower"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/fab_margin">
+
+        <ImageView
+            android:id="@+id/avatar_iv"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:paddingLeft="@dimen/image_padding"
+            android:paddingRight="@dimen/image_padding"
+            android:src="@drawable/ic_person"
+            app:imageUrl="@{viewModel.avatarUrl}"
+            android:clickable="true"
+            android:onClick="@{() -> viewModel.expandUser()}"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:paddingTop="@dimen/image_padding"
+            android:paddingBottom="@dimen/image_padding" />
+
+        <TextView
+            android:id="@+id/displayName_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text='@{viewModel.displayName}'
+            android:textColor="@color/colorAccent"
+            tools:text="User McUsername"
+            android:clickable="true"
+            android:onClick="@{() -> viewModel.expandUser()}"
+            android:layout_toRightOf="@+id/avatar_iv"
+            android:layout_toEndOf="@+id/avatar_iv" />
+
+        <TextView
+            android:id="@+id/username_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text='@{"@" + viewModel.username}'
+            android:textColor="@color/colorAccent"
+            tools:text="\@User McUsernam"
+            android:clickable="true"
+            android:onClick="@{() -> viewModel.expandUser()}"
+            android:layout_alignLeft="@+id/displayName_tv"
+            android:layout_alignStart="@+id/displayName_tv"
+            android:layout_below="@+id/displayName_tv" />
+
+        <ImageButton
+            android:id="@+id/follow_iv"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@{viewModel.isFollowed ? @drawable/ic_person_remove : @drawable/ic_person_add}"
+            android:clickable="true"
+            android:onClick="@{() -> viewModel.toggleUserRelationship()}"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:padding="@dimen/image_padding"
+            android:paddingRight="16dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/colorPrimaryDark"
+            android:layout_below="@+id/avatar_iv"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+    </RelativeLayout>
+</layout>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -16,14 +16,15 @@
         android:background="@{tootViewModel.isHighlighted ? @color/colorPrimaryDark : @color/colorPrimary}"
         android:onClick="@{() -> tootViewModel.startThread()}"
         android:minHeight="96dp"
-        android:paddingTop="12dp">
+        android:paddingTop="12dp"
+        android:descendantFocusability="afterDescendants">
 
         <!--Status type-->
         <ImageView
             android:id="@+id/person_add_icn"
             android:layout_width="@dimen/icon_dimension"
             android:layout_height="@dimen/icon_dimension"
-            android:src="@drawable/ic_person_add"
+            android:background="@drawable/ic_person_add"
             android:layout_alignParentTop="true"
             android:visibility="@{tootViewModel.statusTypeFollow}"
             android:layout_toLeftOf="@+id/status_type_tv"
@@ -70,6 +71,7 @@
         <ImageView
             android:id="@id/avatar_iv"
             android:src="@drawable/ic_person"
+            app:imageUrl="@{tootViewModel.avatarUrl}"
             android:layout_below="@+id/status_type_tv"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
@@ -77,7 +79,8 @@
             android:layout_marginRight="@dimen/image_padding"
             android:layout_marginTop="@dimen/image_padding"
             android:layout_width="50dp"
-            android:layout_height="50dp" />
+            android:layout_height="50dp"
+            android:onClick="@{() -> tootViewModel.expandUser()}"/>
 
         <TextView
             android:id="@id/displayName_tv"
@@ -86,11 +89,11 @@
             android:text='@{tootViewModel.displayName}'
             android:textColor="@color/colorAccent"
             tools:text="User McUsername"
-            android:layout_below="@id/status_type_tv"
-            android:layout_toRightOf="@id/avatar_iv"
-            android:layout_toEndOf="@id/avatar_iv"
+            android:layout_toRightOf="@+id/avatar_iv"
+            android:layout_toEndOf="@+id/avatar_iv"
             android:layout_alignTop="@id/avatar_iv"
-            android:textStyle="normal|bold" />
+            android:textStyle="normal|bold"
+            android:onClick="@{() -> tootViewModel.expandUser()}" />
 
         <TextView
             android:id="@+id/username_tv"
@@ -100,10 +103,11 @@
             android:textColor="@color/colorAccent"
             tools:text="\@User McUsernam"
             android:layout_alignTop="@id/avatar_iv"
-            android:layout_toRightOf="@id/displayName_tv"
-            android:layout_toEndOf="@id/displayName_tv"
-            android:layout_below="@id/status_type_tv"
-            android:layout_marginLeft="4dp"/>
+            android:layout_toRightOf="@+id/displayName_tv"
+            android:layout_toEndOf="@+id/displayName_tv"
+            android:layout_below="@+id/status_type_tv"
+            android:layout_marginLeft="4dp"
+            android:onClick="@{() -> tootViewModel.expandUser()}" />
 
         <TextView
             android:id="@+id/content_tv"

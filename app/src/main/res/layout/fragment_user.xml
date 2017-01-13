@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="eu.theinvaded.mastondroid.viewmodel.UserViewModel" />
+    </data>
+
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/main_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+            <android.support.design.widget.CollapsingToolbarLayout
+                android:id="@+id/collapsing_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fitsSystemWindows="true"
+                app:contentScrim="?attr/colorPrimary"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:imageUrl="@{viewModel.header}"
+                        android:foreground="@drawable/header_gradient_shape"
+                        android:scaleType="fitXY" />
+
+                    <ImageButton
+                        android:id="@+id/follow_btn"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentTop="true"
+                        android:background="@{viewModel.isFollowed ? @drawable/ic_person_remove : @drawable/ic_person_add}"
+                        android:onClick="@{() -> viewModel.toggleUserRelationship()}"
+                        android:paddingLeft="@dimen/icon_padding"
+                        android:paddingTop="@dimen/icon_padding" />
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/avatar_iv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        app:imageUrl="@{viewModel.avatar}"
+                        android:layout_centerHorizontal="true" />
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/displayName_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/avatar_iv"
+                        android:layout_centerHorizontal="true"
+                        android:textAlignment="center"
+                        android:text="@{viewModel.displayName}"
+                        tools:text="Displayname"
+                        android:textColor="@color/colorTextPrimary" />
+                    <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/username_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/displayName_tv"
+                        android:layout_centerHorizontal="true"
+                        android:textAlignment="center"
+                        android:text="@{viewModel.username}"
+                        tools:text="Username"
+                        android:textColor="@color/colorTextSecundary" />
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:id="@+id/note_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/username_tv"
+                        android:layout_centerHorizontal="true"
+                        android:textAlignment="center"
+                        android:text="@{viewModel.note}"
+                        tools:text="Username"
+                        android:textColor="@color/colorTextSecundary" />
+                </RelativeLayout>
+            </android.support.design.widget.CollapsingToolbarLayout>
+
+            <android.support.design.widget.TabLayout
+                android:id="@+id/tabs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimaryDark" />
+
+        </android.support.design.widget.AppBarLayout>
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="@dimen/fab_margin"
+            android:onClick="@{() -> viewModel.toot()}"
+            android:src="@drawable/ic_done"
+            app:pressedTranslationZ="8dp" />
+
+    </android.support.design.widget.CoordinatorLayout>
+</layout>

@@ -22,8 +22,8 @@ android {
         applicationId "eu.theinvaded.mastondroid"
         minSdkVersion 15
         targetSdkVersion 24
-        versionCode 4
-        versionName "0.1.2"
+        versionCode 6
+        versionName "0.1.4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -60,6 +60,7 @@ dependencies {
     compile 'io.reactivex:rxandroid:1.2.1'
     compile 'io.reactivex:rxjava:1.1.10'
     compile 'com.android.support:support-v4:24.2.1'
+    compile 'de.hdodenhof:circleimageview:2.1.0'
     testCompile 'junit:junit:4.12'
     compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
         transitive = true;

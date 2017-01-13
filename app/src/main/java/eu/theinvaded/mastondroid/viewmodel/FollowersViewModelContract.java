@@ -11,17 +11,13 @@ import eu.theinvaded.mastondroid.model.Toot;
  * Created by alin on 10.12.2016.
  */
 
-public class TootViewModelContract {
-    public interface TootView {
+public class FollowersViewModelContract {
+    public interface FollowersView {
         Context getContext();
 
-        void reply(Toot toot);
-        void startThread(Toot toot);
-
+        void loadData(List<MastodonAccount> timeline);
         String getCredentials();
         String getUsername();
-
-        void expandUser(MastodonAccount account);
     }
 
     public interface ViewModel {

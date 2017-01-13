@@ -18,6 +18,8 @@ public class MastodonAccount implements Parcelable {
     public String acct;
     @SerializedName("display_name")
     public String displayName;
+    @SerializedName("locked")
+    public boolean locked;
     @SerializedName("note")
     public String note;
     @SerializedName("url")
@@ -32,12 +34,15 @@ public class MastodonAccount implements Parcelable {
     public int followingCount;
     @SerializedName("statuses_count")
     public int statuses_count;
+    public Relationship relationship;
+
 
     protected MastodonAccount(Parcel in) {
         id = in.readLong();
         username = in.readString();
         acct = in.readString();
         displayName = in.readString();
+        locked = in.readByte() != 0;
         note = in.readString();
         url = in.readString();
         avatar = in.readString();
@@ -45,6 +50,7 @@ public class MastodonAccount implements Parcelable {
         followersCount = in.readInt();
         followingCount = in.readInt();
         statuses_count = in.readInt();
+        relationship = in.readParcelable(Relationship.class.getClassLoader());
     }
 
     public static final Creator<MastodonAccount> CREATOR = new Creator<MastodonAccount>() {
@@ -70,6 +76,7 @@ public class MastodonAccount implements Parcelable {
         dest.writeString(username);
         dest.writeString(acct);
         dest.writeString(displayName);
+        dest.writeByte((byte) (locked ? 1 : 0));
         dest.writeString(note);
         dest.writeString(url);
         dest.writeString(avatar);
@@ -77,5 +84,6 @@ public class MastodonAccount implements Parcelable {
         dest.writeInt(followersCount);
         dest.writeInt(followingCount);
         dest.writeInt(statuses_count);
+        dest.writeParcelable(relationship, flags);
     }
 }
