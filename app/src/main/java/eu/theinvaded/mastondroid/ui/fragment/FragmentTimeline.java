@@ -19,6 +19,7 @@ import eu.theinvaded.mastondroid.databinding.FragmentTimelineBinding;
 import eu.theinvaded.mastondroid.model.StatusType;
 import eu.theinvaded.mastondroid.model.Toot;
 import eu.theinvaded.mastondroid.ui.adapter.TimelineAdapter;
+import eu.theinvaded.mastondroid.utils.PostsRecyclerScrollListener;
 import eu.theinvaded.mastondroid.utils.TootComparator;
 import eu.theinvaded.mastondroid.viewmodel.TimelineViewModel;
 import eu.theinvaded.mastondroid.viewmodel.TimelineViewModelContract;
@@ -106,47 +107,23 @@ public class FragmentTimeline extends FragmentBase implements TimelineViewModelC
             }
         });
 
-        dataBinding.listPeople.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        dataBinding.listPeople
+                .addOnScrollListener(
+                        new PostsRecyclerScrollListener((LinearLayoutManager) dataBinding.listPeople.getLayoutManager()) {
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-            }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                LinearLayoutManager linearLayoutManager =
-                        (LinearLayoutManager) dataBinding.listPeople.getLayoutManager();
-
-                visibleItemCount = recyclerView.getChildCount();
-                totalItemCount = linearLayoutManager.getItemCount();
-                firstVisibleItemIndex = linearLayoutManager.findFirstVisibleItemPosition();
-
-                //synchronize loading state when item count changes
-                if (loading) {
-                    if (totalItemCount > previousTotal) {
-                        loading = false;
-                        previousTotal = totalItemCount;
-                    }
+            protected void loadData() {
+                if (userId != 0) {
+                    timelineViewModel
+                            .refreshUser(userId, ((TimelineAdapter)dataBinding.listPeople
+                                    .getAdapter())
+                                    .getLastId());
+                } else {
+                    timelineViewModel
+                            .bringFromPast(((TimelineAdapter)dataBinding.listPeople
+                                    .getAdapter())
+                                    .getLastId());
                 }
-                if (!loading && (totalItemCount - visibleItemCount) <= firstVisibleItemIndex) {
-                    // Loading NOT in progress and end of list has been reached
-                    // also triggered if not enough items to fill the screen
-                    // if you start loading
-                    loading = true;
-                    if (userId != 0) {
-                        timelineViewModel
-                                .refreshUser(userId, ((TimelineAdapter)dataBinding.listPeople
-                                        .getAdapter())
-                                        .getLastId());
-                    } else {
-                        timelineViewModel
-                                .bringFromPast(((TimelineAdapter)dataBinding.listPeople
-                                        .getAdapter())
-                                        .getLastId());
-                    }
-                }
+
             }
         });
     }
@@ -160,8 +137,8 @@ public class FragmentTimeline extends FragmentBase implements TimelineViewModelC
             }
         }
 
-        timelineAdapter.setTimeline(timeline);
         Collections.sort(timeline, new TootComparator());
+        timelineAdapter.setTimeline(timeline);
         loading = false;
         setVisibility();
     }

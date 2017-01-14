@@ -42,7 +42,6 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
     public TimelineViewModel(@NonNull TimelineViewModelContract.MainView mainView,
                              @NonNull Context context, int type) {
         this.context = context;
-        this.subscription = subscription;
         this.mainView = mainView;
         this.tootProgressIsVisible = new ObservableInt(View.VISIBLE);
         this.type = type;
