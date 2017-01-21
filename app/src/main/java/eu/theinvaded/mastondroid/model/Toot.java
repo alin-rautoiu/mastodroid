@@ -2,6 +2,7 @@ package eu.theinvaded.mastondroid.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -23,6 +24,7 @@ public class Toot implements Parcelable {
     public boolean sensitive;
     @SerializedName("account")
     public MastodonAccount account;
+    @Nullable
     @SerializedName("media_attachments")
     public List<MediaAttachments> mediaAttachments;
     @SerializedName("mentions")

@@ -87,7 +87,7 @@ public class FragmentTimeline extends FragmentBase implements TimelineViewModelC
     private void setupRecycler(View rootView) {
         dataBinding.listPeople
                 .setLayoutManager(new LinearLayoutManager(dataBinding.listPeople.getContext()));
-        TimelineAdapter adapter = new TimelineAdapter();
+        TimelineAdapter adapter = new TimelineAdapter(getActivity().getSupportFragmentManager());
         adapter.setCredentials(getCredentials());
         adapter.setUsername(getUsername());
         dataBinding.listPeople.setAdapter(adapter);

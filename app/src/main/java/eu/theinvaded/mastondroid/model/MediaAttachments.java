@@ -3,11 +3,28 @@ package eu.theinvaded.mastondroid.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by alin on 09.12.2016.
  */
 
 public class MediaAttachments implements Parcelable {
+
+    @SerializedName("url")
+    public String url;
+    @SerializedName("preview_url")
+    public String previewUrl;
+    @SerializedName("type")
+    public Type type;
+
+    public enum Type {
+        @SerializedName("image")
+        IMAGE,
+        @SerializedName("video")
+        VIDEO
+    }
+
     protected MediaAttachments(Parcel in) {
     }
 

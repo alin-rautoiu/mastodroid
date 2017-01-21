@@ -2,11 +2,17 @@ package eu.theinvaded.mastondroid.ui.adapter;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.ViewUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.squareup.picasso.Picasso;
 
@@ -16,12 +22,15 @@ import java.util.List;
 import eu.theinvaded.mastondroid.R;
 import eu.theinvaded.mastondroid.databinding.ItemTootBinding;
 import eu.theinvaded.mastondroid.model.MastodonAccount;
+import eu.theinvaded.mastondroid.model.MediaAttachments;
 import eu.theinvaded.mastondroid.model.StatusType;
 import eu.theinvaded.mastondroid.model.Toot;
 import eu.theinvaded.mastondroid.ui.activity.MainActivity;
 import eu.theinvaded.mastondroid.ui.activity.ReplyActivity;
 import eu.theinvaded.mastondroid.ui.activity.ThreadActivity;
 import eu.theinvaded.mastondroid.ui.fragment.FragmentUser;
+import eu.theinvaded.mastondroid.ui.fragment.FullscreenImageFragment;
+import eu.theinvaded.mastondroid.utils.ViewsUtils;
 import eu.theinvaded.mastondroid.viewmodel.ItemTootViewModel;
 import eu.theinvaded.mastondroid.viewmodel.TootViewModelContract;
 
@@ -32,9 +41,11 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.TootVi
     private List<Toot> timeline;
     private String credentials;
     private String username;
+    private FragmentManager fragmentManager;
 
-    public TimelineAdapter() {
+    public TimelineAdapter(FragmentManager fragmentManager) {
         this.timeline = Collections.emptyList();
+        this.fragmentManager = fragmentManager;
     }
 
     public void setUsername(String username) {
@@ -116,6 +127,27 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.TootVi
                     .into(itemTootBinding.avatarIv);
 
             this.itemTootBinding.contentTv.setMovementMethod(new LinkMovementMethod());
+
+            this.itemTootBinding.mediaLayout.removeAllViews();
+
+            if (toot.mediaAttachments != null) {
+                final int imageHeight = (int) ViewsUtils.convertDpToPixel(120, getContext());
+                Picasso picasso = Picasso.with(getContext());
+
+                for (final MediaAttachments attachment : toot.mediaAttachments) {
+                    ImageView attachmentView = new ImageView(getContext());
+                    attachmentView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    LinearLayout.LayoutParams imageLayoutParams =
+                            new LinearLayout.LayoutParams(0, imageHeight);
+                    final int sideMargin = (int) ViewsUtils.convertDpToPixel(2, getContext());
+                    imageLayoutParams.setMargins(sideMargin, 0, sideMargin, 0);
+                    imageLayoutParams.weight = 1;
+                    itemTootBinding.mediaLayout.addView(attachmentView, imageLayoutParams);
+                    picasso.load(attachment.previewUrl).into(attachmentView);
+                    attachmentView.setTag(attachment.url);
+                    attachmentView.setOnClickListener(imageClickListener);
+                }
+            }
         }
 
         @Override
@@ -151,5 +183,18 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.TootVi
                     .replace(R.id.container, FragmentUser.getInstance(account))
                     .commit();
         }
+
+        View.OnClickListener imageClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String imageUrl = (String) v.getTag();
+                FullscreenImageFragment imageFragment =
+                        FullscreenImageFragment.getInstance(imageUrl);
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, imageFragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        };
     }
 }

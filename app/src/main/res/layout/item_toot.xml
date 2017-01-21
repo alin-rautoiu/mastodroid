@@ -123,12 +123,22 @@
             android:layout_marginEnd="4dp"
             android:layout_marginRight="4dp" />
 
+        <LinearLayout
+            android:id="@+id/media_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/avatar_iv"
+            android:layout_alignRight="@id/content_tv"
+            android:layout_below="@id/content_tv"
+            android:layout_marginBottom="5dp"
+            android:orientation="horizontal" />
+
         <android.support.v7.widget.ButtonBarLayout
             android:id="@+id/buttonPanel"
             android:visibility="@{tootViewModel.buttonBarVisibility}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/content_tv"
+            android:layout_below="@+id/media_layout"
             android:layout_toRightOf="@id/avatar_iv"
             android:layout_toEndOf="@id/avatar_iv"
             android:weightSum="1"
