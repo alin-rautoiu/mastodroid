@@ -165,19 +165,28 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
         // Restyle link: remove underline and change color
         // Also handle clicks
         for (final URLSpan span : spanned.getSpans(0, spanned.length(), URLSpan.class)) {
-            spanned.setSpan(new ClickableSpan() {
+            spanned.setSpan(new URLSpan(span.getURL()) {
                 @Override
                 public void onClick(View widget) {
                     int lowerBound = spanned.getSpanStart(this) - 1;
                     String spanString = spanned.toString().substring(lowerBound < 0 ? 0 : lowerBound,
                             spanned.getSpanEnd(this));
-                    handleLink(spanString);
+                    if (isProfileLInk(spanString, span.getURL())) {
+                        handleUsernameLink(spanString.substring(1));
+                    } else {
+                        super.onClick(widget);
+                    }
                 }
 
                 @Override
                 public void updateDrawState(TextPaint tp) {
                     tp.setUnderlineText(false);
                     tp.setColor(ContextCompat.getColor(context, R.color.colorLink));
+                }
+
+
+                boolean isProfileLInk(String linkText, String url) {
+                    return linkText.charAt(0) == '@';
                 }
             }, spanned.getSpanStart(span), spanned.getSpanEnd(span), 0);
             spanned.removeSpan(span);
@@ -335,13 +344,6 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
         subscription = null;
         context = null;
         tootView = null;
-    }
-
-    void handleLink(String linkText) {
-        // if the link leads to the username
-        if (linkText.charAt(0) == '@') {
-            handleUsernameLink(linkText.substring(1));
-        }
     }
 
     void handleUsernameLink(String username) {
