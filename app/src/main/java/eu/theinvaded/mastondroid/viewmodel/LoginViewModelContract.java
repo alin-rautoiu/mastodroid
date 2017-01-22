@@ -20,6 +20,7 @@ public class LoginViewModelContract {
         String getClientSecret();
         String getClientId();
         void setUser(MastodonAccount account);
+        void showLoginError();
     }
 
     public interface ViewModel {
