@@ -101,7 +101,7 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
     }
 
     @Override
-    public void setNoPaswordError() {
+    public void setNoPasswordError() {
         binding.passwordLayout.setErrorEnabled(true);
         binding.passwordLayout.setError(getString(R.string.NO_PASSWORD_ERROR));
     }

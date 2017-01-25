@@ -98,7 +98,7 @@ public class LoginViewModel extends BaseObservable implements LoginViewModelCont
         }
 
         if (viewModel.getPassword().compareTo("") == 0) {
-            viewModel.setNoPaswordError();
+            viewModel.setNoPasswordError();
             isSignIn.set(!isSignIn.get());
             return;
         } else {

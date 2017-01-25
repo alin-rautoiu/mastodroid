@@ -78,7 +78,7 @@
                 </android.support.design.widget.TextInputLayout>
 
                 <ProgressBar
-                    android:id="@+id/sing_in_progress"
+                    android:id="@+id/sign_in_progress"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/password_layout"

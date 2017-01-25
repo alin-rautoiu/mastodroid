@@ -22,7 +22,7 @@ public class LoginViewModelContract {
         void setUser(MastodonAccount account);
         void showLoginError();
         void setNoUsernameError();
-        void setNoPaswordError();
+        void setNoPasswordError();
         void clearNoUsernameError();
         void clearNoPasswordError();
     }
