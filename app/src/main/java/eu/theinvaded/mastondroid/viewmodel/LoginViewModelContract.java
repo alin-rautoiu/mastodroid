@@ -21,6 +21,10 @@ public class LoginViewModelContract {
         String getClientId();
         void setUser(MastodonAccount account);
         void showLoginError();
+        void setNoUsernameError();
+        void setNoPaswordError();
+        void clearNoUsernameError();
+        void clearNoPasswordError();
     }
 
     public interface ViewModel {

@@ -89,6 +89,22 @@ public class LoginViewModel extends BaseObservable implements LoginViewModelCont
         MastodroidService service = app.getMastodroidLoginService();
         unsubscribeFromObservable();
 
+        if (viewModel.getUsername().compareTo("") == 0) {
+            viewModel.setNoUsernameError();
+            isSignIn.set(!isSignIn.get());
+            return;
+        } else {
+            viewModel.clearNoUsernameError();
+        }
+
+        if (viewModel.getPassword().compareTo("") == 0) {
+            viewModel.setNoPaswordError();
+            isSignIn.set(!isSignIn.get());
+            return;
+        } else {
+            viewModel.clearNoPasswordError();
+        }
+
         service.SignIn(viewModel.getClientId(),
                 viewModel.getClientSecret(),
                 "read write follow",

@@ -19,6 +19,20 @@
         android:paddingTop="12dp"
         android:descendantFocusability="afterDescendants">
 
+        <ImageView
+            android:id="@+id/avatar_iv"
+            android:src="@drawable/ic_person"
+            app:imageUrl="@{tootViewModel.avatarUrl}"
+            android:layout_below="@+id/status_type_tv"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="@dimen/image_padding"
+            android:layout_marginRight="@dimen/image_padding"
+            android:layout_marginTop="@dimen/image_padding"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:onClick="@{() -> tootViewModel.expandUser()}"/>
+
         <!--Status type-->
         <ImageView
             android:id="@+id/person_add_icn"
@@ -30,7 +44,7 @@
             android:layout_toLeftOf="@+id/status_type_tv"
             android:layout_toStartOf="@+id/status_type_tv"
             android:scaleType="fitXY"
-            android:layout_alignRight="@+id/avatar_iv"
+            android:layout_alignRight="@id/avatar_iv"
             android:layout_alignBottom="@+id/status_type_tv"/>
         <ImageView
             android:id="@+id/star_icn"
@@ -67,20 +81,6 @@
             tools:text="xxxName boosted"
             android:fontFamily="sans-serif-light"
             android:textSize="12sp" />
-
-        <ImageView
-            android:id="@id/avatar_iv"
-            android:src="@drawable/ic_person"
-            app:imageUrl="@{tootViewModel.avatarUrl}"
-            android:layout_below="@+id/status_type_tv"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginLeft="@dimen/image_padding"
-            android:layout_marginRight="@dimen/image_padding"
-            android:layout_marginTop="@dimen/image_padding"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:onClick="@{() -> tootViewModel.expandUser()}"/>
 
         <TextView
             android:id="@id/displayName_tv"

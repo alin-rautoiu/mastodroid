@@ -87,8 +87,32 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
                 .apply();
     }
 
+
+
     @Override
     public void showLoginError() {
         Toast.makeText(context, R.string.login_failed_message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void setNoUsernameError() {
+        binding.usernameLayout.setErrorEnabled(true);
+        binding.usernameLayout.setError(getString(R.string.NO_USERNAME_ERROR));
+    }
+
+    @Override
+    public void setNoPaswordError() {
+        binding.passwordLayout.setErrorEnabled(true);
+        binding.passwordLayout.setError(getString(R.string.NO_PASSWORD_ERROR));
+    }
+
+    @Override
+    public void clearNoUsernameError() {
+        binding.usernameLayout.setErrorEnabled(false);
+    }
+
+    @Override
+    public void clearNoPasswordError() {
+        binding.passwordLayout.setErrorEnabled(false);
     }
 }
