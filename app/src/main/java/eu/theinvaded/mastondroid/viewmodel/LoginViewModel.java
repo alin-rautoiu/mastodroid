@@ -78,6 +78,8 @@ public class LoginViewModel extends BaseObservable implements LoginViewModelCont
         MastodroidService service = app.getMastodroidLoginService();
         unsubscribeFromObservable();
 
+        if (!isNonBlankInput("client_secret", viewModel.getClientSecret(), "login_process")) return;
+        if (!isNonBlankInput("client_id", viewModel.getClientId(), "login_process")) return;
         if (!isNonBlankInput("username", viewModel.getUsername())) return;
         if (!isNonBlankInput("password", viewModel.getPassword())) return;
 
@@ -112,8 +114,13 @@ public class LoginViewModel extends BaseObservable implements LoginViewModelCont
     }
 
     private Boolean isNonBlankInput(String target, String value) {
+        return isNonBlankInput(target, value, null);
+    }
+
+    private Boolean isNonBlankInput(String target, String value, String on) {
+        on = on == null ? target : on;
         if (value.compareTo("") == 0) {
-            viewModel.setError(target, "NO_" + target.toUpperCase() + "_ERROR");
+            viewModel.setError(on, "NO_" + target.toUpperCase() + "_ERROR");
             isSignIn.set(!isSignIn.get());
             return false;
         }
