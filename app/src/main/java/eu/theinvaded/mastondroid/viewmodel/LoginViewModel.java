@@ -1,21 +1,10 @@
 package eu.theinvaded.mastondroid.viewmodel;
 
-import android.accounts.Account;
-import android.content.Context;
-import android.content.res.Resources;
 import android.databinding.BaseObservable;
-import android.databinding.Bindable;
 import android.databinding.ObservableBoolean;
-import android.databinding.ObservableField;
-import android.databinding.ObservableInt;
-import android.view.View;
-import android.widget.Toast;
 
-import eu.theinvaded.mastondroid.BR;
 import eu.theinvaded.mastondroid.MastodroidApplication;
-import eu.theinvaded.mastondroid.R;
 import eu.theinvaded.mastondroid.data.MastodroidService;
-import eu.theinvaded.mastondroid.databinding.ActivityLoginBinding;
 import eu.theinvaded.mastondroid.model.MastodonAccount;
 import eu.theinvaded.mastondroid.model.Token;
 import rx.Subscription;
@@ -111,7 +100,7 @@ public class LoginViewModel extends BaseObservable implements LoginViewModelCont
                 "password",
                 viewModel.getUsername(),
                 viewModel.getPassword()
-                )
+        )
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(

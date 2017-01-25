@@ -3,11 +3,12 @@ package eu.theinvaded.mastondroid.ui.activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+
 import eu.theinvaded.mastondroid.R;
 import eu.theinvaded.mastondroid.databinding.ActivityLoginBinding;
 import eu.theinvaded.mastondroid.model.MastodonAccount;
@@ -86,7 +87,6 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
                 .putString(getString(R.string.CURRENT_USERNAME), account.username)
                 .apply();
     }
-
 
 
     @Override
