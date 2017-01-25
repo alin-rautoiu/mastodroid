@@ -56,6 +56,9 @@ public class UserViewModel extends BaseObservable implements UserViewModelContra
     }
 
     public Spanned getNote() {
+        if (account.note == null) {
+            return null;
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return Html.fromHtml(account.note, Html.FROM_HTML_MODE_LEGACY);
         } else {

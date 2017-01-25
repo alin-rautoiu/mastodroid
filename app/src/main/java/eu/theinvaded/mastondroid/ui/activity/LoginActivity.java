@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import eu.theinvaded.mastondroid.R;
@@ -84,5 +85,10 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
                 .edit()
                 .putString(getString(R.string.CURRENT_USERNAME), account.username)
                 .apply();
+    }
+
+    @Override
+    public void showLoginError() {
+        Toast.makeText(context, R.string.login_failed_message, Toast.LENGTH_SHORT).show();
     }
 }

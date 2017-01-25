@@ -61,7 +61,7 @@ public class ThreadActivity extends AppCompatActivity implements TimelineViewMod
                 highlightedStatus);
         timelineViewModel.refresh();
 
-        TimelineAdapter adapter = new TimelineAdapter();
+        TimelineAdapter adapter = new TimelineAdapter(getSupportFragmentManager());
         adapter.setCredentials(getCredentials());
         adapter.setUsername(getUsername());
 

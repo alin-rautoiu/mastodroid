@@ -2,6 +2,7 @@ package eu.theinvaded.mastondroid.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -23,8 +24,9 @@ public class Toot implements Parcelable {
     public boolean sensitive;
     @SerializedName("account")
     public MastodonAccount account;
-    @SerializedName("mediat_attachments")
-    public MediaAttachments mediaAttachments;
+    @Nullable
+    @SerializedName("media_attachments")
+    public List<MediaAttachments> mediaAttachments;
     @SerializedName("mentions")
     public List<MastodonAccount> mentions;
     @SerializedName("tags")
@@ -60,7 +62,7 @@ public class Toot implements Parcelable {
         dest.writeLong(this.createdAt != null ? this.createdAt.getTime() : -1);
         dest.writeByte(this.sensitive ? (byte) 1 : (byte) 0);
         dest.writeParcelable(this.account, flags);
-        dest.writeParcelable(this.mediaAttachments, flags);
+        dest.writeList(this.mediaAttachments);
         dest.writeList(this.mentions);
         dest.writeList(this.tags);
         dest.writeString(this.url);
@@ -85,7 +87,8 @@ public class Toot implements Parcelable {
         this.createdAt = tmpCreatedAt == -1 ? null : new Date(tmpCreatedAt);
         this.sensitive = in.readByte() != 0;
         this.account = in.readParcelable(MastodonAccount.class.getClassLoader());
-        this.mediaAttachments = in.readParcelable(MediaAttachments.class.getClassLoader());
+        this.mediaAttachments = new ArrayList<>();
+        in.readList(this.mediaAttachments, MediaAttachments.class.getClassLoader());
         this.mentions = new ArrayList<>();
         in.readList(this.mentions, MastodonAccount.class.getClassLoader());
         this.tags = new ArrayList<Tag>();

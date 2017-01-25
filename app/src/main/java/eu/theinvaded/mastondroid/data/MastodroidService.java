@@ -72,6 +72,9 @@ public interface MastodroidService {
     @GET("api/v1/accounts/verify_credentials")
     Observable<MastodonAccount> verifyCredentials();
 
+    @GET("api/v1/accounts/{id}")
+    Observable<MastodonAccount> getUser(@Path("id") long id);
+
     @GET("api/v1/accounts/{id}/statuses")
     Observable<List<Toot>> getStatusesForUser(@Path("id") long id);
 

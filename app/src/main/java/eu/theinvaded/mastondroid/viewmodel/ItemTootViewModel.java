@@ -5,12 +5,14 @@ import android.databinding.BaseObservable;
 import android.databinding.BindingAdapter;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableInt;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.Spanned;
 import android.text.TextPaint;
+import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.text.style.UnderlineSpan;
 import android.util.Log;
@@ -19,12 +21,18 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
+import java.net.URL;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import eu.theinvaded.mastondroid.MastodroidApplication;
 import eu.theinvaded.mastondroid.R;
 import eu.theinvaded.mastondroid.data.MastodroidService;
 import eu.theinvaded.mastondroid.model.MastodonAccount;
 import eu.theinvaded.mastondroid.model.StatusType;
 import eu.theinvaded.mastondroid.model.Toot;
+import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -137,15 +145,17 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
     }
 
     public Spanned getContent() {
-        String content = "";
+        final String content;
         if (toot.statusType == StatusType.Boost) {
             content = toot.reblog.content;
             statusTypeVisible.set(View.VISIBLE);
         } else if (toot.statusType != StatusType.Follow) {
             content = toot.content;
+        } else {
+            content = "";
         }
 
-        Spannable spanned;
+        final Spannable spanned;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             spanned = (Spannable) Html.fromHtml(content, Html.FROM_HTML_MODE_LEGACY);
         } else {
@@ -153,13 +163,33 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
         }
 
         // Restyle link: remove underline and change color
-        for (URLSpan span : spanned.getSpans(0, spanned.length(), URLSpan.class)) {
-            spanned.setSpan(new UnderlineSpan() {
+        // Also handle clicks
+        for (final URLSpan span : spanned.getSpans(0, spanned.length(), URLSpan.class)) {
+            spanned.setSpan(new URLSpan(span.getURL()) {
+                @Override
+                public void onClick(View widget) {
+                    int lowerBound = spanned.getSpanStart(this) - 1;
+                    String spanString = spanned.toString().substring(lowerBound < 0 ? 0 : lowerBound,
+                            spanned.getSpanEnd(this));
+                    if (isProfileLInk(spanString, span.getURL())) {
+                        handleUsernameLink(spanString.substring(1));
+                    } else {
+                        super.onClick(widget);
+                    }
+                }
+
+                @Override
                 public void updateDrawState(TextPaint tp) {
                     tp.setUnderlineText(false);
                     tp.setColor(ContextCompat.getColor(context, R.color.colorLink));
                 }
+
+
+                boolean isProfileLInk(String linkText, String url) {
+                    return linkText.charAt(0) == '@';
+                }
             }, spanned.getSpanStart(span), spanned.getSpanEnd(span), 0);
+            spanned.removeSpan(span);
         }
         return spanned;
     }
@@ -302,7 +332,6 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
         } else {
             tootView.expandUser(toot.account);
         }
-
     }
 
     @Override
@@ -315,5 +344,53 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
         subscription = null;
         context = null;
         tootView = null;
+    }
+
+    void handleUsernameLink(String username) {
+        MastodonAccount mentionedUser = null;
+        List<MastodonAccount> mentions;
+        if (toot.reblog != null) {
+            mentions = toot.reblog.mentions;
+        } else {
+            mentions = toot.mentions;
+        }
+
+        // First check if there's a mention from our domain
+        for (MastodonAccount mention : mentions) {
+            if (mention.acct.equals(username)) {
+                mentionedUser = mention;
+                break;
+            }
+        }
+
+        // now check mentions from other domains
+        // not perfect, we should probably check the link
+        if (mentionedUser == null) {
+            for (MastodonAccount mention : mentions) {
+                String shortUsername = mention.acct.split("@")[0];
+                if (shortUsername.equals(username)) {
+                    mentionedUser = mention;
+                    break;
+                }
+            }
+        }
+
+        if (mentionedUser != null) {
+            service.getUser(mentionedUser.id)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(new Action1<MastodonAccount>() {
+                                   @Override
+                                   public void call(MastodonAccount user) {
+                                       tootView.expandUser(user);
+                                   }
+                               },
+                            new Action1<Throwable>() {
+                                @Override
+                                public void call(Throwable throwable) {
+                                    Log.e("Open profile: ", throwable.getMessage());
+                                }
+                            });
+        }
     }
 }
