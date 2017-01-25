@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
@@ -94,25 +95,25 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
         Toast.makeText(context, R.string.login_failed_message, Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    public void setNoUsernameError() {
-        binding.usernameLayout.setErrorEnabled(true);
-        binding.usernameLayout.setError(getString(R.string.NO_USERNAME_ERROR));
+    public void setError(String target, String error) {
+        // probably better ways to do this, but the android docs are stirred shit
+        TextInputLayout target_layout = getLayoutOrFallback(target);
+        int errorId = getResId(error, "string");
+        String errorStr = errorId == 0 ? getString(R.string.UNKNOWN_ERROR_ID) + error : getString(errorId);
+        target_layout.setErrorEnabled(true);
+        target_layout.setError(errorStr);
     }
 
-    @Override
-    public void setNoPasswordError() {
-        binding.passwordLayout.setErrorEnabled(true);
-        binding.passwordLayout.setError(getString(R.string.NO_PASSWORD_ERROR));
+    public void clearError(String target) {
+        getLayoutOrFallback(target).setErrorEnabled(false);
     }
 
-    @Override
-    public void clearNoUsernameError() {
-        binding.usernameLayout.setErrorEnabled(false);
+    private TextInputLayout getLayoutOrFallback(String target) {
+        TextInputLayout layout = (TextInputLayout) findViewById(getResId(target + "_layout", "id"));
+        return layout == null ? binding.loginProcessLayout : layout;
     }
 
-    @Override
-    public void clearNoPasswordError() {
-        binding.passwordLayout.setErrorEnabled(false);
+    private int getResId(String target, String type) {
+        return getResources().getIdentifier(target, type, getPackageName());
     }
 }

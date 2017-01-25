@@ -15,4 +15,5 @@
     <string name="login_failed_message">Couldn\'t log in</string>
     <string name="NO_USERNAME_ERROR">You must enter a username</string>
     <string name="NO_PASSWORD_ERROR">You must enter a password.</string>
+    <string name="UNKNOWN_ERROR_ID">Tried to report error, but id is unknown:\ </string>
 </resources>
