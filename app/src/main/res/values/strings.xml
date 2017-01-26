@@ -12,7 +12,8 @@
     <string name="mark_as_private">Mark as private</string>
     <string name="do_not_display_in_public_timeline">Do not display in public timeline</string>
     <string name="CURRENT_USERNAME">CURRENT_USERNAME</string>
-    <string name="login_failed_message">Couldn\'t log in</string>
+    <string name="login_failed_message">Login rejected, likely email or password wrong.</string>
+    <string name="login_failed_unknown">Login failed unexpectedly</string>
     <string name="NO_USERNAME_ERROR">You must enter a username</string>
     <string name="NO_PASSWORD_ERROR">You must enter a password.</string>
     <string name="NO_CLIENT_ID_ERROR">No client id configured. Contact app maintainer.</string>

@@ -7,6 +7,7 @@ import eu.theinvaded.mastondroid.MastodroidApplication;
 import eu.theinvaded.mastondroid.data.MastodroidService;
 import eu.theinvaded.mastondroid.model.MastodonAccount;
 import eu.theinvaded.mastondroid.model.Token;
+import retrofit2.adapter.rxjava.HttpException;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -107,11 +108,31 @@ public class LoginViewModel extends BaseObservable implements LoginViewModelCont
                             @Override
                             public void call(Throwable throwable) {
                                 isSignIn.set(!isSignIn.get());
-
-                                viewModel.setError("login_process", "login_failed_message", throwable.toString());
+                                String details = loginExceptionToString(throwable);
+                                viewModel.setError("login_process", details == null ? "login_failed_message" : "login_failed_unknown", details);
                             }
                         }
                 );
+    }
+
+    private String loginExceptionToString(Throwable e) {
+        return e instanceof HttpException ? loginHttpExceptionToString((HttpException) e) : e.toString();
+    }
+
+    private String loginHttpExceptionToString(HttpException he) {
+        String errorBody;
+        try {
+            errorBody = he.response().errorBody().string();
+        } catch (Throwable convertError) {
+            return he.toString() + " and " + convertError.toString();
+        }
+
+        // https://github.com/tootsuite/mastodon/pull/550
+        if (he.code() == 302 && errorBody.contains("/auth/sign_in"))
+            return null;
+
+        String headers = he.response().headers().toString();
+        return headers + "\n" + errorBody;
     }
 
     private Boolean isNonBlankInput(String target, String value) {
