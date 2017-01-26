@@ -73,6 +73,7 @@ public class LoginViewModel extends BaseObservable implements LoginViewModelCont
 
     public void signIn() {
         isSignIn.set(!isSignIn.get());
+        viewModel.clearError();
 
         MastodroidApplication app = MastodroidApplication.create(viewModel.getContext());
         MastodroidService service = app.getMastodroidLoginService();
@@ -107,7 +108,7 @@ public class LoginViewModel extends BaseObservable implements LoginViewModelCont
                             public void call(Throwable throwable) {
                                 isSignIn.set(!isSignIn.get());
 
-                                viewModel.showLoginError();
+                                viewModel.setError("login_process", "login_failed_message", throwable.toString());
                             }
                         }
                 );

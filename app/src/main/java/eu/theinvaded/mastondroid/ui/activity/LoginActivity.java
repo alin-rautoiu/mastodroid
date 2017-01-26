@@ -6,7 +6,6 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -89,19 +88,21 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
                 .apply();
     }
 
-
-    @Override
-    public void showLoginError() {
-        Toast.makeText(context, R.string.login_failed_message, Toast.LENGTH_SHORT).show();
+    public void setError(String target, String error) {
+        setError(target, error, null);
     }
 
-    public void setError(String target, String error) {
+    public void setError(String target, String error, String details) {
         // probably better ways to do this, but the android docs are stirred shit
         TextInputLayout target_layout = getLayoutOrFallback(target);
         int errorId = getResId(error, "string");
         String errorStr = errorId == 0 ? getString(R.string.UNKNOWN_ERROR_ID) + error : getString(errorId);
         target_layout.setErrorEnabled(true);
-        target_layout.setError(errorStr);
+        target_layout.setError(errorStr + (details == null ? "" : ": " + details));
+    }
+
+    public void clearError() {
+        clearError(null);
     }
 
     public void clearError(String target) {

@@ -20,8 +20,9 @@ public class LoginViewModelContract {
         String getClientSecret();
         String getClientId();
         void setUser(MastodonAccount account);
-        void showLoginError();
         void setError(String type, String error);
+        void setError(String type, String error, String details);
+        void clearError();
         void clearError(String target);
     }
 
