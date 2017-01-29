@@ -4,6 +4,7 @@ import android.databinding.BaseObservable;
 import android.databinding.ObservableBoolean;
 
 import eu.theinvaded.mastondroid.MastodroidApplication;
+import eu.theinvaded.mastondroid.R;
 import eu.theinvaded.mastondroid.data.MastodroidService;
 import eu.theinvaded.mastondroid.model.MastodonAccount;
 import eu.theinvaded.mastondroid.model.Token;
@@ -12,6 +13,12 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
+
+import static eu.theinvaded.mastondroid.ui.activity.LoginActivity.CLIENT_ID;
+import static eu.theinvaded.mastondroid.ui.activity.LoginActivity.CLIENT_SECRET;
+import static eu.theinvaded.mastondroid.ui.activity.LoginActivity.LOGIN_PROCESS;
+import static eu.theinvaded.mastondroid.ui.activity.LoginActivity.PASSWORD;
+import static eu.theinvaded.mastondroid.ui.activity.LoginActivity.USERNAME;
 
 /**
  * Created by alin on 23.12.2016.
@@ -80,10 +87,10 @@ public class LoginViewModel extends BaseObservable implements LoginViewModelCont
         MastodroidService service = app.getMastodroidLoginService();
         unsubscribeFromObservable();
 
-        if (!isNonBlankInput("client_secret", viewModel.getClientSecret(), "login_process")) return;
-        if (!isNonBlankInput("client_id", viewModel.getClientId(), "login_process")) return;
-        if (!isNonBlankInput("username", viewModel.getUsername())) return;
-        if (!isNonBlankInput("password", viewModel.getPassword())) return;
+        if (!isNonBlankInput(CLIENT_SECRET, viewModel.getClientSecret(), LOGIN_PROCESS)) return;
+        if (!isNonBlankInput(CLIENT_ID, viewModel.getClientId(), LOGIN_PROCESS)) return;
+        if (!isNonBlankInput(USERNAME, viewModel.getUsername())) return;
+        if (!isNonBlankInput(PASSWORD, viewModel.getPassword())) return;
 
         service.SignIn(viewModel.getClientId(),
                 viewModel.getClientSecret(),
@@ -109,7 +116,7 @@ public class LoginViewModel extends BaseObservable implements LoginViewModelCont
                             public void call(Throwable throwable) {
                                 isSignIn.set(!isSignIn.get());
                                 String details = loginExceptionToString(throwable);
-                                viewModel.setError("login_process", details == null ? "login_failed_message" : "login_failed_unknown", details);
+                                viewModel.setError(LOGIN_PROCESS, details == null ? R.string.login_failed_message : R.string.login_failed_unknown, details);
                             }
                         }
                 );

@@ -22,6 +22,12 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
     private Context context;
     private SharedPreferences preferences;
 
+    public static final String LOGIN_PROCESS = "login_process";
+    public static final String CLIENT_SECRET = "client_secret";
+    public static final String CLIENT_ID = "client_id";
+    public static final String USERNAME = "username";
+    public static final String PASSWORD = "password";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,6 +97,11 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
     public void setError(String target, String error) {
         setError(target, error, null);
     }
+
+    public void setError(String target, int error, String details) {
+        setError(target, getResources().getResourceEntryName(error), details);
+    }
+
 
     public void setError(String target, String error, String details) {
         // probably better ways to do this, but the android docs are stirred shit
