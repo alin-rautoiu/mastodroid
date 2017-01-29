@@ -108,6 +108,7 @@ public interface MastodroidService {
     @FormUrlEncoded
     @POST("/api/v1/statuses")
     Observable<Toot> postStatusReplyWithMedia(@Field("status") String toot,
+                                              @Field("spoiler_text") String spoilerText,
                                 @Field("in_reply_to_id") long replyToId,
                                 @Field("media_id") long mediaId,
                                 @Field("sensitive") boolean sensitive,
@@ -116,6 +117,7 @@ public interface MastodroidService {
     @FormUrlEncoded
     @POST("/api/v1/statuses")
     Observable<Toot> postStatusReply(@Field("status") String toot,
+                                     @Field("spoiler_text") String spoilerText,
                                      @Field("in_reply_to_id") long replyToId,
                                      @Field("sensitive") boolean sensitive,
                                      @Field("visibility") String visibility);
@@ -123,6 +125,7 @@ public interface MastodroidService {
     @FormUrlEncoded
     @POST("/api/v1/statuses")
     Observable<Toot> postStatusWithMedia(@Field("status") String toot,
+                                         @Field("spoiler_text") String spoilerText,
                                 @Field("media_id") long mediaId,
                                 @Field("sensitive") boolean sensitive,
                                 @Field("visibility") String visibility);
@@ -130,6 +133,7 @@ public interface MastodroidService {
     @FormUrlEncoded
     @POST("/api/v1/statuses")
     Observable<Toot> postStatus(@Field("status") String toot,
+                                @Field("spoiler_text") String spoilerText,
                                 @Field("sensitive") boolean sensitive,
                                 @Field("visibility") String visibility);
 }

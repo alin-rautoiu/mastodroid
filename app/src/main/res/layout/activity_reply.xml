@@ -33,6 +33,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/toot"
+        android:textSize="16sp"
+        android:textColor="#FFFFFF"
+        android:background="@color/colorToot"
         android:layout_below="@+id/status_et"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
@@ -43,6 +46,7 @@
         android:layout_below="@id/status_et"
         android:layout_toLeftOf="@id/send_button"
         android:layout_toStartOf="@id/send_button"
+        android:layout_marginRight="14dp"
         android:textColor='@{viewModel.remainingChars &gt; -1 ? @color/colorPrimary : @color/colorRed }'
         android:text="@{viewModel.remainingCharsText}"
         android:layout_width="wrap_content"
@@ -61,6 +65,17 @@
         android:layout_alignParentStart="true" />
 
     <CheckBox
+        android:text="@string/content_warning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="@={viewModel.showContentWarning}"
+        android:layout_below="@+id/public_timeline_ck"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/spoiler_ck"
+        style="@style/Widget.AppCompat.CompoundButton.CheckBox" />
+
+    <CheckBox
         android:id="@+id/public_timeline_ck"
         android:checked="@={viewModel.notDisplayPublic}"
         android:visibility="@{viewModel.isPrivate ? VIEW.GONE : VIEW.VISIBLE}"
@@ -71,5 +86,18 @@
         android:layout_below="@+id/private_ck"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="@{viewModel.showContentWarning ? VIEW.VISIBLE : VIEW.GONE}"
+        android:text="@={viewModel.spoilerText}"
+        android:ems="10"
+        android:id="@+id/content_warning_et"
+        android:layout_below="@+id/spoiler_ck"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:inputType="textCapSentences|textMultiLine"
+        android:hint="@string/content_warning_hint" />
 </RelativeLayout>
 </layout>

@@ -30,10 +30,12 @@ public class ReplyViewModel extends BaseObservable implements ReplyViewModelCont
     private ReplyViewModelContract.ReplyView replyView;
 
     public ObservableField<String> tootText = new ObservableField<>("");
+    public ObservableField<String> spoilerText = new ObservableField<>("");
     public ObservableField<String> remainingCharsText = new ObservableField<>("500");
     public ObservableInt remainingChars = new ObservableInt(500);
     public ObservableBoolean isPrivate = new ObservableBoolean(false);
     public ObservableBoolean notDisplayPublic = new ObservableBoolean(false);
+    public ObservableBoolean showContentWarning = new ObservableBoolean(false);
 
     public long replyToId;
 
@@ -83,8 +85,13 @@ public class ReplyViewModel extends BaseObservable implements ReplyViewModelCont
                 : notDisplayPublic.get()
                     ? "unlisted"
                     : "public";
+        String spoilerTextTemp = spoilerText.get();
+        if(!showContentWarning.get())
+        {
+            spoilerTextTemp = "";
+        }
         if (replyToId == 0) {
-            service.postStatus(tootText.get(), false, statusVisibility)
+            service.postStatus(tootText.get(), spoilerTextTemp, false, statusVisibility)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeOn(Schedulers.io())
                     .subscribe(new Action1<Toot>() {
@@ -101,7 +108,7 @@ public class ReplyViewModel extends BaseObservable implements ReplyViewModelCont
                         }
                     });
         } else {
-            service.postStatusReply(tootText.get(), replyToId, false, statusVisibility)
+            service.postStatusReply(tootText.get(), spoilerTextTemp, replyToId, false, statusVisibility)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeOn(Schedulers.io())
                     .subscribe(new Action1<Toot>() {
@@ -117,7 +124,6 @@ public class ReplyViewModel extends BaseObservable implements ReplyViewModelCont
                     });
         }
     }
-
     @Override
     public void destroy() {
     }

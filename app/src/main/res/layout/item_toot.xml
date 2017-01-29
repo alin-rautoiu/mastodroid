@@ -130,6 +130,7 @@
             android:layout_alignLeft="@id/avatar_iv"
             android:layout_alignRight="@id/content_tv"
             android:layout_below="@id/content_tv"
+            android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
             android:orientation="horizontal" />
 

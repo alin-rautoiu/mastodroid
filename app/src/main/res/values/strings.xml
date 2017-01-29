@@ -8,9 +8,13 @@
     <string name="authKey">AUTH_KEY</string>
     <string name="statusId">STATUSID</string>
     <string name="toot_hint">What is on your mind?</string>
+    <string name="content_warning_hint">Content warning</string>
     <string name="toot">Toot</string>
     <string name="mark_as_private">Mark as private</string>
     <string name="do_not_display_in_public_timeline">Do not display in public timeline</string>
+    <string name="content_warning">Hide behind content warning</string>
+    <string name="show_content_warning">Show content</string>
+    <string name="hide_content_warning">Hide content</string>
     <string name="CURRENT_USERNAME">CURRENT_USERNAME</string>
     <string name="login_failed_message">Couldn\'t log in</string>
     <string name="NO_USERNAME_ERROR">You must enter a username</string>
