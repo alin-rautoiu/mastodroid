@@ -135,44 +135,24 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.TootVi
             this.itemTootBinding.contentTv.setMovementMethod(new LinkMovementMethod());
 
             this.itemTootBinding.mediaLayout.removeAllViews();
+            final Toot mediaToot;
+            mediaToot = toot.statusType == StatusType.Boost ? toot.reblog : toot;
+            if (mediaToot.mediaAttachments != null) {
+                final int imageHeight = (int) ViewsUtils.convertDpToPixel(120, getContext());
+                Picasso picasso = Picasso.with(getContext());
 
-            if(toot.statusType == StatusType.Boost) {
-                if (toot.reblog.mediaAttachments != null) {
-                    final int imageHeight = (int) ViewsUtils.convertDpToPixel(120, getContext());
-                    Picasso picasso = Picasso.with(getContext());
-
-                    for (final MediaAttachments attachment : toot.reblog.mediaAttachments) {
-                        ImageView attachmentView = new ImageView(getContext());
-                        attachmentView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                        LinearLayout.LayoutParams imageLayoutParams =
-                                new LinearLayout.LayoutParams(0, imageHeight);
-                        final int sideMargin = (int) ViewsUtils.convertDpToPixel(2, getContext());
-                        imageLayoutParams.setMargins(sideMargin, 0, sideMargin, 0);
-                        imageLayoutParams.weight = 1;
-                        itemTootBinding.mediaLayout.addView(attachmentView, imageLayoutParams);
-                        picasso.load(attachment.previewUrl).into(attachmentView);
-                        attachmentView.setTag(attachment.url);
-                        attachmentView.setOnClickListener(imageClickListener);
-                    }
-                }
-            } else {
-                if (toot.mediaAttachments != null) {
-                    final int imageHeight = (int) ViewsUtils.convertDpToPixel(120, getContext());
-                    Picasso picasso = Picasso.with(getContext());
-
-                    for (final MediaAttachments attachment : toot.mediaAttachments) {
-                        ImageView attachmentView = new ImageView(getContext());
-                        attachmentView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                        LinearLayout.LayoutParams imageLayoutParams =
-                                new LinearLayout.LayoutParams(0, imageHeight);
-                        final int sideMargin = (int) ViewsUtils.convertDpToPixel(2, getContext());
-                        imageLayoutParams.setMargins(sideMargin, 0, sideMargin, 0);
-                        imageLayoutParams.weight = 1;
-                        itemTootBinding.mediaLayout.addView(attachmentView, imageLayoutParams);
-                        picasso.load(attachment.previewUrl).into(attachmentView);
-                        attachmentView.setTag(attachment.url);
-                        attachmentView.setOnClickListener(imageClickListener);
-                    }
+                for (final MediaAttachments attachment : mediaToot.mediaAttachments) {
+                    ImageView attachmentView = new ImageView(getContext());
+                    attachmentView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    LinearLayout.LayoutParams imageLayoutParams =
+                            new LinearLayout.LayoutParams(0, imageHeight);
+                    final int sideMargin = (int) ViewsUtils.convertDpToPixel(2, getContext());
+                    imageLayoutParams.setMargins(sideMargin, 0, sideMargin, 0);
+                    imageLayoutParams.weight = 1;
+                    itemTootBinding.mediaLayout.addView(attachmentView, imageLayoutParams);
+                    picasso.load(attachment.previewUrl).into(attachmentView);
+                    attachmentView.setTag(attachment.url);
+                    attachmentView.setOnClickListener(imageClickListener);
                 }
             }
         }
