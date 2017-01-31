@@ -34,6 +34,7 @@ import eu.theinvaded.mastondroid.data.MastodroidService;
 import eu.theinvaded.mastondroid.model.MastodonAccount;
 import eu.theinvaded.mastondroid.model.StatusType;
 import eu.theinvaded.mastondroid.model.Toot;
+import eu.theinvaded.mastondroid.utils.Emojione;
 import eu.theinvaded.mastondroid.utils.StringUtils;
 import rx.Observer;
 import rx.Subscription;
@@ -100,10 +101,13 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
     }
 
     public String getDisplayName() {
+        final String displayName;
         if (toot.reblog == null) {
-            return toot.account.displayName;
+            displayName = Emojione.shortnameToUnicode(toot.account.displayName, false);
+            return displayName;
         } else {
-            return toot.reblog.account.displayName;
+            displayName = Emojione.shortnameToUnicode(toot.reblog.account.displayName, false);
+            return displayName;
         }
     }
 
@@ -170,10 +174,10 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
 
 
         if (toot.statusType == StatusType.Boost) {
-            content = toot.reblog.content;
+            content = Emojione.shortnameToUnicode(toot.reblog.content, false);
             statusTypeVisible.set(View.VISIBLE);
         } else if (toot.statusType != StatusType.Follow) {
-            content = toot.content;
+            content = Emojione.shortnameToUnicode(toot.content, false);;
             statusTypeVisible.set(View.GONE);
         } else {
             content = "";
