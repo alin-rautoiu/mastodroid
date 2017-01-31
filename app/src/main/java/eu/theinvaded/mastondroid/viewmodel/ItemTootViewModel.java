@@ -58,6 +58,7 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
     public ObservableInt statusTypeBoost;
     public ObservableInt statusTypeFavorite;
     public ObservableInt statusTypeFollow;
+    public ObservableInt statusTypeMention;
 
 
     private TootViewModelContract.TootView tootView;
@@ -72,6 +73,7 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
         reblogged = new ObservableBoolean(this.toot.statusType == StatusType.Boost
                 ? toot.reblog.reblogged
                 : toot.reblogged);
+
         isFavorited = new ObservableBoolean(this.toot.statusType == StatusType.Boost
                 ? toot.reblog.favorited
                 : toot.favorited);
@@ -82,6 +84,7 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
         statusTypeFavorite = new ObservableInt(View.GONE);
         statusTypeBoost = new ObservableInt(View.GONE);
         statusTypeFollow = new ObservableInt(View.GONE);
+        statusTypeMention = new ObservableInt(View.GONE);
 
         app = MastodroidApplication.create(context);
         service = app.getMastodroidService(tootView.getCredentials());
@@ -109,25 +112,30 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
         statusTypeFavorite.set(View.GONE);
         statusTypeBoost.set(View.GONE);
         statusTypeFollow.set(View.GONE);
+        statusTypeMention.set(View.GONE);
 
         if (toot.statusType == null)
             return status;
 
-        //statusTypeVisible.set(View.VISIBLE);
         switch (toot.statusType) {
             case Boost:
+                statusTypeVisible.set(View.VISIBLE);
                 statusTypeBoost.set(View.VISIBLE);
                 status = getStatusName() + " boosted";
                 break;
             case Favorite:
+                statusTypeVisible.set(View.VISIBLE);
                 statusTypeFavorite.set(View.VISIBLE);
                 status = getStatusName() + " favourited your status";
                 break;
             case Follow:
+                statusTypeVisible.set(View.VISIBLE);
                 statusTypeFollow.set(View.VISIBLE);
                 status = getStatusName() + " followed you";
                 break;
             case Mention:
+                statusTypeVisible.set(View.VISIBLE);
+                statusTypeMention.set(View.VISIBLE);
                 status = "Mentioned";
                 break;
         }
@@ -149,14 +157,27 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
 
     public Spanned getContent() {
         final String content;
-        String contentTemp;
+        //Placeholder here till i figure out things
+        //Resets/refreshes toot status
+        if (toot.statusType == StatusType.Boost) {
+            isFavorited.set(toot.reblog.favorited);
+            reblogged.set(toot.reblog.reblogged);
+        } else {
+            isFavorited.set(toot.favorited);
+            reblogged.set(toot.reblogged);
+        }
+
+
+
         if (toot.statusType == StatusType.Boost) {
             content = toot.reblog.content;
             statusTypeVisible.set(View.VISIBLE);
         } else if (toot.statusType != StatusType.Follow) {
             content = toot.content;
+            statusTypeVisible.set(View.GONE);
         } else {
             content = "";
+            statusTypeVisible.set(View.GONE);
         }
 
         final Spannable spanned;
@@ -222,6 +243,7 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
                 .into(view);
     }
 
+
     public void favoriteStatus() {
 
         if (!toot.favorited) {
@@ -251,6 +273,7 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
                                    public void call(Toot favoritedStatus) {
                                        toot = favoritedStatus;
                                        isFavorited.set(favoritedStatus.favorited);
+
                                    }
                                },
                             new Action1<Throwable>() {

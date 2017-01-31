@@ -74,11 +74,17 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.TootVi
         return timeline.size();
     }
 
-    public void setTimeline(List<Toot> timeline) {
+    public void setTimeline(List<Toot> timeline, boolean inFront, boolean isNotifications) {
         if (this.timeline == null || this.timeline.size() == 0) {
             this.timeline = timeline;
         } else {
-            this.timeline.addAll(timeline);
+            if(inFront && !isNotifications) {
+                this.timeline.addAll(0, timeline);
+            } else if (!isNotifications){
+                this.timeline.addAll(timeline);
+            } else {
+                this.timeline = timeline;
+            }
         }
 
         notifyDataSetChanged();
@@ -130,22 +136,43 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.TootVi
 
             this.itemTootBinding.mediaLayout.removeAllViews();
 
-            if (toot.mediaAttachments != null) {
-                final int imageHeight = (int) ViewsUtils.convertDpToPixel(120, getContext());
-                Picasso picasso = Picasso.with(getContext());
+            if(toot.statusType == StatusType.Boost) {
+                if (toot.reblog.mediaAttachments != null) {
+                    final int imageHeight = (int) ViewsUtils.convertDpToPixel(120, getContext());
+                    Picasso picasso = Picasso.with(getContext());
 
-                for (final MediaAttachments attachment : toot.mediaAttachments) {
-                    ImageView attachmentView = new ImageView(getContext());
-                    attachmentView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                    LinearLayout.LayoutParams imageLayoutParams =
-                            new LinearLayout.LayoutParams(0, imageHeight);
-                    final int sideMargin = (int) ViewsUtils.convertDpToPixel(2, getContext());
-                    imageLayoutParams.setMargins(sideMargin, 0, sideMargin, 0);
-                    imageLayoutParams.weight = 1;
-                    itemTootBinding.mediaLayout.addView(attachmentView, imageLayoutParams);
-                    picasso.load(attachment.previewUrl).into(attachmentView);
-                    attachmentView.setTag(attachment.url);
-                    attachmentView.setOnClickListener(imageClickListener);
+                    for (final MediaAttachments attachment : toot.reblog.mediaAttachments) {
+                        ImageView attachmentView = new ImageView(getContext());
+                        attachmentView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                        LinearLayout.LayoutParams imageLayoutParams =
+                                new LinearLayout.LayoutParams(0, imageHeight);
+                        final int sideMargin = (int) ViewsUtils.convertDpToPixel(2, getContext());
+                        imageLayoutParams.setMargins(sideMargin, 0, sideMargin, 0);
+                        imageLayoutParams.weight = 1;
+                        itemTootBinding.mediaLayout.addView(attachmentView, imageLayoutParams);
+                        picasso.load(attachment.previewUrl).into(attachmentView);
+                        attachmentView.setTag(attachment.url);
+                        attachmentView.setOnClickListener(imageClickListener);
+                    }
+                }
+            } else {
+                if (toot.mediaAttachments != null) {
+                    final int imageHeight = (int) ViewsUtils.convertDpToPixel(120, getContext());
+                    Picasso picasso = Picasso.with(getContext());
+
+                    for (final MediaAttachments attachment : toot.mediaAttachments) {
+                        ImageView attachmentView = new ImageView(getContext());
+                        attachmentView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                        LinearLayout.LayoutParams imageLayoutParams =
+                                new LinearLayout.LayoutParams(0, imageHeight);
+                        final int sideMargin = (int) ViewsUtils.convertDpToPixel(2, getContext());
+                        imageLayoutParams.setMargins(sideMargin, 0, sideMargin, 0);
+                        imageLayoutParams.weight = 1;
+                        itemTootBinding.mediaLayout.addView(attachmentView, imageLayoutParams);
+                        picasso.load(attachment.previewUrl).into(attachmentView);
+                        attachmentView.setTag(attachment.url);
+                        attachmentView.setOnClickListener(imageClickListener);
+                    }
                 }
             }
         }

@@ -50,7 +50,7 @@
             android:id="@+id/star_icn"
             android:layout_width="@dimen/icon_dimension"
             android:layout_height="@dimen/icon_dimension"
-            android:background="@drawable/star"
+            android:background="@drawable/ic_star"
             android:layout_alignParentTop="true"
             android:layout_toLeftOf="@id/status_type_tv"
             android:layout_toStartOf="@id/status_type_tv"
@@ -59,10 +59,22 @@
             android:layout_alignRight="@id/avatar_iv"
             android:layout_alignBottom="@id/status_type_tv"/>
         <ImageView
+            android:id="@+id/mention_icn"
+            android:layout_width="@dimen/icon_dimension"
+            android:layout_height="@dimen/icon_dimension"
+            android:background="@drawable/ic_mention"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@id/status_type_tv"
+            android:layout_toStartOf="@id/status_type_tv"
+            android:visibility="@{tootViewModel.statusTypeMention}"
+            android:scaleType="fitXY"
+            android:layout_alignRight="@id/avatar_iv"
+            android:layout_alignBottom="@id/status_type_tv"/>
+        <ImageView
             android:id="@+id/retoot_icn"
             android:layout_width="@dimen/icon_dimension"
             android:layout_height="@dimen/icon_dimension"
-            android:background="@drawable/twitter_retweeted"
+            android:background="@drawable/ic_boosted"
             android:visibility="@{tootViewModel.statusTypeBoost}"
             android:scaleType="fitXY"
             android:layout_alignParentTop="true"
@@ -118,10 +130,11 @@
             android:layout_toEndOf="@id/avatar_iv"
             android:text="@{tootViewModel.content}"
             android:textColor="@color/colorAccent"
-            tools:text="Tooooooooooooooooooooooooooooooooooooooooooooooooooot"
+            tools:text="Tooooooooooooooooooooooooooooooooot"
             android:selectAllOnFocus="true"
             android:layout_marginEnd="4dp"
-            android:layout_marginRight="4dp" />
+            android:layout_marginRight="4dp"
+            android:minHeight="30dp" />
 
         <LinearLayout
             android:id="@+id/media_layout"
@@ -152,7 +165,7 @@
                 android:id="@+id/reply_btn"
                 android:layout_width="@dimen/icon_dimension"
                 android:layout_height="@dimen/icon_dimension"
-                android:background="@drawable/reply"
+                android:background="@drawable/ic_reply"
                 android:scaleType="fitCenter"
                 android:onClick="@{() -> tootViewModel.reply()}"/>
 
@@ -160,7 +173,7 @@
                 android:id="@+id/retoot_btn"
                 android:layout_width="@dimen/icon_dimension"
                 android:layout_height="@dimen/icon_dimension"
-                android:background="@{tootViewModel.reblogged ? @drawable/twitter_retweeted : @drawable/twitter_retweet}"
+                android:background="@{tootViewModel.reblogged ? @drawable/ic_boosted : @drawable/ic_boost}"
                 android:onClick="@{() -> tootViewModel.reblogToot()}"
                 android:layout_marginLeft="@dimen/icon_padding"
                 android:scaleType="fitCenter" />
@@ -169,7 +182,7 @@
                 android:id="@+id/star_btn"
                 android:layout_width="@dimen/icon_dimension"
                 android:layout_height="@dimen/icon_dimension"
-                android:background="@{tootViewModel.isFavorited ? @drawable/star : @drawable/star_outline}"
+                android:background="@{tootViewModel.isFavorited ? @drawable/ic_star : @drawable/ic_star_outline}"
                 android:onClick="@{() -> tootViewModel.favoriteStatus()}"
                 android:layout_marginLeft="@dimen/icon_padding"
                 android:scaleType="fitCenter" />
