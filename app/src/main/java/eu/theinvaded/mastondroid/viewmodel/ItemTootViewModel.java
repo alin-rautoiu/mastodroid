@@ -11,6 +11,7 @@ import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.Spanned;
+import android.text.SpannableStringBuilder;
 import android.text.TextPaint;
 import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
@@ -18,6 +19,7 @@ import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+
 
 import com.squareup.picasso.Picasso;
 
@@ -32,6 +34,7 @@ import eu.theinvaded.mastondroid.data.MastodroidService;
 import eu.theinvaded.mastondroid.model.MastodonAccount;
 import eu.theinvaded.mastondroid.model.StatusType;
 import eu.theinvaded.mastondroid.model.Toot;
+import eu.theinvaded.mastondroid.utils.StringUtils;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -110,7 +113,7 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
         if (toot.statusType == null)
             return status;
 
-        statusTypeVisible.set(View.VISIBLE);
+        //statusTypeVisible.set(View.VISIBLE);
         switch (toot.statusType) {
             case Boost:
                 statusTypeBoost.set(View.VISIBLE);
@@ -146,6 +149,7 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
 
     public Spanned getContent() {
         final String content;
+        String contentTemp;
         if (toot.statusType == StatusType.Boost) {
             content = toot.reblog.content;
             statusTypeVisible.set(View.VISIBLE);
@@ -161,7 +165,6 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
         } else {
             spanned = (Spannable) Html.fromHtml(content);
         }
-
         // Restyle link: remove underline and change color
         // Also handle clicks
         for (final URLSpan span : spanned.getSpans(0, spanned.length(), URLSpan.class)) {
@@ -191,7 +194,9 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
             }, spanned.getSpanStart(span), spanned.getSpanEnd(span), 0);
             spanned.removeSpan(span);
         }
-        return spanned;
+        final Spannable spannedTrimmed;
+        spannedTrimmed = StringUtils.trimSpannable((SpannableStringBuilder) spanned);
+        return spannedTrimmed;
     }
 
 

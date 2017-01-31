@@ -22,6 +22,8 @@ public class Toot implements Parcelable {
     public Date createdAt;
     @SerializedName("sensitive")
     public boolean sensitive;
+    @SerializedName("spoiler_text")
+    public String spoiler_text;
     @SerializedName("account")
     public MastodonAccount account;
     @Nullable
@@ -61,6 +63,7 @@ public class Toot implements Parcelable {
         dest.writeLong(this.id);
         dest.writeLong(this.createdAt != null ? this.createdAt.getTime() : -1);
         dest.writeByte(this.sensitive ? (byte) 1 : (byte) 0);
+        dest.writeString(this.spoiler_text);
         dest.writeParcelable(this.account, flags);
         dest.writeList(this.mediaAttachments);
         dest.writeList(this.mentions);
@@ -86,6 +89,7 @@ public class Toot implements Parcelable {
         long tmpCreatedAt = in.readLong();
         this.createdAt = tmpCreatedAt == -1 ? null : new Date(tmpCreatedAt);
         this.sensitive = in.readByte() != 0;
+        this.spoiler_text = in.readString();
         this.account = in.readParcelable(MastodonAccount.class.getClassLoader());
         this.mediaAttachments = new ArrayList<>();
         in.readList(this.mediaAttachments, MediaAttachments.class.getClassLoader());
