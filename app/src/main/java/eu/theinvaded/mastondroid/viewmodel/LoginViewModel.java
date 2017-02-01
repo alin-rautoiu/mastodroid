@@ -14,11 +14,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
-import static eu.theinvaded.mastondroid.ui.activity.LoginActivity.CLIENT_ID;
-import static eu.theinvaded.mastondroid.ui.activity.LoginActivity.CLIENT_SECRET;
-import static eu.theinvaded.mastondroid.ui.activity.LoginActivity.LOGIN_PROCESS;
-import static eu.theinvaded.mastondroid.ui.activity.LoginActivity.PASSWORD;
-import static eu.theinvaded.mastondroid.ui.activity.LoginActivity.USERNAME;
+import static eu.theinvaded.mastondroid.viewmodel.LoginViewModelContract.*;
 
 /**
  * Created by alin on 23.12.2016.
@@ -148,7 +144,7 @@ public class LoginViewModel extends BaseObservable implements LoginViewModelCont
 
     private Boolean isNonBlankInput(String target, String value, String on) {
         on = on == null ? target : on;
-        if (value.compareTo("") == 0) {
+        if (value == null || value.isEmpty()) {
             viewModel.setError(on, "NO_" + target.toUpperCase() + "_ERROR");
             isSignIn.set(!isSignIn.get());
             return false;
