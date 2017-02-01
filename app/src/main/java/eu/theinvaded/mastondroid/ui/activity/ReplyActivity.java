@@ -3,6 +3,7 @@ package eu.theinvaded.mastondroid.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.os.PersistableBundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,6 +19,8 @@ public class ReplyActivity extends AppCompatActivity implements ReplyViewModelCo
 
     public final static String STATUS_ID = "STATUS_ID";
     public final static String IN_REPLY_TO = "IN_REPLY_TO";
+
+    private final static String TOOT_TEXT = "TOOT_TEXT";
 
     private ActivityReplyBinding binding;
     private Context context;
@@ -54,12 +57,25 @@ public class ReplyActivity extends AppCompatActivity implements ReplyViewModelCo
     @Override
     public String getCredentials() {
         return context
-                .getSharedPreferences(getString(R.string.preferences), context.MODE_PRIVATE)
+                .getSharedPreferences(getString(R.string.preferences), Context.MODE_PRIVATE)
                 .getString(getString(R.string.authKey), "");
     }
 
     @Override
     public void goToParent() {
         NavUtils.navigateUpFromSameTask(this);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(TOOT_TEXT, binding.statusEt.getText().toString());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        String tootText = savedInstanceState.getString(TOOT_TEXT);
+        binding.getViewModel().tootText.set(tootText);
     }
 }
