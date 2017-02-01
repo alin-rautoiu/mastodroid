@@ -8,6 +8,7 @@ import android.databinding.Bindable;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.databinding.ObservableInt;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -15,6 +16,7 @@ import eu.theinvaded.mastondroid.BR;
 import eu.theinvaded.mastondroid.MastodroidApplication;
 import eu.theinvaded.mastondroid.R;
 import eu.theinvaded.mastondroid.data.MastodroidService;
+import eu.theinvaded.mastondroid.data.RegisterResponse;
 import eu.theinvaded.mastondroid.databinding.ActivityLoginBinding;
 import eu.theinvaded.mastondroid.model.MastodonAccount;
 import eu.theinvaded.mastondroid.model.Token;
@@ -33,46 +35,16 @@ public class LoginViewModel extends BaseObservable implements LoginViewModelCont
     public ObservableBoolean isSignIn;
     private Subscription subscription;
     private LoginViewModelContract.LoginView viewModel;
-
+    private final MastodroidApplication app;
+    private final MastodroidService service;
 
     public LoginViewModel(LoginViewModelContract.LoginView viewModel) {
         isSignIn = new ObservableBoolean(false);
         alreadyHasCredentials = new ObservableBoolean(true);
         this.viewModel = viewModel;
-        String credentials = viewModel.getCredentials();
-        if (credentials.length() != 0) {
-            checkCredentials(credentials);
-        } else {
-            alreadyHasCredentials.set(false);
-        }
-    }
 
-    private void checkCredentials(String credentials) {
-        MastodroidApplication app = MastodroidApplication.create(viewModel.getContext());
-        MastodroidService service = app.getMastodroidService(credentials);
-        unsubscribeFromObservable();
-
-        service.verifyCredentials()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(
-                        new Action1<MastodonAccount>() {
-                            @Override
-                            public void call(MastodonAccount account) {
-                                if (account != null) {
-                                    viewModel.setUser(account);
-                                    viewModel.startMainActivity();
-                                }
-                            }
-                        },
-                        new Action1<Throwable>() {
-                            @Override
-                            public void call(Throwable throwable) {
-                                alreadyHasCredentials.set(false);
-                                isSignIn.set(false);
-                            }
-                        }
-                );
+        app = MastodroidApplication.create(viewModel.getContext());
+        service = app.getMastodroidLoginService();
     }
 
     @Override
@@ -82,57 +54,40 @@ public class LoginViewModel extends BaseObservable implements LoginViewModelCont
         viewModel = null;
     }
 
-    public void signIn() {
-        isSignIn.set(!isSignIn.get());
-
-        MastodroidApplication app = MastodroidApplication.create(viewModel.getContext());
-        MastodroidService service = app.getMastodroidLoginService();
-        unsubscribeFromObservable();
-
-        if (viewModel.getUsername().compareTo("") == 0) {
-            viewModel.setNoUsernameError();
-            isSignIn.set(!isSignIn.get());
-            return;
-        } else {
-            viewModel.clearNoUsernameError();
-        }
-
-        if (viewModel.getPassword().compareTo("") == 0) {
-            viewModel.setNoPaswordError();
-            isSignIn.set(!isSignIn.get());
-            return;
-        } else {
-            viewModel.clearNoPasswordError();
-        }
-
-        service.SignIn(viewModel.getClientId(),
-                viewModel.getClientSecret(),
-                "read write follow",
-                "password",
-                viewModel.getUsername(),
-                viewModel.getPassword()
-                )
+    @Override
+    public void signIn(String clientId, String clientSecret, String authorization_code, String code) {
+        service.SignIn(clientId, clientSecret, "eu.theinvaded.mastondroid://oauth2redirect/", authorization_code, code)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(
-                        new Action1<Token>() {
-                            @Override
-                            public void call(Token token) {
-                                viewModel.setAuthKey(token.accessToken);
-                                isSignIn.set(!isSignIn.get());
-                                checkCredentials(token.accessToken);
-                                viewModel.startMainActivity();
-                            }
-                        },
-                        new Action1<Throwable>() {
-                            @Override
-                            public void call(Throwable throwable) {
-                                isSignIn.set(!isSignIn.get());
+                .subscribe(new Action1<Token>() {
+                    @Override
+                    public void call(Token token) {
+                        viewModel.authorizeApp(token.accessToken);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.e("LoginViewModel: signIn", throwable.getMessage(), throwable);
+                    }
+                });
+    }
 
-                                viewModel.showLoginError();
-                            }
+    public void signIn() {
+        //isSignIn.set(true);
+        if (!viewModel.checkAppRegistered()) {
+            service.registerApp("Mastodroid", "eu.theinvaded.mastondroid://oauth2redirect/", "read write follow")
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(new Action1<RegisterResponse>() {
+                        @Override
+                        public void call(RegisterResponse registerResponse) {
+                            viewModel.registerApp(registerResponse.getClientId(), registerResponse.getClientSecret());
+                            viewModel.signIn("");
                         }
-                );
+                    });
+        } else {
+            viewModel.signIn("");
+        }
     }
 
     private void unsubscribeFromObservable() {

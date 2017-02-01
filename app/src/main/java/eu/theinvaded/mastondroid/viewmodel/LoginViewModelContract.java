@@ -11,23 +11,18 @@ import eu.theinvaded.mastondroid.model.MastodonAccount;
 public class LoginViewModelContract {
 
     public interface LoginView {
-        String getUsername();
-        String getPassword();
         Context getContext();
-        void setAuthKey(String authKey);
         String getCredentials();
         void startMainActivity();
-        String getClientSecret();
-        String getClientId();
         void setUser(MastodonAccount account);
-        void showLoginError();
-        void setNoUsernameError();
-        void setNoPaswordError();
-        void clearNoUsernameError();
-        void clearNoPasswordError();
+        void signIn(String node);
+        boolean checkAppRegistered();
+        void registerApp(String clientId, String clientSecret);
+        void authorizeApp(String accessToken);
     }
 
     public interface ViewModel {
         void destroy();
+        void signIn(String clientId, String clientSecret, String authorization_code, String code);
     }
 }
