@@ -34,6 +34,7 @@ import eu.theinvaded.mastondroid.data.MastodroidService;
 import eu.theinvaded.mastondroid.model.MastodonAccount;
 import eu.theinvaded.mastondroid.model.StatusType;
 import eu.theinvaded.mastondroid.model.Toot;
+import eu.theinvaded.mastondroid.utils.Emojione;
 import eu.theinvaded.mastondroid.utils.StringUtils;
 import rx.Observer;
 import rx.Subscription;
@@ -53,12 +54,16 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
     public ObservableBoolean isFavorited;
     public ObservableBoolean reblogged;
     public ObservableBoolean isHighlighted;
+    public ObservableBoolean hasContentWarning;
+    public ObservableBoolean showContent;
 
     public ObservableInt statusTypeVisible;
     public ObservableInt statusTypeBoost;
     public ObservableInt statusTypeFavorite;
     public ObservableInt statusTypeFollow;
+    public ObservableInt statusTypeMention;
 
+    public String spoilerText;
 
     private TootViewModelContract.TootView tootView;
     private MastodroidService service;
@@ -72,6 +77,7 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
         reblogged = new ObservableBoolean(this.toot.statusType == StatusType.Boost
                 ? toot.reblog.reblogged
                 : toot.reblogged);
+
         isFavorited = new ObservableBoolean(this.toot.statusType == StatusType.Boost
                 ? toot.reblog.favorited
                 : toot.favorited);
@@ -82,6 +88,10 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
         statusTypeFavorite = new ObservableInt(View.GONE);
         statusTypeBoost = new ObservableInt(View.GONE);
         statusTypeFollow = new ObservableInt(View.GONE);
+        statusTypeMention = new ObservableInt(View.GONE);
+
+        hasContentWarning = new ObservableBoolean(false);
+        showContent = new ObservableBoolean(!hasContentWarning.get());
 
         app = MastodroidApplication.create(context);
         service = app.getMastodroidService(tootView.getCredentials());
@@ -97,10 +107,13 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
     }
 
     public String getDisplayName() {
+        final String displayName;
         if (toot.reblog == null) {
-            return toot.account.displayName;
+            displayName = Emojione.shortnameToUnicode(toot.account.displayName, false);
+            return displayName;
         } else {
-            return toot.reblog.account.displayName;
+            displayName = Emojione.shortnameToUnicode(toot.reblog.account.displayName, false);
+            return displayName;
         }
     }
 
@@ -109,25 +122,30 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
         statusTypeFavorite.set(View.GONE);
         statusTypeBoost.set(View.GONE);
         statusTypeFollow.set(View.GONE);
+        statusTypeMention.set(View.GONE);
 
         if (toot.statusType == null)
             return status;
 
-        //statusTypeVisible.set(View.VISIBLE);
         switch (toot.statusType) {
             case Boost:
+                statusTypeVisible.set(View.VISIBLE);
                 statusTypeBoost.set(View.VISIBLE);
                 status = getStatusName() + " boosted";
                 break;
             case Favorite:
+                statusTypeVisible.set(View.VISIBLE);
                 statusTypeFavorite.set(View.VISIBLE);
                 status = getStatusName() + " favourited your status";
                 break;
             case Follow:
+                statusTypeVisible.set(View.VISIBLE);
                 statusTypeFollow.set(View.VISIBLE);
                 status = getStatusName() + " followed you";
                 break;
             case Mention:
+                statusTypeVisible.set(View.VISIBLE);
+                statusTypeMention.set(View.VISIBLE);
                 status = "Mentioned";
                 break;
         }
@@ -149,14 +167,35 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
 
     public Spanned getContent() {
         final String content;
-        String contentTemp;
+        //Placeholder here till i figure out things
+        //Resets/refreshes toot status on timeline update
+        if (toot.reblog != null) {
+            isFavorited.set(toot.reblog.favorited);
+            reblogged.set(toot.reblog.reblogged);
+            spoilerText = toot.reblog.spoiler_text;
+        } else {
+            isFavorited.set(toot.favorited);
+            reblogged.set(toot.reblogged);
+            spoilerText = toot.spoiler_text;
+        }
+
+        if (spoilerText != "") {
+            hasContentWarning.set(true);
+            showContent.set(false);
+        } else {
+            hasContentWarning.set(false);
+            showContent.set(true);
+        }
+
         if (toot.statusType == StatusType.Boost) {
-            content = toot.reblog.content;
+            content = Emojione.shortnameToUnicode(toot.reblog.content, false);
             statusTypeVisible.set(View.VISIBLE);
         } else if (toot.statusType != StatusType.Follow) {
-            content = toot.content;
+            content = Emojione.shortnameToUnicode(toot.content, false);;
+            statusTypeVisible.set(View.GONE);
         } else {
             content = "";
+            statusTypeVisible.set(View.GONE);
         }
 
         final Spannable spanned;
@@ -222,6 +261,7 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
                 .into(view);
     }
 
+
     public void favoriteStatus() {
 
         if (!toot.favorited) {
@@ -251,6 +291,7 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
                                    public void call(Toot favoritedStatus) {
                                        toot = favoritedStatus;
                                        isFavorited.set(favoritedStatus.favorited);
+
                                    }
                                },
                             new Action1<Throwable>() {
@@ -337,6 +378,10 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
         } else {
             tootView.expandUser(toot.account);
         }
+    }
+
+    public void toggleContent() {
+        showContent.set(!showContent.get());
     }
 
     @Override

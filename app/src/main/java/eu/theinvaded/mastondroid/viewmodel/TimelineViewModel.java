@@ -68,7 +68,7 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
                                @Override
                                public void call(List<Toot> timeline) {
                                    if (mainView != null) {
-                                       mainView.loadData(timeline);
+                                       mainView.loadData(timeline, false, false);
                                    }
                                }
                            },
@@ -90,7 +90,7 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
                                @Override
                                public void call(List<Toot> timeline) {
                                    if (mainView != null) {
-                                       mainView.loadData(timeline);
+                                       mainView.loadData(timeline, true, false);
                                    }
                                }
                            },
@@ -112,7 +112,7 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
                                @Override
                                public void call(List<Toot> timeline) {
                                    if (mainView != null) {
-                                       mainView.loadData(timeline);
+                                       mainView.loadData(timeline, false, false);
                                    }
                                }
                            },
@@ -167,7 +167,7 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
                                            }
                                        }
 
-                                       mainView.loadData(statuses);
+                                       mainView.loadData(statuses, true, true);
                                    }
                                }
                            },
@@ -189,7 +189,7 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
                                @Override
                                public void call(List<Toot> timeline) {
                                    if (mainView != null) {
-                                       mainView.loadData(timeline);
+                                       mainView.loadData(timeline, false, false);
                                    }
                                }
                            },
@@ -211,7 +211,7 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
                                @Override
                                public void call(List<Toot> timeline) {
                                    if (mainView != null) {
-                                       mainView.loadData(timeline);
+                                       mainView.loadData(timeline, true, false);
                                    }
                                }
                            },
@@ -233,7 +233,7 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
                                @Override
                                public void call(List<Toot> timeline) {
                                    if (mainView != null) {
-                                       mainView.loadData(timeline);
+                                       mainView.loadData(timeline, false, false);
                                    }
                                }
                            },
@@ -259,7 +259,7 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
                                        newList.addAll(thread.descendants);
                                        highlightedStatus.isHiglighted = true;
                                        newList.add(highlightedStatus);
-                                       mainView.loadData(newList);
+                                       mainView.loadData(newList, false, false);
                                    }
                                }
                            },
@@ -280,7 +280,7 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
                                @Override
                                public void call(List<Toot> statuses) {
                                    if (mainView != null) {
-                                       mainView.loadData(statuses);
+                                       mainView.loadData(statuses, false, false);
                                    }
                                }
                            },
@@ -301,7 +301,7 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
                                @Override
                                public void call(List<Toot> statuses) {
                                    if (mainView != null) {
-                                       mainView.loadData(statuses);
+                                       mainView.loadData(statuses, false, false);
                                    }
                                }
                            },

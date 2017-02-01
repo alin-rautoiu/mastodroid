@@ -87,7 +87,7 @@ public class ThreadActivity extends AppCompatActivity implements TimelineViewMod
     }
 
     @Override
-    public void loadData(List<Toot> timeline) {
+    public void loadData(List<Toot> timeline, boolean inFront, boolean isNotifications) {
         TimelineAdapter timelineAdapter = (TimelineAdapter) binding.listPeople.getAdapter();
         for (Toot toot: timeline) {
             if (toot.reblog != null) {
@@ -95,8 +95,10 @@ public class ThreadActivity extends AppCompatActivity implements TimelineViewMod
             }
         }
 
-        timelineAdapter.setTimeline(timeline);
-        Collections.sort(timeline, new TootComparator(true));
+        timelineAdapter.setTimeline(timeline, inFront, isNotifications);
+        if(!isNotifications) {
+            Collections.sort(timeline, new TootComparator(true));
+        }
         this.loading = false;
         setVisibility();
     }
