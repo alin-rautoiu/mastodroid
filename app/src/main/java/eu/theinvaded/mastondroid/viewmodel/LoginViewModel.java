@@ -1,25 +1,19 @@
 package eu.theinvaded.mastondroid.viewmodel;
 
-import android.accounts.Account;
-import android.content.Context;
-import android.content.res.Resources;
 import android.databinding.BaseObservable;
-import android.databinding.Bindable;
 import android.databinding.ObservableBoolean;
-import android.databinding.ObservableField;
-import android.databinding.ObservableInt;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
-import eu.theinvaded.mastondroid.BR;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import eu.theinvaded.mastondroid.MastodroidApplication;
-import eu.theinvaded.mastondroid.R;
 import eu.theinvaded.mastondroid.data.MastodroidService;
 import eu.theinvaded.mastondroid.data.RegisterResponse;
-import eu.theinvaded.mastondroid.databinding.ActivityLoginBinding;
-import eu.theinvaded.mastondroid.model.MastodonAccount;
 import eu.theinvaded.mastondroid.model.Token;
+import rx.Observable;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -37,12 +31,20 @@ public class LoginViewModel extends BaseObservable implements LoginViewModelCont
     private LoginViewModelContract.LoginView viewModel;
     private final MastodroidApplication app;
     private final MastodroidService service;
+    private final String appName;
+    private final String schema;
+    private String host;
+    private String scopes;
 
-    public LoginViewModel(LoginViewModelContract.LoginView viewModel) {
-        isSignIn = new ObservableBoolean(false);
-        alreadyHasCredentials = new ObservableBoolean(true);
+    public LoginViewModel(LoginViewModelContract.LoginView viewModel, String appName, String schema, String host, String scopes) {
+        this.appName = appName;
+        this.schema = schema;
+        this.host = host;
+        this.scopes = scopes;
         this.viewModel = viewModel;
 
+        isSignIn = new ObservableBoolean(false);
+        alreadyHasCredentials = new ObservableBoolean(true);
         app = MastodroidApplication.create(viewModel.getContext());
         service = app.getMastodroidLoginService();
     }
@@ -55,8 +57,8 @@ public class LoginViewModel extends BaseObservable implements LoginViewModelCont
     }
 
     @Override
-    public void signIn(String clientId, String clientSecret, String authorization_code, String code) {
-        service.SignIn(clientId, clientSecret, "eu.theinvaded.mastondroid://oauth2redirect/", authorization_code, code)
+    public void authorizeApp(String clientId, String clientSecret, String authorization_code, String code) {
+        service.SignIn(clientId, clientSecret, schema + "://" + host + "/", authorization_code, code)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Action1<Token>() {
@@ -73,21 +75,61 @@ public class LoginViewModel extends BaseObservable implements LoginViewModelCont
     }
 
     public void signIn() {
-        //isSignIn.set(true);
-        if (!viewModel.checkAppRegistered()) {
-            service.registerApp("Mastodroid", "eu.theinvaded.mastondroid://oauth2redirect/", "read write follow")
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeOn(Schedulers.io())
-                    .subscribe(new Action1<RegisterResponse>() {
-                        @Override
-                        public void call(RegisterResponse registerResponse) {
-                            viewModel.registerApp(registerResponse.getClientId(), registerResponse.getClientSecret());
-                            viewModel.signIn("");
-                        }
-                    });
-        } else {
-            viewModel.signIn("");
+
+        Observable.create(new Observable.OnSubscribe<Boolean>() {
+            @Override
+            public void call(Subscriber<? super Boolean> subscriber) {
+                    subscriber.onNext(checkConnections());
+                subscriber.onCompleted();
+            }
+        })
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribeOn(Schedulers.io())
+        .subscribe(new Action1<Boolean>() {
+            @Override
+            public void call(Boolean availableConnection) {
+                if (!availableConnection) {
+                    viewModel.domainError();
+                } else {
+                    if (!viewModel.checkAppRegistered()) {
+                        service.registerApp(appName, schema + "://" + host + "/", scopes)
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribeOn(Schedulers.io())
+                                .subscribe(new Action1<RegisterResponse>() {
+                                    @Override
+                                    public void call(RegisterResponse registerResponse) {
+                                        viewModel.registerApp(registerResponse.getClientId(), registerResponse.getClientSecret());
+                                        viewModel.signIn();
+                                    }
+                                });
+                    } else {
+                        viewModel.signIn();
+                    }
+                }
+            }
+        });
+    }
+
+    private boolean checkConnections() {
+        String domain = viewModel.getDomain();
+
+        try {
+            URL url = new URL(domain);
+
+            HttpURLConnection urlConnection = null;
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setConnectTimeout(1000);
+            urlConnection.connect();
+            if (urlConnection.getResponseCode() == 200) {
+                urlConnection.disconnect();
+                return true;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
         }
+
+        return false;
     }
 
     private void unsubscribeFromObservable() {

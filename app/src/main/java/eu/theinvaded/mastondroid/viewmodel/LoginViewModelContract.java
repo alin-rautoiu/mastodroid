@@ -15,14 +15,16 @@ public class LoginViewModelContract {
         String getCredentials();
         void startMainActivity();
         void setUser(MastodonAccount account);
-        void signIn(String node);
+        void signIn();
         boolean checkAppRegistered();
         void registerApp(String clientId, String clientSecret);
         void authorizeApp(String accessToken);
+        String getDomain();
+        void domainError();
     }
 
     public interface ViewModel {
         void destroy();
-        void signIn(String clientId, String clientSecret, String authorization_code, String code);
+        void authorizeApp(String clientId, String clientSecret, String authorization_code, String code);
     }
 }

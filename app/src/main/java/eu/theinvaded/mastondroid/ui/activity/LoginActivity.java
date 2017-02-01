@@ -5,15 +5,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
-import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.webkit.HttpAuthHandler;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebResourceResponse;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.Toast;
+import android.support.v7.app.AppCompatActivity;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -25,17 +18,23 @@ import java.util.Map;
 import eu.theinvaded.mastondroid.R;
 import eu.theinvaded.mastondroid.databinding.ActivityLoginBinding;
 import eu.theinvaded.mastondroid.model.MastodonAccount;
+import eu.theinvaded.mastondroid.utils.StringUtils;
 import eu.theinvaded.mastondroid.viewmodel.LoginViewModel;
 import eu.theinvaded.mastondroid.viewmodel.LoginViewModelContract;
 import io.fabric.sdk.android.Fabric;
-import retrofit2.http.Url;
 
 public class LoginActivity extends AppCompatActivity implements LoginViewModelContract.LoginView {
 
     private ActivityLoginBinding binding;
     private Context context;
     private SharedPreferences preferences;
+    private String customSchema;
+    private String host;
+    private String appName;
+    private String scopes;
+    private String domain;
     LoginViewModel loginViewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,8 +43,13 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
         this.context = this;
         preferences =
                 context.getSharedPreferences(getString(R.string.preferences), context.MODE_PRIVATE);
+
+        customSchema = getString(R.string.custom_schema);
+        host = getString(R.string.host);
+        appName = getString(R.string.app_name);
+        scopes = getString(R.string.scopes);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
-        loginViewModel = new LoginViewModel(this);
+        loginViewModel = new LoginViewModel(this, appName, customSchema, host, scopes);
         binding.setViewModel(loginViewModel);
 
         Uri uri = getIntent().getData();
@@ -57,12 +61,12 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
     }
 
     private void treatAuthorization(Uri uri) {
-        if (uri != null ){
+        if (uri != null) {
             String clientId = preferences.getString(getString(R.string.clientId), "");
             String clientSecret = preferences.getString(getString(R.string.clientSecret), "");
-            String code = uri.getQueryParameter("code");
+            String code = uri.getQueryParameter(getString(R.string.code));
 
-            loginViewModel.signIn(clientId, clientSecret, "authorization_code", code);
+            loginViewModel.authorizeApp(clientId, clientSecret, getString(R.string.authorization_code), code);
         }
     }
 
@@ -102,10 +106,10 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
     }
 
     @Override
-    public void signIn(String node) {
+    public void signIn() {
         Map<String, String> parameters = new HashMap<>();
         parameters.put("client_id", preferences.getString(getString(R.string.clientId), ""));
-        parameters.put("redirect_uri", "eu.theinvaded.mastondroid://oauth2redirect/");
+        parameters.put("redirect_uri", customSchema + "://" + host + "/");
         parameters.put("response_type", "code");
         parameters.put("scope", "read write follow");
         String queryParameters;
@@ -113,12 +117,42 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
             queryParameters = toQueryString(parameters);
         } catch (UnsupportedEncodingException e) {
             //TODO: No clue how to handle this error case??
-            assert(false);
+            assert (false);
             return;
         }
-        String url = "https://mastodon.social/oauth/authorize?" + queryParameters;
+
+        String domain = getDomain();
+
+        String url = domain
+                + getString(R.string.api_authorize) + "?"
+                + queryParameters;
         Intent viewIntent = new Intent("android.intent.action.VIEW", Uri.parse(url));
         startActivity(viewIntent);
+    }
+
+    @Override
+    public String getDomain() {
+        String domain = binding.instanceEt.getText().toString();
+        if (StringUtils.isNullOrEmpty(domain)) {
+            domain = "https://mastodon.social/";
+        } else {
+            domain = "https://" + cleanDomain(domain) + "/";
+        }
+        return domain;
+    }
+
+    @Override
+    public void domainError() {
+        binding.instanceTil.setErrorEnabled(true);
+        binding.instanceTil.setError(getString(R.string.server_connection_error));
+    }
+
+    private String cleanDomain(String domain) {
+        domain = domain.replace("https://", "");
+        domain = domain.replace("http://", "");
+        domain = domain.replaceAll(" ", "");
+
+        return domain;
     }
 
     @Override
