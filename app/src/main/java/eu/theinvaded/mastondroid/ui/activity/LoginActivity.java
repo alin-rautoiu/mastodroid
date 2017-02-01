@@ -3,11 +3,12 @@ package eu.theinvaded.mastondroid.ui.activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.Toast;
+import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.AppCompatActivity;
 
 import com.crashlytics.android.Crashlytics;
+
 import eu.theinvaded.mastondroid.R;
 import eu.theinvaded.mastondroid.databinding.ActivityLoginBinding;
 import eu.theinvaded.mastondroid.model.MastodonAccount;
@@ -87,32 +88,38 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
                 .apply();
     }
 
-
-
-    @Override
-    public void showLoginError() {
-        Toast.makeText(context, R.string.login_failed_message, Toast.LENGTH_SHORT).show();
+    public void setError(String target, String error) {
+        setError(target, error, null);
     }
 
-    @Override
-    public void setNoUsernameError() {
-        binding.usernameLayout.setErrorEnabled(true);
-        binding.usernameLayout.setError(getString(R.string.NO_USERNAME_ERROR));
+    public void setError(String target, int error, String details) {
+        setError(target, getResources().getResourceEntryName(error), details);
     }
 
-    @Override
-    public void setNoPaswordError() {
-        binding.passwordLayout.setErrorEnabled(true);
-        binding.passwordLayout.setError(getString(R.string.NO_PASSWORD_ERROR));
+
+    public void setError(String target, String error, String details) {
+        // probably better ways to do this, but the android docs are stirred shit
+        TextInputLayout target_layout = getLayoutOrFallback(target);
+        int errorId = getResId(error, "string");
+        String errorStr = errorId == 0 ? getString(R.string.UNKNOWN_ERROR_ID) + error : getString(errorId);
+        target_layout.setErrorEnabled(true);
+        target_layout.setError(errorStr + (details == null ? "" : ": " + details));
     }
 
-    @Override
-    public void clearNoUsernameError() {
-        binding.usernameLayout.setErrorEnabled(false);
+    public void clearError() {
+        clearError(null);
     }
 
-    @Override
-    public void clearNoPasswordError() {
-        binding.passwordLayout.setErrorEnabled(false);
+    public void clearError(String target) {
+        getLayoutOrFallback(target).setErrorEnabled(false);
+    }
+
+    private TextInputLayout getLayoutOrFallback(String target) {
+        TextInputLayout layout = (TextInputLayout) findViewById(getResId(target + "_layout", "id"));
+        return layout == null ? binding.loginProcessLayout : layout;
+    }
+
+    private int getResId(String target, String type) {
+        return getResources().getIdentifier(target, type, getPackageName());
     }
 }

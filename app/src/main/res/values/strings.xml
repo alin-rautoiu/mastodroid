@@ -16,7 +16,11 @@
     <string name="show_content_warning">Show content</string>
     <string name="hide_content_warning">Hide content</string>
     <string name="CURRENT_USERNAME">CURRENT_USERNAME</string>
-    <string name="login_failed_message">Couldn\'t log in</string>
+    <string name="login_failed_message">Login rejected, likely email or password wrong.</string>
+    <string name="login_failed_unknown">Login failed unexpectedly</string>
     <string name="NO_USERNAME_ERROR">You must enter a username</string>
     <string name="NO_PASSWORD_ERROR">You must enter a password.</string>
+    <string name="NO_CLIENT_ID_ERROR">No client id configured. Contact app maintainer.</string>
+    <string name="NO_CLIENT_SECRET_ERROR">No client secret configured. Contact app maintainer.</string>
+    <string name="UNKNOWN_ERROR_ID">Tried to report error, but id is unknown:\ </string>
 </resources>
