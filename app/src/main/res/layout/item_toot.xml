@@ -7,6 +7,9 @@
         <variable
             name="tootViewModel"
             type="eu.theinvaded.mastondroid.viewmodel.ItemTootViewModel" />
+        <variable
+            name="VIEW"
+            type="android.view.View"/>
     </data>
 
     <RelativeLayout
@@ -122,10 +125,28 @@
             android:onClick="@{() -> tootViewModel.expandUser()}" />
 
         <TextView
-            android:id="@+id/content_tv"
+            android:id="@+id/spoiler_tv"
+            android:visibility="@{tootViewModel.hasContentWarning ? VIEW.VISIBLE : VIEW.GONE}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/username_tv"
+            android:layout_toRightOf="@id/avatar_iv"
+            android:layout_toEndOf="@id/avatar_iv"
+            android:text="@{tootViewModel.spoilerText}"
+            android:textColor="@color/colorAccent"
+            android:textStyle="italic"
+            tools:text="Content Warning: Code"
+            android:selectAllOnFocus="true"
+            android:layout_marginEnd="4dp"
+            android:layout_marginRight="4dp"
+            android:minHeight="30dp" />
+
+        <TextView
+            android:id="@+id/content_tv"
+            android:visibility="@{tootViewModel.showContent ? VIEW.VISIBLE : VIEW.GONE}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/spoiler_tv"
             android:layout_toRightOf="@id/avatar_iv"
             android:layout_toEndOf="@id/avatar_iv"
             android:text="@{tootViewModel.content}"
@@ -186,6 +207,17 @@
                 android:onClick="@{() -> tootViewModel.favoriteStatus()}"
                 android:layout_marginLeft="@dimen/icon_padding"
                 android:scaleType="fitCenter" />
+
+            <ImageButton
+                android:id="@+id/showcontent_btn"
+                android:visibility="@{tootViewModel.hasContentWarning ? VIEW.VISIBLE : VIEW.GONE}"
+                android:layout_width="@dimen/icon_dimension"
+                android:layout_height="@dimen/icon_dimension"
+                android:background="@{tootViewModel.showContent ? @drawable/ic_show_content : @drawable/ic_hide_content}"
+                android:onClick="@{() -> tootViewModel.toggleContent()}"
+                android:layout_marginLeft="16dp"
+                android:scaleType="fitCenter" />
+
         </android.support.v7.widget.ButtonBarLayout>
         <View
             android:layout_alignParentBottom="true"

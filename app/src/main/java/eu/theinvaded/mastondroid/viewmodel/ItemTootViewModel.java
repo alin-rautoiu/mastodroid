@@ -54,6 +54,8 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
     public ObservableBoolean isFavorited;
     public ObservableBoolean reblogged;
     public ObservableBoolean isHighlighted;
+    public ObservableBoolean hasContentWarning;
+    public ObservableBoolean showContent;
 
     public ObservableInt statusTypeVisible;
     public ObservableInt statusTypeBoost;
@@ -61,6 +63,7 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
     public ObservableInt statusTypeFollow;
     public ObservableInt statusTypeMention;
 
+    public String spoilerText;
 
     private TootViewModelContract.TootView tootView;
     private MastodroidService service;
@@ -86,6 +89,9 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
         statusTypeBoost = new ObservableInt(View.GONE);
         statusTypeFollow = new ObservableInt(View.GONE);
         statusTypeMention = new ObservableInt(View.GONE);
+
+        hasContentWarning = new ObservableBoolean(false);
+        showContent = new ObservableBoolean(!hasContentWarning.get());
 
         app = MastodroidApplication.create(context);
         service = app.getMastodroidService(tootView.getCredentials());
@@ -162,16 +168,24 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
     public Spanned getContent() {
         final String content;
         //Placeholder here till i figure out things
-        //Resets/refreshes toot status
-        if (toot.statusType == StatusType.Boost) {
+        //Resets/refreshes toot status on timeline update
+        if (toot.reblog != null) {
             isFavorited.set(toot.reblog.favorited);
             reblogged.set(toot.reblog.reblogged);
+            spoilerText = toot.reblog.spoiler_text;
         } else {
             isFavorited.set(toot.favorited);
             reblogged.set(toot.reblogged);
+            spoilerText = toot.spoiler_text;
         }
 
-
+        if (spoilerText != "") {
+            hasContentWarning.set(true);
+            showContent.set(false);
+        } else {
+            hasContentWarning.set(false);
+            showContent.set(true);
+        }
 
         if (toot.statusType == StatusType.Boost) {
             content = Emojione.shortnameToUnicode(toot.reblog.content, false);
@@ -364,6 +378,10 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
         } else {
             tootView.expandUser(toot.account);
         }
+    }
+
+    public void toggleContent() {
+        showContent.set(!showContent.get());
     }
 
     @Override
