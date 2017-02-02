@@ -24,7 +24,9 @@
     <string name="host">oauth2redirect</string>
     <string name="authorization_code">authorization_code</string>
     <string name="code">code</string>
-    <string name="api_authorize">/oauth/authorize?</string>
+    <string name="api_oauth">oauth</string>
+    <string name="api_authorize">authorize</string>
     <string name="scopes">read write follow</string>
     <string name="server_connection_error">Cannot connect to the server.</string>
+    <string name="response_type">code</string>
 </resources>

@@ -35,6 +35,7 @@ public class LoginViewModel extends BaseObservable implements LoginViewModelCont
     private final String schema;
     private String host;
     private String scopes;
+    private final static String TAG = "LoginViewModel";
 
     public LoginViewModel(LoginViewModelContract.LoginView viewModel, String appName, String schema, String host, String scopes) {
         this.appName = appName;
@@ -79,39 +80,44 @@ public class LoginViewModel extends BaseObservable implements LoginViewModelCont
         Observable.create(new Observable.OnSubscribe<Boolean>() {
             @Override
             public void call(Subscriber<? super Boolean> subscriber) {
-                    subscriber.onNext(checkConnections());
+                subscriber.onNext(checkConnections());
                 subscriber.onCompleted();
             }
         })
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribeOn(Schedulers.io())
-        .subscribe(new Action1<Boolean>() {
-            @Override
-            public void call(Boolean availableConnection) {
-                if (!availableConnection) {
-                    viewModel.domainError();
-                } else {
-                    if (!viewModel.checkAppRegistered()) {
-                        service.registerApp(appName, schema + "://" + host + "/", scopes)
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribeOn(Schedulers.io())
-                                .subscribe(new Action1<RegisterResponse>() {
-                                    @Override
-                                    public void call(RegisterResponse registerResponse) {
-                                        viewModel.registerApp(registerResponse.getClientId(), registerResponse.getClientSecret());
-                                        viewModel.signIn();
-                                    }
-                                });
-                    } else {
-                        viewModel.signIn();
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Action1<Boolean>() {
+                    @Override
+                    public void call(Boolean availableConnection) {
+                        if (!availableConnection) {
+                            viewModel.domainError();
+                        } else {
+                            if (!viewModel.checkAppRegistered()) {
+                                service.registerApp(appName, schema + "://" + host + "/", scopes)
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribeOn(Schedulers.io())
+                                        .subscribe(new Action1<RegisterResponse>() {
+                                            @Override
+                                            public void call(RegisterResponse registerResponse) {
+                                                viewModel.registerApp(registerResponse.getClientId(), registerResponse.getClientSecret());
+                                                viewModel.signIn();
+                                            }
+                                        });
+                            } else {
+                                viewModel.signIn();
+                            }
+                        }
                     }
-                }
-            }
-        });
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.e(TAG, "call: signIn", throwable);
+                    }
+                });
     }
 
     private boolean checkConnections() {
-        String domain = viewModel.getDomain();
+        String domain = viewModel.getDomain().toString();
 
         try {
             URL url = new URL(domain);

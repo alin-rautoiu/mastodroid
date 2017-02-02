@@ -1,6 +1,7 @@
 package eu.theinvaded.mastondroid.viewmodel;
 
 import android.content.Context;
+import android.net.Uri;
 
 import eu.theinvaded.mastondroid.model.MastodonAccount;
 
@@ -19,7 +20,7 @@ public class LoginViewModelContract {
         boolean checkAppRegistered();
         void registerApp(String clientId, String clientSecret);
         void authorizeApp(String accessToken);
-        String getDomain();
+        Uri.Builder getDomain();
         void domainError();
     }
 

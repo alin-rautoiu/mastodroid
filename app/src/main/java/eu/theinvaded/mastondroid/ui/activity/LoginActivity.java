@@ -10,11 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.crashlytics.android.Crashlytics;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
-
 import eu.theinvaded.mastondroid.R;
 import eu.theinvaded.mastondroid.databinding.ActivityLoginBinding;
 import eu.theinvaded.mastondroid.model.MastodonAccount;
@@ -32,7 +27,6 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
     private String host;
     private String appName;
     private String scopes;
-    private String domain;
     LoginViewModel loginViewModel;
 
     @Override
@@ -61,24 +55,21 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
     }
 
     private void treatAuthorization(Uri uri) {
-        if (uri != null) {
-            String clientId = preferences.getString(getString(R.string.clientId), "");
-            String clientSecret = preferences.getString(getString(R.string.clientSecret), "");
-            String code = uri.getQueryParameter(getString(R.string.code));
+        if (uri == null) return;
+        String clientId = preferences.getString(getString(R.string.clientId), "");
+        String clientSecret = preferences.getString(getString(R.string.clientSecret), "");
+        String code = uri.getQueryParameter(getString(R.string.code));
 
-            loginViewModel.authorizeApp(clientId, clientSecret, getString(R.string.authorization_code), code);
-        }
+        loginViewModel.authorizeApp(clientId, clientSecret, getString(R.string.authorization_code), code);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Uri uri = getIntent().getData();
         if (preferences == null) {
             preferences =
                     context.getSharedPreferences(getString(R.string.preferences), context.MODE_PRIVATE);
         }
-
     }
 
     @Override
@@ -107,38 +98,35 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
 
     @Override
     public void signIn() {
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put("client_id", preferences.getString(getString(R.string.clientId), ""));
-        parameters.put("redirect_uri", customSchema + "://" + host + "/");
-        parameters.put("response_type", "code");
-        parameters.put("scope", "read write follow");
-        String queryParameters;
-        try {
-            queryParameters = toQueryString(parameters);
-        } catch (UnsupportedEncodingException e) {
-            //TODO: No clue how to handle this error case??
-            assert (false);
-            return;
-        }
+        final String clientId = preferences.getString(getString(R.string.clientId), "");
+        final String redirectUri = customSchema + "://" + host + "/";
+        final String responseType = getString(R.string.response_type);
+        final String scope = getString(R.string.scopes);
 
-        String domain = getDomain();
+        Uri.Builder builder = getDomain()
+                .appendPath(getString(R.string.api_oauth))
+                .appendPath(getString(R.string.api_authorize))
+                .appendQueryParameter("client_id", clientId)
+                .appendQueryParameter("redirect_uri", redirectUri)
+                .appendQueryParameter("response_type", responseType)
+                .appendQueryParameter("scope", scope);
 
-        String url = domain
-                + getString(R.string.api_authorize) + "?"
-                + queryParameters;
-        Intent viewIntent = new Intent("android.intent.action.VIEW", Uri.parse(url));
+        Intent viewIntent = new Intent("android.intent.action.VIEW", builder.build());
         startActivity(viewIntent);
     }
 
     @Override
-    public String getDomain() {
+    public Uri.Builder getDomain() {
         String domain = binding.instanceEt.getText().toString();
+        Uri.Builder builder = new Uri.Builder().scheme("https");
         if (StringUtils.isNullOrEmpty(domain)) {
-            domain = "https://mastodon.social/";
+            builder = builder
+                    .authority("mastodon.social");
         } else {
-            domain = "https://" + cleanDomain(domain) + "/";
+            builder = builder
+                    .authority(cleanDomain(domain));
         }
-        return domain;
+        return builder;
     }
 
     @Override
@@ -176,19 +164,5 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
                 .apply();
 
         startMainActivity();
-    }
-
-    private String toQueryString(Map<String, String> parameters)
-            throws UnsupportedEncodingException {
-        StringBuilder s = new StringBuilder();
-        String between = "";
-        for (Map.Entry<String, String> entry : parameters.entrySet()) {
-            s.append(between);
-            s.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
-            s.append("=");
-            s.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
-            between = "&";
-        }
-        return s.toString();
     }
 }
