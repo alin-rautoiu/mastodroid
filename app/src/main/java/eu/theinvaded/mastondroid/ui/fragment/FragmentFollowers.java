@@ -19,6 +19,7 @@ import eu.theinvaded.mastondroid.databinding.FragmentFollowersBinding;
 import eu.theinvaded.mastondroid.model.MastodonAccount;
 import eu.theinvaded.mastondroid.ui.adapter.FollowersAdapter;
 import eu.theinvaded.mastondroid.ui.adapter.TimelineAdapter;
+import eu.theinvaded.mastondroid.utils.Constants;
 import eu.theinvaded.mastondroid.utils.PostsRecyclerScrollListener;
 import eu.theinvaded.mastondroid.viewmodel.FollowersViewModel;
 import eu.theinvaded.mastondroid.viewmodel.FollowersViewModelContract;
@@ -44,11 +45,30 @@ public class FragmentFollowers extends Fragment implements FollowersViewModelCon
     private boolean loading;
     private int previousTotal;
 
+    public static FragmentFollowers getInstance(int type) {
+        FragmentFollowers followersFragment = new FragmentFollowers();
+        Bundle extraArguments = new Bundle();
+        extraArguments.putInt(TYPE, type);
+        followersFragment.setArguments(extraArguments);
+
+        return followersFragment;
+    }
+
     public static FragmentFollowers getInstance(int type, long userId) {
         FragmentFollowers followersFragment = new FragmentFollowers();
         Bundle extraArguments = new Bundle();
         extraArguments.putInt(TYPE, type);
         extraArguments.putLong(USER_ID, userId);
+        followersFragment.setArguments(extraArguments);
+
+        return followersFragment;
+    }
+
+    public static FragmentFollowers getInstance(int type, String query) {
+        FragmentFollowers followersFragment = new FragmentFollowers();
+        Bundle extraArguments = new Bundle();
+        extraArguments.putInt(TYPE, type);
+        extraArguments.putString(Constants.QUERY, query);
         followersFragment.setArguments(extraArguments);
 
         return followersFragment;
@@ -75,6 +95,7 @@ public class FragmentFollowers extends Fragment implements FollowersViewModelCon
         Bundle bundle = this.getArguments();
 
         followersViewModel = new FollowersViewModel(this, bundle.getLong(USER_ID), bundle.getInt(TYPE));
+        followersViewModel.setQuery(bundle.getString(Constants.QUERY));
         followersViewModel.populateList();
     }
 

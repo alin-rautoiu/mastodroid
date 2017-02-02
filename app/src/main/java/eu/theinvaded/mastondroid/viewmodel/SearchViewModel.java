@@ -10,11 +10,11 @@ import eu.theinvaded.mastondroid.ui.activity.SearchActivity;
  * Created by alin on 26.12.2016.
  */
 
-public class MainViewModel extends BaseObservable {
+public class SearchViewModel extends BaseObservable {
 
     private final Context context;
 
-    public MainViewModel(Context context) {
+    public SearchViewModel(Context context) {
         this.context = context;
     }
 

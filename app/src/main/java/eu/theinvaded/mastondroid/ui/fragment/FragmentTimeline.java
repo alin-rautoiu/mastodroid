@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +18,7 @@ import eu.theinvaded.mastondroid.databinding.FragmentTimelineBinding;
 import eu.theinvaded.mastondroid.model.StatusType;
 import eu.theinvaded.mastondroid.model.Toot;
 import eu.theinvaded.mastondroid.ui.adapter.TimelineAdapter;
+import eu.theinvaded.mastondroid.utils.Constants;
 import eu.theinvaded.mastondroid.utils.PostsRecyclerScrollListener;
 import eu.theinvaded.mastondroid.utils.TootComparator;
 import eu.theinvaded.mastondroid.viewmodel.TimelineViewModel;
@@ -60,6 +60,16 @@ public class FragmentTimeline extends FragmentBase implements TimelineViewModelC
         return fragmentTimeline;
     }
 
+    public static FragmentTimeline getInstance(int type, String query) {
+        FragmentTimeline fragmentTimeline = new FragmentTimeline();
+        Bundle extraArguments = new Bundle();
+        extraArguments.putInt(TYPE, type);
+        extraArguments.putString(Constants.QUERY, query);
+        fragmentTimeline.setArguments(extraArguments);
+
+        return fragmentTimeline;
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -76,6 +86,8 @@ public class FragmentTimeline extends FragmentBase implements TimelineViewModelC
 
         timelineViewModel = new TimelineViewModel(mainView, getContext(), bundle.getInt(TYPE));
         userId = getArguments().getLong(USER_ID);
+        String query = getArguments().getString(Constants.QUERY);
+        timelineViewModel.setHashtag(query);
         if (userId != 0) {
             timelineViewModel.refreshUser(userId);
         } else {
@@ -97,7 +109,7 @@ public class FragmentTimeline extends FragmentBase implements TimelineViewModelC
             public void onRefresh() {
                 if (dataBinding.listPeople.getAdapter().getItemCount() != 0) {
                     timelineViewModel
-                            .refresh(((TimelineAdapter)dataBinding.listPeople
+                            .refresh(((TimelineAdapter) dataBinding.listPeople
                                     .getAdapter())
                                     .getLatestId());
                 } else {
@@ -110,33 +122,33 @@ public class FragmentTimeline extends FragmentBase implements TimelineViewModelC
         dataBinding.listPeople
                 .addOnScrollListener(
                         new PostsRecyclerScrollListener((LinearLayoutManager) dataBinding.listPeople.getLayoutManager()) {
-            @Override
-            protected void loadData() {
-                if (userId != 0) {
-                    timelineViewModel
-                            .refreshUser(userId, ((TimelineAdapter)dataBinding.listPeople
-                                    .getAdapter())
-                                    .getLastId());
-                } else {
-                    timelineViewModel
-                            .bringFromPast(((TimelineAdapter)dataBinding.listPeople
-                                    .getAdapter())
-                                    .getLastId());
-                }
+                            @Override
+                            protected void loadData() {
+                                if (userId != 0) {
+                                    timelineViewModel
+                                            .refreshUser(userId, ((TimelineAdapter) dataBinding.listPeople
+                                                    .getAdapter())
+                                                    .getLastId());
+                                } else {
+                                    timelineViewModel
+                                            .bringFromPast(((TimelineAdapter) dataBinding.listPeople
+                                                    .getAdapter())
+                                                    .getLastId());
+                                }
 
-            }
-        });
+                            }
+                        });
     }
 
     @Override
     public void loadData(List<Toot> timeline, boolean inFront, boolean isNotifications) {
         TimelineAdapter timelineAdapter = (TimelineAdapter) dataBinding.listPeople.getAdapter();
-        for (Toot toot: timeline) {
+        for (Toot toot : timeline) {
             if (toot.reblog != null) {
                 toot.statusType = StatusType.Boost;
             }
         }
-        if(!isNotifications) {
+        if (!isNotifications) {
             Collections.sort(timeline, new TootComparator());
         }
         timelineAdapter.setTimeline(timeline, inFront, isNotifications);

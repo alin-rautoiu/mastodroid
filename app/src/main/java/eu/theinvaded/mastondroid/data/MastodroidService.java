@@ -1,6 +1,5 @@
 package eu.theinvaded.mastondroid.data;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import eu.theinvaded.mastondroid.model.MastodonAccount;
@@ -15,7 +14,6 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
-import retrofit2.http.Url;
 import rx.Observable;
 
 /**
@@ -50,6 +48,15 @@ public interface MastodroidService {
 
     @GET("api/v1/timelines/home")
     Observable<List<Toot>> getHomeTimeLine();
+
+    @GET("api/v1/timelines/tag/{hashtag}")
+    Observable<List<Toot>> getHashtagTimelineFromPast(@Path("hashtag") String hashtag, @Query("max_id") long maxId);
+
+    @GET("api/v1/timelines/tag/{hashtag}")
+    Observable<List<Toot>> getHashtagTimelineUpdate(@Path("hashtag") String hashtag, @Query("since_id") long sinceId);
+
+    @GET("api/v1/timelines/tag/{hashtag}")
+    Observable<List<Toot>> getHashtagTimeline(@Path("hashtag") String hashtag);
 
     @POST("api/v1/statuses/{id}/reblog")
     Observable<Toot> reblogStatus(@Path("id") long statusId);
@@ -102,6 +109,12 @@ public interface MastodroidService {
     @POST("api/v1/accounts/{id}/unfollow")
     Observable<Relationship> unfollowUser(@Path("id") long id);
 
+    @GET("api/v1/accounts/search")
+    Observable<List<MastodonAccount>> searchUsers(@Query("q") String searchTerm, @Query("limit") int maxUsers);
+
+    @GET("api/v1/accounts/search")
+    Observable<List<MastodonAccount>> searchUsersNext(@Query("q") String searchTerm, @Query("limit") int maxUsers, @Query("since_id") long maxId);
+
     @GET("api/v1/notifications")
     Observable<List<Notification>> getNotifications();
 
@@ -109,10 +122,10 @@ public interface MastodroidService {
     @POST("/api/v1/statuses")
     Observable<Toot> postStatusReplyWithMedia(@Field("status") String toot,
                                               @Field("spoiler_text") String spoilerText,
-                                @Field("in_reply_to_id") long replyToId,
-                                @Field("media_id") long mediaId,
-                                @Field("sensitive") boolean sensitive,
-                                @Field("visibility") String visibility);
+                                              @Field("in_reply_to_id") long replyToId,
+                                              @Field("media_id") long mediaId,
+                                              @Field("sensitive") boolean sensitive,
+                                              @Field("visibility") String visibility);
 
     @FormUrlEncoded
     @POST("/api/v1/statuses")
@@ -126,9 +139,9 @@ public interface MastodroidService {
     @POST("/api/v1/statuses")
     Observable<Toot> postStatusWithMedia(@Field("status") String toot,
                                          @Field("spoiler_text") String spoilerText,
-                                @Field("media_id") long mediaId,
-                                @Field("sensitive") boolean sensitive,
-                                @Field("visibility") String visibility);
+                                         @Field("media_id") long mediaId,
+                                         @Field("sensitive") boolean sensitive,
+                                         @Field("visibility") String visibility);
 
     @FormUrlEncoded
     @POST("/api/v1/statuses")

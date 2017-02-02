@@ -38,6 +38,7 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
     private MastodroidApplication app;
     private MastodroidService service;
     private Toot highlightedStatus;
+    private String hashtag;
 
     public TimelineViewModel(@NonNull TimelineViewModelContract.MainView mainView,
                              @NonNull Context context, int type) {
@@ -351,6 +352,9 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
             case Constants.THREAD:
                 fetchThread();
                 break;
+            case Constants.HASHTAG:
+                fetchHashtag();
+                break;
         }
     }
 
@@ -374,7 +378,73 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
             case Constants.PUBLIC:
                 fetchPublicTimelineUpdate(sinceId);
                 break;
+            case Constants.HASHTAG:
+                fetchHashtag(sinceId);
+                break;
         }
+    }
+
+    private void fetchHashtag() {
+        subscription = service.getHashtagTimeline(hashtag)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Action1<List<Toot>>() {
+                               @Override
+                               public void call(List<Toot> statuses) {
+                                   if (mainView != null) {
+                                       mainView.loadData(statuses, false, false);
+                                   }
+                               }
+                           },
+                        new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                Log.e("Error", throwable.getMessage());
+                            }
+                        }
+                );
+    }
+
+    private void fetchHashtag(long sinceId) {
+        subscription = service.getHashtagTimelineUpdate(hashtag, sinceId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Action1<List<Toot>>() {
+                               @Override
+                               public void call(List<Toot> statuses) {
+                                   if (mainView != null) {
+                                       mainView.loadData(statuses, false, false);
+                                   }
+                               }
+                           },
+                        new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                Log.e("Error", throwable.getMessage());
+                            }
+                        }
+                );
+    }
+
+    private void fetchHashtagFromPast(long maxId) {
+        subscription = service.getHashtagTimelineFromPast(hashtag, maxId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Action1<List<Toot>>() {
+                               @Override
+                               public void call(List<Toot> statuses) {
+                                   if (mainView != null) {
+                                       mainView.loadData(statuses, false, false);
+                                   }
+                               }
+                           },
+                        new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                Log.e("Error", throwable.getMessage());
+                            }
+                        }
+                );
     }
 
     public void bringFromPast(long maxId) {
@@ -385,10 +455,17 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
             case Constants.PUBLIC:
                 fetchPublicTimelineFromPast(maxId);
                 break;
+            case Constants.HASHTAG:
+                fetchHashtagFromPast(maxId);
+                break;
         }
     }
 
     public void setHighlightedStatus(Toot highlightedStatus) {
         this.highlightedStatus = highlightedStatus;
+    }
+
+    public void setHashtag(String hashtag) {
+        this.hashtag = hashtag;
     }
 }
