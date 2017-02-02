@@ -13,6 +13,7 @@ import android.text.Spannable;
 import android.text.Spanned;
 import android.text.SpannableStringBuilder;
 import android.text.TextPaint;
+import android.text.TextUtils;
 import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.text.style.UnderlineSpan;
@@ -179,7 +180,7 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
             spoilerText = toot.spoiler_text;
         }
 
-        if (spoilerText != "") {
+        if (!TextUtils.isEmpty(spoilerText)) {
             hasContentWarning.set(true);
             showContent.set(false);
         } else {
