@@ -1,9 +1,8 @@
 <resources>
     <string name="app_name">Mastodroid</string>
-
     <string name="username">Username or email</string>
     <string name="password">Password</string>
-    <string name="sign_in">Sign In</string>
+    <string name="sign_in">Sign in</string>
     <string name="preferences">PREFERENCES</string>
     <string name="authKey">AUTH_KEY</string>
     <string name="statusId">STATUSID</string>
@@ -16,11 +15,21 @@
     <string name="show_content_warning">Show content</string>
     <string name="hide_content_warning">Hide content</string>
     <string name="CURRENT_USERNAME">CURRENT_USERNAME</string>
-    <string name="login_failed_message">Login rejected, likely email or password wrong.</string>
-    <string name="login_failed_unknown">Login failed unexpectedly</string>
+    <string name="login_failed_message">Couldn\'t log in</string>
     <string name="NO_USERNAME_ERROR">You must enter a username</string>
     <string name="NO_PASSWORD_ERROR">You must enter a password.</string>
-    <string name="NO_CLIENT_ID_ERROR">No client id configured. Contact app maintainer.</string>
-    <string name="NO_CLIENT_SECRET_ERROR">No client secret configured. Contact app maintainer.</string>
-    <string name="UNKNOWN_ERROR_ID">Tried to report error, but id is unknown:\ </string>
+    <string name="select_your_instance">Select your instance</string>
+    <string name="custom_schema">eu.theinvaded.mastodroid</string>
+    <string name="host">oauth2redirect</string>
+    <string name="authorization_code">authorization_code</string>
+    <string name="code">code</string>
+    <string name="api_oauth">oauth</string>
+    <string name="api_authorize">authorize</string>
+    <string name="scopes">read write follow</string>
+    <string name="server_connection_error">Cannot connect to the server.</string>
+    <string name="response_type">code</string>
+    <string name="sign_in_mastodon">Sign in mastodon.social</string>
+    <string name="or">OR</string>
+    <string name="client_secret">client_secret</string>
+    <string name="client_id">client_id</string>
 </resources>

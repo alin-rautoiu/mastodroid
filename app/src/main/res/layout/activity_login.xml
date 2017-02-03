@@ -1,110 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="viewModel"
             type="eu.theinvaded.mastondroid.viewmodel.LoginViewModel" />
-
         <variable
             name="VIEW"
             type="android.view.View" />
     </data>
 
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#CCCCCC"
+        android:background="@color/colorPrimary"
         tools:context="eu.theinvaded.mastondroid.ui.activity.LoginActivity">
 
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <ImageView
+            android:src="@drawable/icon"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/icon_padding"/>
 
-            <RelativeLayout
-                android:id="@+id/activity_login"
+        <Button
+            android:id="@+id/login_btn"
+            app:text="@{viewModel.instanceDomain}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> viewModel.signIn()}"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:id="@+id/or_tv"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/login_btn"
+            android:text="@string/or"
+            android:textColor="@color/colorAccent"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:layout_marginTop="@dimen/image_padding"
+            android:layout_marginBottom="@dimen/image_padding" />
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/instance_til"
+            android:hint="@string/select_your_instance"
+            android:textAlignment="center"
+            android:gravity="center_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/or_tv">
+            <android.support.v7.widget.AppCompatEditText
+                android:id="@+id/instance_et"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="@dimen/activity_vertical_margin"
-                android:foregroundGravity="center_vertical|center_horizontal">
-
-                <ImageView
-                    android:id="@+id/icon_iv"
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_marginTop="40dp"
-                    android:layout_marginBottom="20dp"
-                    android:src="@drawable/icon"
-                    android:scaleType="fitXY" />
-
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/login_process_layout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/icon_iv"
-                    android:layout_centerInParent="true"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:visibility="@{VIEW.VISIBLE}" />
-
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/username_layout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/login_process_layout"
-                    android:layout_centerInParent="true"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:visibility="@{viewModel.alreadyHasCredentials ? VIEW.GONE : VIEW.VISIBLE}">
-
-                    <android.support.v7.widget.AppCompatEditText
-                        android:id="@+id/username_tv"
-                        android:layout_width="300dp"
-                        android:layout_height="match_parent"
-                        android:hint="@string/username"
-                        android:inputType="textEmailAddress">
-
-                    </android.support.v7.widget.AppCompatEditText>
-                </android.support.design.widget.TextInputLayout>
-
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/password_layout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/username_layout"
-                    android:layout_centerInParent="true"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:visibility="@{viewModel.alreadyHasCredentials ? VIEW.GONE : VIEW.VISIBLE}">
-
-                    <android.support.v7.widget.AppCompatEditText
-                        android:id="@+id/password_tv"
-                        android:layout_width="300dp"
-                        android:layout_height="match_parent"
-                        android:hint="@string/password"
-                        android:inputType="textPassword" />
-                </android.support.design.widget.TextInputLayout>
-
-                <ProgressBar
-                    android:id="@+id/sign_in_progress"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/password_layout"
-                    android:layout_centerHorizontal="true"
-                    android:visibility="@{viewModel.isSignIn &amp;&amp; !viewModel.alreadyHasCredentials ? VIEW.VISIBLE : VIEW.INVISIBLE}" />
-
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/password_layout"
-                    android:layout_centerInParent="true"
-                    android:background="@color/colorToot"
-                    android:onClick="@{() -> viewModel.signIn()}"
-                    android:text="@string/sign_in"
-                    android:textColor="@color/colorAccent"
-                    android:visibility="@{!viewModel.isSignIn &amp;&amp; !viewModel.alreadyHasCredentials ? VIEW.VISIBLE : VIEW.INVISIBLE}" />
-            </RelativeLayout>
-        </ScrollView>
-    </FrameLayout>
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:textAlignment="center"
+                style="@style/LoginTextStyle"
+                android:text="@={viewModel.instanceDomain}"
+                android:inputType="textUri"/>
+        </android.support.design.widget.TextInputLayout>
+    </RelativeLayout>
 </layout>
