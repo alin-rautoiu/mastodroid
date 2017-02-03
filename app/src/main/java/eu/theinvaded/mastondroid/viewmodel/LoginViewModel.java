@@ -155,10 +155,8 @@ public class LoginViewModel extends BaseObservable implements LoginViewModelCont
 
     @BindingAdapter(value = {"text"}, requireAll = false)
     public static void setButtonText(Button view, String value) {
-        if (TextUtils.isEmpty(value)) {
-            view.setText(R.string.sign_in_mastodon);
-        } else {
-            view.setText(R.string.sign_in);
-        }
+        view.setText(TextUtils.isEmpty(value)
+                ? R.string.sign_in_mastodon
+                : R.string.sign_in);
     }
 }
