@@ -53,14 +53,15 @@
             android:gravity="center_horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/or_tv">
+            android:layout_below="@id/or_tv"
+            style="@style/LoginTextStyle">
+
             <android.support.v7.widget.AppCompatEditText
                 android:id="@+id/instance_et"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:textAlignment="center"
                 style="@style/LoginTextStyle"
                 android:text="@={viewModel.instanceDomain}"
                 android:inputType="textUri"/>

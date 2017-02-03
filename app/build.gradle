@@ -22,8 +22,8 @@ android {
         applicationId "eu.theinvaded.mastondroid"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 9
-        versionName "0.1.6"
+        versionCode 10
+        versionName "0.2.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 

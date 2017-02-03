@@ -14,14 +14,20 @@
         <activity
             android:name=".ui.activity.MainActivity"
             android:launchMode="singleTop"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ui.activity.LoginActivity">
+            android:theme="@style/AppTheme.NoActionBar" >
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.activity.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
-                <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.BROWSABLE"/>
+                <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="@string/custom_schema" android:host="@string/host"/>
             </intent-filter>
         </activity>
@@ -29,15 +35,14 @@
             android:name=".ui.activity.ReplyActivity"
             android:parentActivityName=".ui.activity.MainActivity"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
+        <activity
+            android:parentActivityName=".ui.activity.MainActivity"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+            android:name=".ui.activity.ThreadActivity"/>
 
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="894c7240bb1eaa57bdc34a7a3b487c70eba1d799" />
-
-        <activity
-            android:parentActivityName=".ui.activity.MainActivity"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
-            android:name=".ui.activity.ThreadActivity"></activity>
     </application>
 
 </manifest>

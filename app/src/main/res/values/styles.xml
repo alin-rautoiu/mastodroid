@@ -24,6 +24,7 @@
 
     <style name="LoginTextStyle" >
         <item name="android:textColor">#ffffff</item>
+        <item name="android:textColorHint">#ffffff</item>
     </style>
 
 </resources>
