@@ -35,15 +35,6 @@ public class FragmentFollowers extends Fragment implements FollowersViewModelCon
 
     private FragmentFollowersBinding dataBinding;
     private FollowersViewModel followersViewModel;
-    private FollowersViewModelContract.FollowersView followersView = this;
-
-    private long userId;
-    private int type;
-    private int visibleItemCount;
-    private int totalItemCount;
-    private int firstVisibleItemIndex;
-    private boolean loading;
-    private int previousTotal;
 
     public static FragmentFollowers getInstance(int type) {
         FragmentFollowers followersFragment = new FragmentFollowers();
@@ -78,14 +69,13 @@ public class FragmentFollowers extends Fragment implements FollowersViewModelCon
         // Required empty public constructor
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         dataBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_followers, container, false);
         View rootView = dataBinding.getRoot();
-        setupRecycler(rootView);
+        setupRecycler();
         initDataBinding();
 
         return rootView;
@@ -99,7 +89,7 @@ public class FragmentFollowers extends Fragment implements FollowersViewModelCon
         followersViewModel.populateList();
     }
 
-    private void setupRecycler(View rootView) {
+    private void setupRecycler() {
         dataBinding.followRv
                 .setLayoutManager(new LinearLayoutManager(dataBinding.followRv.getContext()));
         FollowersAdapter adapter = new FollowersAdapter();

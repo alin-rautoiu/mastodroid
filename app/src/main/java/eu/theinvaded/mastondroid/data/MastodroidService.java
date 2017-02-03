@@ -113,7 +113,7 @@ public interface MastodroidService {
     Observable<List<MastodonAccount>> searchUsers(@Query("q") String searchTerm, @Query("limit") int maxUsers);
 
     @GET("api/v1/accounts/search")
-    Observable<List<MastodonAccount>> searchUsersNext(@Query("q") String searchTerm, @Query("limit") int maxUsers, @Query("since_id") long maxId);
+    Observable<List<MastodonAccount>> searchUsersNext(@Query("q") String searchTerm, @Query("limit") int maxUsers, @Query("max_id") long maxId);
 
     @GET("api/v1/notifications")
     Observable<List<Notification>> getNotifications();

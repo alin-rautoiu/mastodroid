@@ -16,7 +16,6 @@ import eu.theinvaded.mastondroid.model.Notification;
 import eu.theinvaded.mastondroid.model.StatusType;
 import eu.theinvaded.mastondroid.model.Toot;
 import eu.theinvaded.mastondroid.ui.activity.ThreadActivity;
-import eu.theinvaded.mastondroid.ui.fragment.FragmentMain;
 import eu.theinvaded.mastondroid.utils.Constants;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -31,7 +30,6 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
 
     public ObservableInt tootProgressIsVisible;
 
-    private Context context;
     private Subscription subscription;
     private TimelineViewModelContract.MainView mainView;
     private int type;
@@ -42,7 +40,7 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
 
     public TimelineViewModel(@NonNull TimelineViewModelContract.MainView mainView,
                              @NonNull Context context, int type) {
-        this.context = context;
+
         this.mainView = mainView;
         this.tootProgressIsVisible = new ObservableInt(View.VISIBLE);
         this.type = type;
@@ -138,7 +136,7 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
 
                                        List<Toot> statuses = new ArrayList<>();
 
-                                       for (Notification notification: notifications) {
+                                       for (Notification notification : notifications) {
                                            if (notification.status == null) {
                                                Toot emptyToot = new Toot();
                                                emptyToot.statusType = StatusType.Follow;
@@ -150,7 +148,7 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
                                                notification.status.notifiedAccound = notification.account;
                                                Log.i("Notification type ", notification.type);
                                                switch (notification.type) {
-                                                   case "follow" :
+                                                   case "follow":
                                                        notification.status.statusType = StatusType.Follow;
                                                        break;
                                                    case "favourite":
@@ -333,7 +331,6 @@ public class TimelineViewModel implements TimelineViewModelContract.ViewModel {
     private void reset() {
         unsubscribeFromObservable();
         subscription = null;
-        context = null;
         mainView = null;
     }
 

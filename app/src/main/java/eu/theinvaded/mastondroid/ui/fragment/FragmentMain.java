@@ -1,5 +1,6 @@
 package eu.theinvaded.mastondroid.ui.fragment;
 
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,6 +9,7 @@ import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 
 import eu.theinvaded.mastondroid.R;
 import eu.theinvaded.mastondroid.databinding.FragmentMainBinding;
@@ -29,7 +31,7 @@ public class FragmentMain extends FragmentBase {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater layoutInflater, ViewGroup container, Bundle savendInst) {
+    public View onCreateView(LayoutInflater layoutInflater, final ViewGroup container, Bundle savendInst) {
         dataBinding = DataBindingUtil.inflate(layoutInflater, R.layout.fragment_main, container, false);
         View rootView = dataBinding.getRoot();
         settingsToolbar(rootView);

@@ -63,7 +63,7 @@ public class FragmentUser extends FragmentBase implements UserViewModelContract.
         fragmentPager.addFragment(FragmentFollowers.getInstance(Constants.FOLLOWS, account.id), "FOLLOWS");
         fragmentPager.addFragment(FragmentFollowers.getInstance(Constants.FOLLOWERS, account.id), "FOLLOWERS");
 
-        dataBinding.viewpager.setAdapter(fragmentPager);
+        viewpager.setAdapter(fragmentPager);
     }
 
     @Override

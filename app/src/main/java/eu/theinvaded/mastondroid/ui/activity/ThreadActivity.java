@@ -67,8 +67,8 @@ public class ThreadActivity extends AppCompatActivity implements TimelineViewMod
 
         binding = DataBindingUtil.setContentView(this, R.layout.fragment_timeline);
         binding.setMainViewModel(timelineViewModel);
-        binding.listPeople.setAdapter(adapter);
-        binding.listPeople.setLayoutManager(new LinearLayoutManager(context,
+        binding.statusesRv.setAdapter(adapter);
+        binding.statusesRv.setLayoutManager(new LinearLayoutManager(context,
                 LinearLayoutManager.VERTICAL,
                 false));
         binding.swipeRefreshLayout.setEnabled(false);
@@ -88,7 +88,7 @@ public class ThreadActivity extends AppCompatActivity implements TimelineViewMod
 
     @Override
     public void loadData(List<Toot> timeline, boolean inFront, boolean isNotifications) {
-        TimelineAdapter timelineAdapter = (TimelineAdapter) binding.listPeople.getAdapter();
+        TimelineAdapter timelineAdapter = (TimelineAdapter) binding.statusesRv.getAdapter();
         for (Toot toot: timeline) {
             if (toot.reblog != null) {
                 toot.statusType = StatusType.Boost;
