@@ -1,20 +1,28 @@
 package eu.theinvaded.mastondroid.viewmodel;
 
 import android.databinding.BaseObservable;
+import android.databinding.BindingAdapter;
 import android.databinding.ObservableBoolean;
+import android.databinding.ObservableField;
+import android.text.TextUtils;
+import android.util.Log;
+import android.widget.Button;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import eu.theinvaded.mastondroid.MastodroidApplication;
 import eu.theinvaded.mastondroid.R;
 import eu.theinvaded.mastondroid.data.MastodroidService;
-import eu.theinvaded.mastondroid.model.MastodonAccount;
+import eu.theinvaded.mastondroid.data.RegisterResponse;
 import eu.theinvaded.mastondroid.model.Token;
-import retrofit2.adapter.rxjava.HttpException;
+import rx.Observable;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
-
-import static eu.theinvaded.mastondroid.viewmodel.LoginViewModelContract.*;
 
 /**
  * Created by alin on 23.12.2016.
@@ -24,48 +32,29 @@ public class LoginViewModel extends BaseObservable implements LoginViewModelCont
 
     public ObservableBoolean alreadyHasCredentials;
     public ObservableBoolean isSignIn;
+    public ObservableField<String> instanceDomain;
     private Subscription subscription;
     private LoginViewModelContract.LoginView viewModel;
+    private final MastodroidService service;
+    private final String appName;
+    private final String schema;
+    private String host;
+    private String scopes;
+    private final static String TAG = "LoginViewModel";
 
+    public LoginViewModel(LoginViewModelContract.LoginView viewModel, String appName, String schema, String host, String scopes) {
+        this.appName = appName;
+        this.schema = schema;
+        this.host = host;
+        this.scopes = scopes;
+        this.viewModel = viewModel;
 
-    public LoginViewModel(LoginViewModelContract.LoginView viewModel) {
         isSignIn = new ObservableBoolean(false);
         alreadyHasCredentials = new ObservableBoolean(true);
-        this.viewModel = viewModel;
-        String credentials = viewModel.getCredentials();
-        if (credentials.length() != 0) {
-            checkCredentials(credentials);
-        } else {
-            alreadyHasCredentials.set(false);
-        }
-    }
+        instanceDomain = new ObservableField<>("");
 
-    private void checkCredentials(String credentials) {
         MastodroidApplication app = MastodroidApplication.create(viewModel.getContext());
-        MastodroidService service = app.getMastodroidService(credentials);
-        unsubscribeFromObservable();
-
-        service.verifyCredentials()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(
-                        new Action1<MastodonAccount>() {
-                            @Override
-                            public void call(MastodonAccount account) {
-                                if (account != null) {
-                                    viewModel.setUser(account);
-                                    viewModel.startMainActivity();
-                                }
-                            }
-                        },
-                        new Action1<Throwable>() {
-                            @Override
-                            public void call(Throwable throwable) {
-                                alreadyHasCredentials.set(false);
-                                isSignIn.set(false);
-                            }
-                        }
-                );
+        service = app.getMastodroidLoginService();
     }
 
     @Override
@@ -75,88 +64,99 @@ public class LoginViewModel extends BaseObservable implements LoginViewModelCont
         viewModel = null;
     }
 
-    public void signIn() {
-        isSignIn.set(!isSignIn.get());
-        viewModel.clearError();
-
-        MastodroidApplication app = MastodroidApplication.create(viewModel.getContext());
-        MastodroidService service = app.getMastodroidLoginService();
-        unsubscribeFromObservable();
-
-        if (!isNonBlankInput(CLIENT_SECRET, viewModel.getClientSecret(), LOGIN_PROCESS)) return;
-        if (!isNonBlankInput(CLIENT_ID, viewModel.getClientId(), LOGIN_PROCESS)) return;
-        if (!isNonBlankInput(USERNAME, viewModel.getUsername())) return;
-        if (!isNonBlankInput(PASSWORD, viewModel.getPassword())) return;
-
-        service.SignIn(viewModel.getClientId(),
-                viewModel.getClientSecret(),
-                "read write follow",
-                "password",
-                viewModel.getUsername(),
-                viewModel.getPassword()
-        )
+    @Override
+    public void authorizeApp(String clientId, String clientSecret, String authorization_code, String code) {
+        service.SignIn(clientId, clientSecret, schema + "://" + host + "/", authorization_code, code)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(
-                        new Action1<Token>() {
-                            @Override
-                            public void call(Token token) {
-                                viewModel.setAuthKey(token.accessToken);
-                                isSignIn.set(!isSignIn.get());
-                                checkCredentials(token.accessToken);
-                                viewModel.startMainActivity();
-                            }
-                        },
-                        new Action1<Throwable>() {
-                            @Override
-                            public void call(Throwable throwable) {
-                                isSignIn.set(!isSignIn.get());
-                                String details = loginExceptionToString(throwable);
-                                viewModel.setError(LOGIN_PROCESS, details == null ? R.string.login_failed_message : R.string.login_failed_unknown, details);
-                            }
+                .subscribe(new Action1<Token>() {
+                    @Override
+                    public void call(Token token) {
+                        viewModel.authorizeApp(token.accessToken);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.e("LoginViewModel: signIn", throwable.getMessage(), throwable);
+                    }
+                });
+    }
+
+    public void signIn() {
+
+        Observable.create(new Observable.OnSubscribe<Boolean>() {
+            @Override
+            public void call(Subscriber<? super Boolean> subscriber) {
+                subscriber.onNext(checkConnections());
+                subscriber.onCompleted();
+            }
+        })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Action1<Boolean>() {
+                    @Override
+                    public void call(Boolean availableConnection) {
+                        if (!availableConnection) {
+                            viewModel.domainError();
+                            return;
                         }
-                );
+                        if (viewModel.checkAppRegistered()) {
+                            viewModel.signIn();
+                            return;
+                        }
+
+                        service.registerApp(appName, schema + "://" + host + "/", scopes)
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribeOn(Schedulers.io())
+                                .subscribe(new Action1<RegisterResponse>() {
+                                    @Override
+                                    public void call(RegisterResponse registerResponse) {
+                                        viewModel.registerApp(registerResponse.getClientId(), registerResponse.getClientSecret());
+                                        viewModel.signIn();
+                                    }
+                                });
+                    }
+
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.e(TAG, "call: signIn", throwable);
+                    }
+                });
     }
 
-    private String loginExceptionToString(Throwable e) {
-        return e instanceof HttpException ? loginHttpExceptionToString((HttpException) e) : e.toString();
-    }
+    private boolean checkConnections() {
+        String domain = viewModel.getDomain().toString();
 
-    private String loginHttpExceptionToString(HttpException he) {
-        String errorBody;
         try {
-            errorBody = he.response().errorBody().string();
-        } catch (Throwable convertError) {
-            return he.toString() + " and " + convertError.toString();
-        }
+            URL url = new URL(domain);
 
-        // https://github.com/tootsuite/mastodon/pull/550
-        if (he.code() == 302 && errorBody.contains("/auth/sign_in"))
-            return null;
-
-        String headers = he.response().headers().toString();
-        return headers + "\n" + errorBody;
-    }
-
-    private Boolean isNonBlankInput(String target, String value) {
-        return isNonBlankInput(target, value, null);
-    }
-
-    private Boolean isNonBlankInput(String target, String value, String on) {
-        on = on == null ? target : on;
-        if (value == null || value.isEmpty()) {
-            viewModel.setError(on, "NO_" + target.toUpperCase() + "_ERROR");
-            isSignIn.set(!isSignIn.get());
+            HttpURLConnection urlConnection;
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setConnectTimeout(1000);
+            urlConnection.connect();
+            if (urlConnection.getResponseCode() == 200) {
+                urlConnection.disconnect();
+                return true;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
             return false;
         }
 
-        viewModel.clearError(target);
-        return true;
+        return false;
     }
 
     private void unsubscribeFromObservable() {
         if (subscription != null && !subscription.isUnsubscribed()) {
             subscription.unsubscribe();
         }
+    }
+
+    @BindingAdapter(value = {"text"}, requireAll = false)
+    public static void setButtonText(Button view, String value) {
+        view.setText(TextUtils.isEmpty(value)
+                ? R.string.sign_in_mastodon
+                : R.string.sign_in);
     }
 }

@@ -35,7 +35,7 @@
         android:text="@string/toot"
         android:textSize="16sp"
         android:textColor="#FFFFFF"
-        android:background="@drawable/btnshape_toot"
+        android:background="@color/colorToot"
         android:layout_below="@+id/status_et"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"

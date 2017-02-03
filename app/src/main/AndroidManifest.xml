@@ -17,9 +17,12 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ui.activity.LoginActivity">
             <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
                 <action android:name="android.intent.action.MAIN" />
-
+                <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="@string/custom_schema" android:host="@string/host"/>
             </intent-filter>
         </activity>
         <activity

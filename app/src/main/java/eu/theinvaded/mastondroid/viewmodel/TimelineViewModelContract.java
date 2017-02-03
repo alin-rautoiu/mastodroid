@@ -16,7 +16,7 @@ public class TimelineViewModelContract {
     public interface MainView {
         Context getContext();
 
-        void loadData(List<Toot> timeline, boolean inFront, boolean isNotifications);
+        void loadData(List<Toot> timeline);
         String getCredentials();
         String getUsername();
     }

@@ -74,17 +74,11 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.TootVi
         return timeline.size();
     }
 
-    public void setTimeline(List<Toot> timeline, boolean inFront, boolean isNotifications) {
+    public void setTimeline(List<Toot> timeline) {
         if (this.timeline == null || this.timeline.size() == 0) {
             this.timeline = timeline;
         } else {
-            if(inFront && !isNotifications) {
-                this.timeline.addAll(0, timeline);
-            } else if (!isNotifications){
-                this.timeline.addAll(timeline);
-            } else {
-                this.timeline = timeline;
-            }
+            this.timeline.addAll(timeline);
         }
 
         notifyDataSetChanged();
@@ -135,13 +129,12 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.TootVi
             this.itemTootBinding.contentTv.setMovementMethod(new LinkMovementMethod());
 
             this.itemTootBinding.mediaLayout.removeAllViews();
-            final Toot mediaToot;
-            mediaToot = toot.statusType == StatusType.Boost ? toot.reblog : toot;
-            if (mediaToot.mediaAttachments != null) {
+
+            if (toot.mediaAttachments != null) {
                 final int imageHeight = (int) ViewsUtils.convertDpToPixel(120, getContext());
                 Picasso picasso = Picasso.with(getContext());
 
-                for (final MediaAttachments attachment : mediaToot.mediaAttachments) {
+                for (final MediaAttachments attachment : toot.mediaAttachments) {
                     ImageView attachmentView = new ImageView(getContext());
                     attachmentView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                     LinearLayout.LayoutParams imageLayoutParams =

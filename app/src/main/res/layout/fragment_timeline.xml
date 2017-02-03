@@ -19,7 +19,6 @@
             android:id="@+id/timeline_pb"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="10dp"
             android:visibility="@{mainViewModel.tootProgressIsVisible}"/>
 
     <android.support.v4.widget.SwipeRefreshLayout

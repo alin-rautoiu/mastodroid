@@ -61,7 +61,7 @@ public class MastodroidFactory {
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         httpClient.addInterceptor(logging);
-        httpClient.followRedirects(false);
+        httpClient.followRedirects(true);
         httpClient.addInterceptor(new Interceptor() {
             @Override
             public Response intercept(Chain chain) throws IOException {

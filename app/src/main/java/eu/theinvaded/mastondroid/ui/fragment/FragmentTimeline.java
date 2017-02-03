@@ -129,17 +129,16 @@ public class FragmentTimeline extends FragmentBase implements TimelineViewModelC
     }
 
     @Override
-    public void loadData(List<Toot> timeline, boolean inFront, boolean isNotifications) {
+    public void loadData(List<Toot> timeline) {
         TimelineAdapter timelineAdapter = (TimelineAdapter) dataBinding.listPeople.getAdapter();
         for (Toot toot: timeline) {
             if (toot.reblog != null) {
                 toot.statusType = StatusType.Boost;
             }
         }
-        if(!isNotifications) {
-            Collections.sort(timeline, new TootComparator());
-        }
-        timelineAdapter.setTimeline(timeline, inFront, isNotifications);
+
+        Collections.sort(timeline, new TootComparator());
+        timelineAdapter.setTimeline(timeline);
         loading = false;
         setVisibility();
     }
