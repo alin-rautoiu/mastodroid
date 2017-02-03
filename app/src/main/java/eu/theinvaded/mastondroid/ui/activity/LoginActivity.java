@@ -25,8 +25,6 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
     private SharedPreferences preferences;
     private String customSchema;
     private String host;
-    private String appName;
-    private String scopes;
     LoginViewModel loginViewModel;
 
     @Override
@@ -36,12 +34,12 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
 
         this.context = this;
         preferences =
-                context.getSharedPreferences(getString(R.string.preferences), context.MODE_PRIVATE);
+                context.getSharedPreferences(getString(R.string.preferences), MODE_PRIVATE);
 
         customSchema = getString(R.string.custom_schema);
         host = getString(R.string.host);
-        appName = getString(R.string.app_name);
-        scopes = getString(R.string.scopes);
+        String appName = getString(R.string.app_name);
+        String scopes = getString(R.string.scopes);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
         loginViewModel = new LoginViewModel(this, appName, customSchema, host, scopes);
         binding.setViewModel(loginViewModel);
@@ -66,10 +64,10 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
     @Override
     protected void onResume() {
         super.onResume();
-        if (preferences == null) {
-            preferences =
-                    context.getSharedPreferences(getString(R.string.preferences), context.MODE_PRIVATE);
-        }
+        if (preferences != null) return;
+        preferences =
+                context.getSharedPreferences(getString(R.string.preferences), MODE_PRIVATE);
+
     }
 
     @Override
@@ -98,6 +96,7 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
 
     @Override
     public void signIn() {
+        binding.instanceTil.setErrorEnabled(false);
         final String clientId = preferences.getString(getString(R.string.clientId), "");
         final String redirectUri = customSchema + "://" + host + "/";
         final String responseType = getString(R.string.response_type);

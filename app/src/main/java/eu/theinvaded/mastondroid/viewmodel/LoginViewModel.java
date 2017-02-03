@@ -29,7 +29,6 @@ public class LoginViewModel extends BaseObservable implements LoginViewModelCont
     public ObservableBoolean isSignIn;
     private Subscription subscription;
     private LoginViewModelContract.LoginView viewModel;
-    private final MastodroidApplication app;
     private final MastodroidService service;
     private final String appName;
     private final String schema;
@@ -46,7 +45,7 @@ public class LoginViewModel extends BaseObservable implements LoginViewModelCont
 
         isSignIn = new ObservableBoolean(false);
         alreadyHasCredentials = new ObservableBoolean(true);
-        app = MastodroidApplication.create(viewModel.getContext());
+        MastodroidApplication app = MastodroidApplication.create(viewModel.getContext());
         service = app.getMastodroidLoginService();
     }
 
@@ -122,7 +121,7 @@ public class LoginViewModel extends BaseObservable implements LoginViewModelCont
         try {
             URL url = new URL(domain);
 
-            HttpURLConnection urlConnection = null;
+            HttpURLConnection urlConnection;
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setConnectTimeout(1000);
             urlConnection.connect();
