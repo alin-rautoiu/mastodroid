@@ -54,8 +54,8 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
 
     private void treatAuthorization(Uri uri) {
         if (uri == null) return;
-        String clientId = preferences.getString(getString(R.string.clientId), "");
-        String clientSecret = preferences.getString(getString(R.string.clientSecret), "");
+        String clientId = preferences.getString(getString(R.string.client_id), "");
+        String clientSecret = preferences.getString(getString(R.string.client_secret), "");
         String code = uri.getQueryParameter(getString(R.string.code));
 
         loginViewModel.authorizeApp(clientId, clientSecret, getString(R.string.authorization_code), code);
@@ -97,7 +97,7 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
     @Override
     public void signIn() {
         binding.instanceTil.setErrorEnabled(false);
-        final String clientId = preferences.getString(getString(R.string.clientId), "");
+        final String clientId = preferences.getString(getString(R.string.client_id), "");
         final String redirectUri = customSchema + "://" + host + "/";
         final String responseType = getString(R.string.response_type);
         final String scope = getString(R.string.scopes);
@@ -144,15 +144,15 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
 
     @Override
     public boolean checkAppRegistered() {
-        return preferences.contains(getString(R.string.clientId))
-                && preferences.contains(getString(R.string.clientSecret));
+        return preferences.contains(getString(R.string.client_id))
+                && preferences.contains(getString(R.string.client_secret));
     }
 
     @Override
     public void registerApp(String clientId, String clientSecret) {
         preferences.edit()
-                .putString(getString(R.string.clientId), clientId)
-                .putString(getString(R.string.clientSecret), clientSecret)
+                .putString(getString(R.string.client_id), clientId)
+                .putString(getString(R.string.client_secret), clientSecret)
                 .apply();
     }
 

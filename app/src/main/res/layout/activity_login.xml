@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
         <variable
             name="viewModel"
             type="eu.theinvaded.mastondroid.viewmodel.LoginViewModel" />
-
         <variable
             name="VIEW"
             type="android.view.View" />
@@ -25,14 +25,35 @@
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/icon_padding"/>
 
+        <Button
+            android:id="@+id/login_btn"
+            app:text="@{viewModel.instanceDomain}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> viewModel.signIn()}"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:id="@+id/or_tv"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/login_btn"
+            android:text="@string/or"
+            android:textColor="@color/colorAccent"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:layout_marginTop="@dimen/image_padding"
+            android:layout_marginBottom="@dimen/image_padding" />
+
         <android.support.design.widget.TextInputLayout
             android:id="@+id/instance_til"
             android:hint="@string/select_your_instance"
             android:textAlignment="center"
-            android:layout_centerInParent="true"
             android:gravity="center_horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_below="@id/or_tv">
             <android.support.v7.widget.AppCompatEditText
                 android:id="@+id/instance_et"
                 android:layout_width="match_parent"
@@ -41,16 +62,8 @@
                 android:layout_marginRight="16dp"
                 android:textAlignment="center"
                 style="@style/LoginTextStyle"
-                android:inputType="textUri" />
+                android:text="@={viewModel.instanceDomain}"
+                android:inputType="textUri"/>
         </android.support.design.widget.TextInputLayout>
-
-        <Button
-            android:id="@+id/login_btn"
-            android:text="@string/sign_in"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="@{() -> viewModel.signIn()}"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/instance_til"/>
     </RelativeLayout>
 </layout>

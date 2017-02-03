@@ -1,14 +1,19 @@
 package eu.theinvaded.mastondroid.viewmodel;
 
 import android.databinding.BaseObservable;
+import android.databinding.BindingAdapter;
 import android.databinding.ObservableBoolean;
+import android.databinding.ObservableField;
+import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Button;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 import eu.theinvaded.mastondroid.MastodroidApplication;
+import eu.theinvaded.mastondroid.R;
 import eu.theinvaded.mastondroid.data.MastodroidService;
 import eu.theinvaded.mastondroid.data.RegisterResponse;
 import eu.theinvaded.mastondroid.model.Token;
@@ -27,6 +32,7 @@ public class LoginViewModel extends BaseObservable implements LoginViewModelCont
 
     public ObservableBoolean alreadyHasCredentials;
     public ObservableBoolean isSignIn;
+    public ObservableField<String> instanceDomain;
     private Subscription subscription;
     private LoginViewModelContract.LoginView viewModel;
     private final MastodroidService service;
@@ -45,6 +51,8 @@ public class LoginViewModel extends BaseObservable implements LoginViewModelCont
 
         isSignIn = new ObservableBoolean(false);
         alreadyHasCredentials = new ObservableBoolean(true);
+        instanceDomain = new ObservableField<>("");
+
         MastodroidApplication app = MastodroidApplication.create(viewModel.getContext());
         service = app.getMastodroidLoginService();
     }
@@ -90,23 +98,25 @@ public class LoginViewModel extends BaseObservable implements LoginViewModelCont
                     public void call(Boolean availableConnection) {
                         if (!availableConnection) {
                             viewModel.domainError();
-                        } else {
-                            if (!viewModel.checkAppRegistered()) {
-                                service.registerApp(appName, schema + "://" + host + "/", scopes)
-                                        .observeOn(AndroidSchedulers.mainThread())
-                                        .subscribeOn(Schedulers.io())
-                                        .subscribe(new Action1<RegisterResponse>() {
-                                            @Override
-                                            public void call(RegisterResponse registerResponse) {
-                                                viewModel.registerApp(registerResponse.getClientId(), registerResponse.getClientSecret());
-                                                viewModel.signIn();
-                                            }
-                                        });
-                            } else {
-                                viewModel.signIn();
-                            }
+                            return;
                         }
+                        if (viewModel.checkAppRegistered()) {
+                            viewModel.signIn();
+                            return;
+                        }
+
+                        service.registerApp(appName, schema + "://" + host + "/", scopes)
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribeOn(Schedulers.io())
+                                .subscribe(new Action1<RegisterResponse>() {
+                                    @Override
+                                    public void call(RegisterResponse registerResponse) {
+                                        viewModel.registerApp(registerResponse.getClientId(), registerResponse.getClientSecret());
+                                        viewModel.signIn();
+                                    }
+                                });
                     }
+
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
@@ -140,6 +150,15 @@ public class LoginViewModel extends BaseObservable implements LoginViewModelCont
     private void unsubscribeFromObservable() {
         if (subscription != null && !subscription.isUnsubscribed()) {
             subscription.unsubscribe();
+        }
+    }
+
+    @BindingAdapter(value = {"text"}, requireAll = false)
+    public static void setButtonText(Button view, String value) {
+        if (TextUtils.isEmpty(value)) {
+            view.setText(R.string.sign_in_mastodon);
+        } else {
+            view.setText(R.string.sign_in);
         }
     }
 }
