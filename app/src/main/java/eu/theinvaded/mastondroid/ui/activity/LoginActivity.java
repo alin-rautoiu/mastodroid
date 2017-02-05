@@ -27,6 +27,10 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
     private String host;
     LoginViewModel loginViewModel;
 
+    public static Intent getStartIntent(Context context) {
+        return new Intent(context, LoginActivity.class);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
