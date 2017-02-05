@@ -2,9 +2,9 @@ package eu.theinvaded.mastondroid.ui.adapter;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
@@ -13,7 +13,6 @@ import java.util.List;
 import eu.theinvaded.mastondroid.R;
 import eu.theinvaded.mastondroid.databinding.ItemFollowerBinding;
 import eu.theinvaded.mastondroid.model.MastodonAccount;
-import eu.theinvaded.mastondroid.ui.activity.MainActivity;
 import eu.theinvaded.mastondroid.ui.fragment.FragmentUser;
 import eu.theinvaded.mastondroid.utils.Constants;
 import eu.theinvaded.mastondroid.viewmodel.ItemFollowerViewModel;
@@ -69,21 +68,21 @@ public class FollowersAdapter extends RecyclerView.Adapter<FollowersAdapter.Foll
 
         @Override
         public String getCredentials() {
-            return ((MainActivity) getContext())
+            return getContext()
                     .getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE)
                     .getString(Constants.AUTH_KEY, "");
         }
 
         @Override
         public String getUsername() {
-            return ((MainActivity) getContext())
+            return getContext()
                     .getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE)
                     .getString(Constants.CURRENT_USERNAME, "");
         }
 
         @Override
         public void expandUser(MastodonAccount account) {
-            ((MainActivity) getContext()).getSupportFragmentManager().beginTransaction()
+            ((AppCompatActivity) getContext()).getSupportFragmentManager().beginTransaction()
                     .addToBackStack("user")
                     .replace(R.id.container, FragmentUser.getInstance(account))
                     .commit();

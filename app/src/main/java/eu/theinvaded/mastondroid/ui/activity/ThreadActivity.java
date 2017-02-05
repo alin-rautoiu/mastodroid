@@ -77,7 +77,7 @@ public class ThreadActivity extends AppCompatActivity implements TimelineViewMod
     public String getUsername() {
 
         return getContext()
-                .getSharedPreferences(getString(R.string.preferences), getContext().MODE_PRIVATE)
+                .getSharedPreferences(getString(R.string.preferences), Context.MODE_PRIVATE)
                 .getString(getString(R.string.CURRENT_USERNAME), "");
     }
 

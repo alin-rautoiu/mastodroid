@@ -12,17 +12,17 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-    <style name="CollapsingTextAppearance" parent="Base.TextAppearance.AppCompat.Widget.ActionBar.Title"/>
+    <style name="CollapsingTextAppearance" parent="Base.TextAppearance.AppCompat.Widget.ActionBar.Title" />
 
-    <style name="CollapsingTextAppearance.TitleSize" >
+    <style name="CollapsingTextAppearance.TitleSize">
         <item name="android:textSize">30sp</item>
     </style>
 
-    <style name="LoginTextStyle" >
+    <style name="LoginTextStyle">
         <item name="android:textColor">#ffffff</item>
         <item name="android:textColorHint">#ffffff</item>
     </style>

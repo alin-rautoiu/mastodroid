@@ -1,7 +1,9 @@
 package eu.theinvaded.mastondroid.ui.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -28,6 +30,7 @@ import eu.theinvaded.mastondroid.model.Toot;
 import eu.theinvaded.mastondroid.ui.activity.MainActivity;
 import eu.theinvaded.mastondroid.ui.activity.ReplyActivity;
 import eu.theinvaded.mastondroid.ui.activity.ThreadActivity;
+import eu.theinvaded.mastondroid.ui.activity.UserActivity;
 import eu.theinvaded.mastondroid.ui.fragment.FragmentUser;
 import eu.theinvaded.mastondroid.ui.fragment.FullscreenImageFragment;
 import eu.theinvaded.mastondroid.utils.ViewsUtils;
@@ -185,10 +188,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.TootVi
 
         @Override
         public void expandUser(MastodonAccount account) {
-            ((MainActivity) getContext()).getSupportFragmentManager().beginTransaction()
-                    .addToBackStack("user")
-                    .replace(R.id.container, FragmentUser.getInstance(account))
-                    .commit();
+            getContext().startActivity(UserActivity.getStartIntent(getContext(), account));
         }
 
         View.OnClickListener imageClickListener = new View.OnClickListener() {
