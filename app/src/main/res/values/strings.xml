@@ -18,6 +18,7 @@
     <string name="login_failed_message">Couldn\'t log in</string>
     <string name="NO_USERNAME_ERROR">You must enter a username</string>
     <string name="NO_PASSWORD_ERROR">You must enter a password.</string>
+    <string name="tooting_failed_message">Failed to post toot. Better luck next time?</string>
     <string name="select_your_instance">Select your instance</string>
     <string name="custom_schema">eu.theinvaded.mastodroid</string>
     <string name="host">oauth2redirect</string>

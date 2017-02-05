@@ -36,6 +36,7 @@ public class ReplyViewModel extends BaseObservable implements ReplyViewModelCont
     public ObservableBoolean isPrivate = new ObservableBoolean(false);
     public ObservableBoolean notDisplayPublic = new ObservableBoolean(false);
     public ObservableBoolean showContentWarning = new ObservableBoolean(false);
+    public ObservableBoolean showLoadingIndicator = new ObservableBoolean(false);
 
     public long replyToId;
 
@@ -80,6 +81,8 @@ public class ReplyViewModel extends BaseObservable implements ReplyViewModelCont
     }
 
     public void postStatus() {
+        showLoadingIndicator.set(true);
+
         String statusVisibility = isPrivate.get()
                 ? "private"
                 : notDisplayPublic.get()
@@ -90,39 +93,28 @@ public class ReplyViewModel extends BaseObservable implements ReplyViewModelCont
         {
             spoilerTextTemp = "";
         }
+        rx.Observable<Toot> postStatus;
         if (replyToId == 0) {
-            service.postStatus(tootText.get(), spoilerTextTemp, false, statusVisibility)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeOn(Schedulers.io())
-                    .subscribe(new Action1<Toot>() {
-                        @Override
-                        public void call(Toot toot) {
-                            Log.d(TAG, "");
-                            replyView.goToParent();
-
-                        }
-                    }, new Action1<Throwable>() {
-                        @Override
-                        public void call(Throwable throwable) {
-                            Log.e("postTootError: ", throwable.getMessage());
-                        }
-                    });
+            postStatus = service.postStatus(tootText.get(), spoilerTextTemp, false, statusVisibility);
         } else {
-            service.postStatusReply(tootText.get(), spoilerTextTemp, replyToId, false, statusVisibility)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeOn(Schedulers.io())
-                    .subscribe(new Action1<Toot>() {
-                        @Override
-                        public void call(Toot toot) {
-                            replyView.goToParent();
-                        }
-                    }, new Action1<Throwable>() {
-                        @Override
-                        public void call(Throwable throwable) {
-                            Log.e("postTootError: ", throwable.getMessage());
-                        }
-                    });
+            postStatus = service.postStatusReply(tootText.get(), spoilerTextTemp, replyToId, false, statusVisibility);
         }
+        postStatus.observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Action1<Toot>() {
+                    @Override
+                    public void call(Toot toot) {
+                        replyView.goToParent();
+                        showLoadingIndicator.set(false);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Log.e("postTootError: ", throwable.getMessage());
+                        showLoadingIndicator.set(false);
+                        replyView.showError();
+                    }
+                });
     }
     @Override
     public void destroy() {

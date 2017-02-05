@@ -12,6 +12,7 @@ public class ReplyViewModelContract {
         String getCredentials();
 
         void goToParent();
+        void showError();
     }
 
     public interface ViewModel {

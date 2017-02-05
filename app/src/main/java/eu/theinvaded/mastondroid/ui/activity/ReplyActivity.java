@@ -7,6 +7,7 @@ import android.os.PersistableBundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import eu.theinvaded.mastondroid.R;
 import eu.theinvaded.mastondroid.databinding.ActivityLoginBinding;
@@ -77,5 +78,10 @@ public class ReplyActivity extends AppCompatActivity implements ReplyViewModelCo
         super.onRestoreInstanceState(savedInstanceState);
         String tootText = savedInstanceState.getString(TOOT_TEXT);
         binding.getViewModel().tootText.set(tootText);
+    }
+
+    @Override
+    public void showError() {
+        Toast.makeText(this, R.string.tooting_failed_message, Toast.LENGTH_SHORT).show();
     }
 }
