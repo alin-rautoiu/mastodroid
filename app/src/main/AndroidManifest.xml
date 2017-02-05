@@ -14,16 +14,24 @@
         <activity
             android:name=".ui.activity.MainActivity"
             android:launchMode="singleTop"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".ui.activity.LoginActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <data
+                    android:host="@string/host"
+                    android:scheme="@string/custom_schema" />
             </intent-filter>
         </activity>
         <activity
             android:name=".ui.activity.ReplyActivity"
+            android:parentActivityName=".ui.activity.MainActivity"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
+        <activity
+            android:name=".ui.activity.ThreadActivity"
             android:parentActivityName=".ui.activity.MainActivity"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
 
@@ -31,10 +39,12 @@
             android:name="io.fabric.ApiKey"
             android:value="894c7240bb1eaa57bdc34a7a3b487c70eba1d799" />
 
-        <activity
-            android:parentActivityName=".ui.activity.MainActivity"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
-            android:name=".ui.activity.ThreadActivity"></activity>
+        <activity android:name=".ui.activity.SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

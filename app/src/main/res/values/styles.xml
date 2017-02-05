@@ -22,4 +22,9 @@
         <item name="android:textSize">30sp</item>
     </style>
 
+    <style name="LoginTextStyle" >
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:textColorHint">#ffffff</item>
+    </style>
+
 </resources>

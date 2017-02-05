@@ -37,7 +37,7 @@ public class FragmentMain extends FragmentBase {
             setUpViewPage(dataBinding.viewpager);
             dataBinding.tabs.setupWithViewPager(dataBinding.viewpager);
             dataBinding.setViewModel(new MainViewModel(getContext()));
-            dataBinding.toolbar.setTitle("");
+            //dataBinding.toolbar.setTitle("");
         }
 
         return rootView;

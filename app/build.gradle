@@ -22,8 +22,8 @@ android {
         applicationId "eu.theinvaded.mastondroid"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 9
-        versionName "0.1.6"
+        versionCode 10
+        versionName "0.2.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -55,9 +55,9 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.squareup.okhttp3:okhttp-urlconnection:3.5.0'
-    compile 'com.squareup.okhttp3:okhttp:3.5.0'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.5.0'
+    compile 'com.squareup.okhttp3:okhttp-urlconnection:3.6.0'
+    compile 'com.squareup.okhttp3:okhttp:3.6.0'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.6.0'
 
     //RxJava
     compile 'io.reactivex:rxandroid:1.2.1'

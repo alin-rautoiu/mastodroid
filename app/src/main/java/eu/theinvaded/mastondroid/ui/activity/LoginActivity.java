@@ -1,10 +1,11 @@
 package eu.theinvaded.mastondroid.ui.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 
 import com.crashlytics.android.Crashlytics;
@@ -12,6 +13,7 @@ import com.crashlytics.android.Crashlytics;
 import eu.theinvaded.mastondroid.R;
 import eu.theinvaded.mastondroid.databinding.ActivityLoginBinding;
 import eu.theinvaded.mastondroid.model.MastodonAccount;
+import eu.theinvaded.mastondroid.utils.StringUtils;
 import eu.theinvaded.mastondroid.viewmodel.LoginViewModel;
 import eu.theinvaded.mastondroid.viewmodel.LoginViewModelContract;
 import io.fabric.sdk.android.Fabric;
@@ -21,6 +23,13 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
     private ActivityLoginBinding binding;
     private Context context;
     private SharedPreferences preferences;
+    private String customSchema;
+    private String host;
+    LoginViewModel loginViewModel;
+
+    public static Intent getStartIntent(Context context) {
+        return new Intent(context, LoginActivity.class);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,34 +38,45 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
 
         this.context = this;
         preferences =
-                context.getSharedPreferences(getString(R.string.preferences), context.MODE_PRIVATE);
+                context.getSharedPreferences(getString(R.string.preferences), MODE_PRIVATE);
 
+        customSchema = getString(R.string.custom_schema);
+        host = getString(R.string.host);
+        String appName = getString(R.string.app_name);
+        String scopes = getString(R.string.scopes);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
-        LoginViewModel loginViewModel = new LoginViewModel(this);
+        loginViewModel = new LoginViewModel(this, appName, customSchema, host, scopes);
         binding.setViewModel(loginViewModel);
+
+        Uri uri = getIntent().getData();
+        treatAuthorization(uri);
+
+        if (preferences.contains(getString(R.string.authKey))) {
+            startMainActivity();
+        }
+    }
+
+    private void treatAuthorization(Uri uri) {
+        if (uri == null) return;
+        String clientId = preferences.getString(getString(R.string.client_id), "");
+        String clientSecret = preferences.getString(getString(R.string.client_secret), "");
+        String code = uri.getQueryParameter(getString(R.string.code));
+
+        loginViewModel.authorizeApp(clientId, clientSecret, getString(R.string.authorization_code), code);
     }
 
     @Override
-    public String getUsername() {
-        return binding.usernameTv.getText().toString();
-    }
+    protected void onResume() {
+        super.onResume();
+        if (preferences != null) return;
+        preferences =
+                context.getSharedPreferences(getString(R.string.preferences), MODE_PRIVATE);
 
-    @Override
-    public String getPassword() {
-        return binding.passwordTv.getText().toString();
     }
 
     @Override
     public Context getContext() {
         return context;
-    }
-
-    @Override
-    public void setAuthKey(String authKey) {
-        preferences
-                .edit()
-                .putString(getString(R.string.authKey), authKey)
-                .apply();
     }
 
     @Override
@@ -71,16 +91,6 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
     }
 
     @Override
-    public String getClientSecret() {
-        return getString(R.string.clientSecret);
-    }
-
-    @Override
-    public String getClientId() {
-        return getString(R.string.clientId);
-    }
-
-    @Override
     public void setUser(MastodonAccount account) {
         preferences
                 .edit()
@@ -88,38 +98,74 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
                 .apply();
     }
 
-    public void setError(String target, String error) {
-        setError(target, error, null);
+    @Override
+    public void signIn() {
+        binding.instanceTil.setErrorEnabled(false);
+        final String clientId = preferences.getString(getString(R.string.client_id), "");
+        final String redirectUri = customSchema + "://" + host + "/";
+        final String responseType = getString(R.string.response_type);
+        final String scope = getString(R.string.scopes);
+
+        Uri.Builder builder = getDomain()
+                .appendPath(getString(R.string.api_oauth))
+                .appendPath(getString(R.string.api_authorize))
+                .appendQueryParameter("client_id", clientId)
+                .appendQueryParameter("redirect_uri", redirectUri)
+                .appendQueryParameter("response_type", responseType)
+                .appendQueryParameter("scope", scope);
+
+        Intent viewIntent = new Intent("android.intent.action.VIEW", builder.build());
+        startActivity(viewIntent);
     }
 
-    public void setError(String target, int error, String details) {
-        setError(target, getResources().getResourceEntryName(error), details);
+    @Override
+    public Uri.Builder getDomain() {
+        String domain = binding.instanceEt.getText().toString();
+        Uri.Builder builder = new Uri.Builder().scheme("https");
+        if (StringUtils.isNullOrEmpty(domain)) {
+            builder = builder
+                    .authority("mastodon.social");
+        } else {
+            builder = builder
+                    .authority(cleanDomain(domain));
+        }
+        return builder;
     }
 
-
-    public void setError(String target, String error, String details) {
-        // probably better ways to do this, but the android docs are stirred shit
-        TextInputLayout target_layout = getLayoutOrFallback(target);
-        int errorId = getResId(error, "string");
-        String errorStr = errorId == 0 ? getString(R.string.UNKNOWN_ERROR_ID) + error : getString(errorId);
-        target_layout.setErrorEnabled(true);
-        target_layout.setError(errorStr + (details == null ? "" : ": " + details));
+    @Override
+    public void domainError() {
+        binding.instanceTil.setErrorEnabled(true);
+        binding.instanceTil.setError(getString(R.string.server_connection_error));
     }
 
-    public void clearError() {
-        clearError(null);
+    private String cleanDomain(String domain) {
+        domain = domain.replace("https://", "");
+        domain = domain.replace("http://", "");
+        domain = domain.replaceAll(" ", "");
+
+        return domain;
     }
 
-    public void clearError(String target) {
-        getLayoutOrFallback(target).setErrorEnabled(false);
+    @Override
+    public boolean checkAppRegistered() {
+        return preferences.contains(getString(R.string.client_id))
+                && preferences.contains(getString(R.string.client_secret));
     }
 
-    private TextInputLayout getLayoutOrFallback(String target) {
-        TextInputLayout layout = (TextInputLayout) findViewById(getResId(target + "_layout", "id"));
-        return layout == null ? binding.loginProcessLayout : layout;
+    @Override
+    public void registerApp(String clientId, String clientSecret) {
+        preferences.edit()
+                .putString(getString(R.string.client_id), clientId)
+                .putString(getString(R.string.client_secret), clientSecret)
+                .apply();
     }
 
-    private int getResId(String target, String type) {
-        return getResources().getIdentifier(target, type, getPackageName());
+    @Override
+    public void authorizeApp(String accessToken) {
+        preferences.edit()
+                .putString(getString(R.string.authKey), accessToken)
+                .apply();
+
+        startMainActivity();
     }
 }

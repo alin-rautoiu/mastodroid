@@ -25,6 +25,12 @@ import rx.Observable;
 public interface MastodroidService {
 
     @FormUrlEncoded
+    @POST("/api/v1/apps")
+    Observable<RegisterResponse> registerApp(@Field("client_name") String clientName,
+                                             @Field("redirect_uris") String redirectUris,
+                                             @Field("scopes") String scopes);
+
+    @FormUrlEncoded
     @POST("oauth/token")
     Observable<Token> SignIn(@Field("client_id") String clientId,
                              @Field("client_secret") String clientSecret,
@@ -32,6 +38,14 @@ public interface MastodroidService {
                              @Field("grant_type") String grantType,
                              @Field("username") String username,
                              @Field("password") String password);
+
+    @FormUrlEncoded
+    @POST("oauth/token")
+    Observable<Token> SignIn(@Field("client_id") String clientId,
+                             @Field("client_secret") String clientSecret,
+                             @Field("redirect_uri") String scope,
+                             @Field("grant_type") String grantType,
+                             @Field("code") String code);
 
     @GET("api/v1/timelines/public")
     Observable<List<Toot>> getPublicTimeLine();
