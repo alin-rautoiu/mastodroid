@@ -33,4 +33,5 @@
     <string name="or">OR</string>
     <string name="client_secret">client_secret</string>
     <string name="client_id">client_id</string>
+    <string name="title_activity_user">User Activity</string>
 </resources>
