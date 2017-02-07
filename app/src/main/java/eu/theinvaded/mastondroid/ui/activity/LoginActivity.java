@@ -3,6 +3,7 @@ package eu.theinvaded.mastondroid.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.databinding.BindingConversion;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
@@ -167,5 +168,10 @@ public class LoginActivity extends AppCompatActivity implements LoginViewModelCo
                 .apply();
 
         startMainActivity();
+    }
+
+    @BindingConversion
+    public static String convertIntToString(int remainingChars) {
+        return String.valueOf(remainingChars);
     }
 }
