@@ -45,7 +45,7 @@ public class ReplyActivity extends AppCompatActivity implements ReplyViewModelCo
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_reply);
         binding.setViewModel(new ReplyViewModel(context, this));
-        binding.statusEt.addTextChangedListener(binding.getViewModel().charCountWatcher());
+        //binding.statusEt.addTextChangedListener(binding.getViewModel().charCountWatcher());
 
         Intent intent = getIntent();
         if (intent != null) {
