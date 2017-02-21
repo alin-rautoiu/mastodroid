@@ -3,8 +3,6 @@ package eu.theinvaded.mastondroid.utils;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import eu.theinvaded.mastondroid.ui.adapter.FollowersAdapter;
-
 /**
  * Created by alin on 11.01.2017.
  */
@@ -41,10 +39,8 @@ public abstract class PostsRecyclerScrollListener extends RecyclerView.OnScrollL
                 loading = false;
             }
         }
-        if (!loading && (totalItemCount - visibleItemCount) <= firstVisibleItemIndex) {
+        if (!loading && (totalItemCount - visibleItemCount) <= firstVisibleItemIndex && totalItemCount != visibleItemCount) {
             // Loading NOT in progress and end of list has been reached
-            // also triggered if not enough items to fill the screen
-            // if you start loading
             loading = true;
             previousTotal = totalItemCount;
             loadData();

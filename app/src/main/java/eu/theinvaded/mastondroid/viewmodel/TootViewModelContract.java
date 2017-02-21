@@ -1,6 +1,7 @@
 package eu.theinvaded.mastondroid.viewmodel;
 
 import android.content.Context;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class TootViewModelContract {
         String getUsername();
 
         void expandUser(MastodonAccount account);
+        void startSearchActivity(String substring);
     }
 
     public interface ViewModel {

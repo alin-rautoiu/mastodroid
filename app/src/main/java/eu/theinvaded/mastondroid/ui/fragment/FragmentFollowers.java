@@ -5,9 +5,7 @@ import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,17 +16,15 @@ import eu.theinvaded.mastondroid.R;
 import eu.theinvaded.mastondroid.databinding.FragmentFollowersBinding;
 import eu.theinvaded.mastondroid.model.MastodonAccount;
 import eu.theinvaded.mastondroid.ui.adapter.FollowersAdapter;
-import eu.theinvaded.mastondroid.ui.adapter.TimelineAdapter;
 import eu.theinvaded.mastondroid.utils.Constants;
 import eu.theinvaded.mastondroid.utils.PostsRecyclerScrollListener;
 import eu.theinvaded.mastondroid.viewmodel.FollowersViewModel;
 import eu.theinvaded.mastondroid.viewmodel.FollowersViewModelContract;
-import eu.theinvaded.mastondroid.viewmodel.TimelineViewModel;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FragmentFollowers extends Fragment implements FollowersViewModelContract.FollowersView{
+public class FragmentFollowers extends Fragment implements FollowersViewModelContract.FollowersView {
 
     private static final String TYPE = "TYPE";
     private static final String USER_ID = "USER_ID";
@@ -98,20 +94,20 @@ public class FragmentFollowers extends Fragment implements FollowersViewModelCon
         dataBinding
                 .followRv
                 .addOnScrollListener(
-                        new PostsRecyclerScrollListener((LinearLayoutManager)dataBinding.followRv.getLayoutManager()) {
-            @Override
-            protected void loadData() {
-                followersViewModel
-                        .populateList(((FollowersAdapter)dataBinding.followRv
-                                .getAdapter())
-                                .getLastId());
-            }
-        });
+                        new PostsRecyclerScrollListener((LinearLayoutManager) dataBinding.followRv.getLayoutManager()) {
+                            @Override
+                            protected void loadData() {
+                                followersViewModel
+                                        .populateList(((FollowersAdapter) dataBinding.followRv
+                                                .getAdapter())
+                                                .getLastId());
+                            }
+                        });
     }
 
     @Override
     public void loadData(List<MastodonAccount> accounts) {
-        ((FollowersAdapter)dataBinding.followRv.getAdapter()).setAccountList(accounts);
+        ((FollowersAdapter) dataBinding.followRv.getAdapter()).setAccountList(accounts);
     }
 
     @Override
