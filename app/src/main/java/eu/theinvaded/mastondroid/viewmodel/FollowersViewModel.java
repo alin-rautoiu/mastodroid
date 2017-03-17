@@ -5,8 +5,6 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 
 import eu.theinvaded.mastondroid.MastodroidApplication;
@@ -14,13 +12,11 @@ import eu.theinvaded.mastondroid.data.MastodroidService;
 import eu.theinvaded.mastondroid.model.MastodonAccount;
 import eu.theinvaded.mastondroid.model.Relationship;
 import eu.theinvaded.mastondroid.utils.Constants;
-import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Action2;
 import rx.functions.Func0;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -38,6 +34,7 @@ public class FollowersViewModel extends BaseObservable implements FollowersViewM
     private FollowersViewModelContract.FollowersView followersView;
     private String nextFollowers;
     private String nextFollowing;
+    private String query;
 
     public FollowersViewModel(@NonNull FollowersViewModelContract.FollowersView followersView,
                               long userId,
@@ -57,6 +54,9 @@ public class FollowersViewModel extends BaseObservable implements FollowersViewM
             case Constants.FOLLOWS:
                 fetchFollowing();
                 break;
+            case Constants.SEARCH:
+                searchUsers(query);
+                break;
         }
     }
 
@@ -67,6 +67,9 @@ public class FollowersViewModel extends BaseObservable implements FollowersViewM
                 break;
             case Constants.FOLLOWS:
                 fetchFollowing(maxId);
+                break;
+            case Constants.SEARCH:
+                searchUsers(query, maxId);
                 break;
         }
     }
@@ -123,6 +126,32 @@ public class FollowersViewModel extends BaseObservable implements FollowersViewM
                 });
     }
 
+    private void searchUsers(String query) {
+        service.searchUsers(query, 20)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(getFollowers()
+                        , new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                Log.e(TAG, "call: searchUsers", throwable);
+                            }
+                        });
+    }
+
+    private void searchUsers(String query, long maxId) {
+        service.searchUsersNext(query, 20, maxId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(getFollowers()
+                        , new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                Log.e(TAG, "call: searchUsers", throwable);
+                            }
+                        });
+    }
+
     @Override
     public void destroy() {
         userId = 0;
@@ -170,7 +199,7 @@ public class FollowersViewModel extends BaseObservable implements FollowersViewM
                                         mappedUsers.append(accounts.get(i).id, i);
                                     }
 
-                                    for (Relationship relationship: relationships) {
+                                    for (Relationship relationship : relationships) {
                                         accounts.get(mappedUsers.get(relationship.getId())).relationship = relationship;
                                     }
                                     followersView.loadData(accounts);
@@ -188,5 +217,9 @@ public class FollowersViewModel extends BaseObservable implements FollowersViewM
 
 
         };
+    }
+
+    public void setQuery(String query) {
+        this.query = query;
     }
 }

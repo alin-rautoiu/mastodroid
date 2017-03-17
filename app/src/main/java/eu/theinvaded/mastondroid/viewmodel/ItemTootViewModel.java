@@ -5,30 +5,24 @@ import android.databinding.BaseObservable;
 import android.databinding.BindingAdapter;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableInt;
-import android.net.Uri;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.text.Spannable;
-import android.text.Spanned;
 import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.TextUtils;
-import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
-import android.text.style.UnderlineSpan;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
-
 import com.squareup.picasso.Picasso;
 
-import java.net.URL;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-
+import java.util.regex.Pattern;
 import eu.theinvaded.mastondroid.MastodroidApplication;
 import eu.theinvaded.mastondroid.R;
 import eu.theinvaded.mastondroid.data.MastodroidService;
@@ -37,7 +31,6 @@ import eu.theinvaded.mastondroid.model.StatusType;
 import eu.theinvaded.mastondroid.model.Toot;
 import eu.theinvaded.mastondroid.utils.Emojione;
 import eu.theinvaded.mastondroid.utils.StringUtils;
-import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -192,7 +185,8 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
             content = Emojione.shortnameToUnicode(toot.reblog.content, false);
             statusTypeVisible.set(View.VISIBLE);
         } else if (toot.statusType != StatusType.Follow) {
-            content = Emojione.shortnameToUnicode(toot.content, false);;
+            content = Emojione.shortnameToUnicode(toot.content, false);
+            ;
             statusTypeVisible.set(View.GONE);
         } else {
             content = "";
@@ -200,6 +194,7 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
         }
 
         final Spannable spanned;
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             spanned = (Spannable) Html.fromHtml(content, Html.FROM_HTML_MODE_LEGACY);
         } else {
@@ -216,6 +211,8 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
                             spanned.getSpanEnd(this));
                     if (isProfileLInk(spanString, span.getURL())) {
                         handleUsernameLink(spanString.substring(1));
+                    } else if (isTagLink(spanString)) {
+                        tootView.startSearchActivity(spanString.substring(1));
                     } else {
                         super.onClick(widget);
                     }
@@ -231,11 +228,17 @@ public class ItemTootViewModel extends BaseObservable implements TootViewModelCo
                 boolean isProfileLInk(String linkText, String url) {
                     return linkText.charAt(0) == '@';
                 }
+
+                boolean isTagLink(String linkText) {
+                    return linkText.charAt(0) == '#';
+                }
+
             }, spanned.getSpanStart(span), spanned.getSpanEnd(span), 0);
             spanned.removeSpan(span);
         }
         final Spannable spannedTrimmed;
         spannedTrimmed = StringUtils.trimSpannable((SpannableStringBuilder) spanned);
+
         return spannedTrimmed;
     }
 

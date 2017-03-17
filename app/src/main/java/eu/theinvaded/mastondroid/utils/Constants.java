@@ -15,6 +15,9 @@ public class Constants {
     public static final String PREFERENCES = "PREFERENCES";
     public static final String AUTH_KEY = "AUTH_KEY";
     public static final String CURRENT_USERNAME = "CURRENT_USERNAME";
+    public static final int SEARCH = 8;
+    public static final String QUERY = "QUERY";
+    public static final int HASHTAG = 9;
 
     public enum FollowColumn {FOLLOWERS, FOLLOWING}
 }

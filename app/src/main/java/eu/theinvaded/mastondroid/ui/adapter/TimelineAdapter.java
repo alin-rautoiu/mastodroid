@@ -10,16 +10,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.ViewUtils;
 import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import eu.theinvaded.mastondroid.R;
 import eu.theinvaded.mastondroid.databinding.ItemTootBinding;
@@ -29,6 +32,7 @@ import eu.theinvaded.mastondroid.model.StatusType;
 import eu.theinvaded.mastondroid.model.Toot;
 import eu.theinvaded.mastondroid.ui.activity.MainActivity;
 import eu.theinvaded.mastondroid.ui.activity.ReplyActivity;
+import eu.theinvaded.mastondroid.ui.activity.SearchActivity;
 import eu.theinvaded.mastondroid.ui.activity.ThreadActivity;
 import eu.theinvaded.mastondroid.ui.activity.UserActivity;
 import eu.theinvaded.mastondroid.ui.fragment.FragmentUser;
@@ -189,6 +193,11 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.TootVi
         @Override
         public void expandUser(MastodonAccount account) {
             getContext().startActivity(UserActivity.getStartIntent(getContext(), account));
+        }
+
+        @Override
+        public void startSearchActivity(String substring) {
+            getContext().startActivity(SearchActivity.getStartIntent(getContext(), substring));
         }
 
         View.OnClickListener imageClickListener = new View.OnClickListener() {
