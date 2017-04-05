@@ -1,9 +1,7 @@
 /.gradle/
 /.idea/
 /build/
-/gradle/
 /gradle.properties
-/gradlew*
 /local.properties
 /mastodroid.iml
 /app/app.iml
